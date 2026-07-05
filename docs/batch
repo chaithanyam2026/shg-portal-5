@@ -1,0 +1,37 @@
+Recommended development batches
+
+To keep the project compilable after every step, I would implement the Financial Year feature in this order:
+
+Batch 1: Domain model, Mongoose schema, Zod validation, create() and list() services, GET/POST APIs, Financial Year List and Create screens.
+    Part 1 (Model + Validation + Services)
+            Next response (Part 1A): src/models/FinancialYear.ts (complete)
+            Then Part 1B: src/features/financial-year/validation.ts
+            Then Part 1C: src/features/financial-year/services/create.ts
+            Then Part 1D: src/features/financial-year/services/list.ts
+    Part 2 (API routes)
+    Part 3 (UI pages and components)
+        Part 3A
+            src/app/(dashboard)/financial-years/page.tsx
+            src/features/financial-year/ui/FinancialYearList.tsx
+            src/features/financial-year/ui/FinancialYearCard.tsx
+        Part 3B
+            src/app/(dashboard)/financial-years/new/page.tsx
+            src/features/financial-year/ui/FinancialYearForm.tsx
+        Part 3C
+            src/app/(dashboard)/financial-years/[id]/page.tsx
+    Part 4 (Tests and final cleanup)
+Batch 2: update() service, GET/PATCH by ID APIs, Details page with the tab layout (General, Members, Committee, Opening Accounts, Summary).
+    Part 2A: Validation updates.
+    Part 2B: update() service.  
+        Part 2B.1
+        Part 2B.2
+    Part 2C: PATCH /api/financial-years/[id].
+    Part 2D: Tab layout and routing.
+    Part 2E: General tab with edit/save.
+    Part 2F: Members tab.
+    Part 2G: Executive Committee tab.
+    Part 2H: Opening Accounts tab.
+    Part 2I: Summary tab.
+Batch 3: Members assignment and Executive Committee tabs, persisting updates through the existing PATCH endpoint.
+Batch 4: Opening balances, Summary calculations, activate() service and activation workflow with validation (unique active year, no overlaps).
+Batch 5: close() service, reconciliation checks, Close Financial Year wizard, and read-only behavior for closed years.

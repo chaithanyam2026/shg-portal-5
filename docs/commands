@@ -1,0 +1,32 @@
+npx create-next-app@latest .
+
+npm install -D tsx       
+
+npm install dotenv    
+
+npm i
+
+
+npm install @mui/material
+npm install @emotion/react @emotion/styled
+npm install @mui/icons-material
+npm install mongoose
+npm install next-auth
+npm install bcryptjs
+npm install react-hook-form
+npm install zod
+npm install @hookform/resolvers
+npm install notistack
+npm install react-icons
+npm install clsx
+npm install dayjs
+npm install date-fns
+npm install uuid
+npm install dotenv
+
+Development dependencies
+
+npm install -D prettier
+npm install -D prettier-plugin-organize-imports
+npm install -D @types/bcryptjs
+npm install -D @types/uuid
