@@ -26,12 +26,358 @@ Batch 2: update() service, GET/PATCH by ID APIs, Details page with the tab layou
         Part 2B.1
         Part 2B.2
     Part 2C: PATCH /api/financial-years/[id].
-    Part 2D: Tab layout and routing.
+    Part 2D: Tab layout and routing. ------
     Part 2E: General tab with edit/save.
-    Part 2F: Members tab.
+    Part 2F: Members tab. -----
     Part 2G: Executive Committee tab.
-    Part 2H: Opening Accounts tab.
+    Part 2H: Opening Accounts tab. ---
     Part 2I: Summary tab.
 Batch 3: Members assignment and Executive Committee tabs, persisting updates through the existing PATCH endpoint.
+    Part 3A
+    Member Assignment Engine
+
+    Files
+
+    src/app/api/members/route.ts
+    src/features/member/services/list.ts
+    src/features/financial-year/ui/tabs/MembersForm.tsx
+    src/features/financial-year/services/get.ts
+
+    Deliverables
+
+    GET active members
+    Checkbox list
+    Save selected members
+    Persist using PATCH
+    Part 3B
+    Executive Committee Assignment
+
+    Files
+
+    src/features/financial-year/ui/tabs/CommitteeForm.tsx
+    src/features/financial-year/services/update.ts
+
+    Deliverables
+
+    Five dropdowns
+    Members loaded from Financial Year
+    Save committee
+    Duplicate validation
+    Committee member must belong to Financial Year
+    Part 3C ----
+    Committee Validation
+
+    Move all committee validation into one private function inside:
+
+    src/features/financial-year/services/update.ts
+    update()
+
+    │
+
+    ├── validateGeneral()
+
+    ├── validateCommittee()
+
+    ├── validateOverlap()
+
+    ├── updateGeneral()
+
+    ├── updateMembers()
+
+    ├── updateCommittee()
+
+    └── updateOpeningBalances()
+
+    Business rules
+
+    No duplicate committee members
+    Committee members must belong to assigned members
+    Closed/Approved Financial Year cannot be modified
+    Batch 3 Part 3D ----
+    Members Validation
+
+    Business rules
+
+    Duplicate members not allowed
+    Only active members allowed
+    Cannot remove committee members from the Financial Year
+    Cannot modify members after APPROVED
+    Batch 3 Part 3E
+    Summary Improvements
+
+    Summary becomes the readiness screen.
+
+    Display
+
+    Members
+
+    Executive Committee
+
+    Opening Accounts
+
+    Validation
+
+    Ready to Start
 Batch 4: Opening balances, Summary calculations, activate() service and activation workflow with validation (unique active year, no overlaps).
 Batch 5: close() service, reconciliation checks, Close Financial Year wizard, and read-only behavior for closed years.
+
+
+
+Files to Create
+src/features/financial-year/services/activate.ts
+
+src/app/api/financial-years/[id]/activate/route.ts
+Files to Modify
+src/features/financial-year/ui/tabs/SummaryTab.tsx
+
+src/features/financial-year/types.ts
+
+src/features/financial-year/validate.ts
+
+src/features/financial-year/ui/tabs/ValidationItem.tsx
+
+Part 3E.5
+
+    If status is
+
+    IN_PROGRESS
+
+    Show
+
+    Financial Year Active
+
+    instead of
+
+    Start Financial Year
+
+    If status is
+
+    CLOSED
+
+    Show
+
+    Financial Year Closed
+
+    No action button.
+
+=====
+   
+   
+   
+Phase 1 — Schema Foundation ======
+
+        Objective
+
+        Extend the Financial Year member structure to support opening balances.
+
+        Files
+        src/models/FinancialYear.ts
+
+        src/features/financial-year/types.ts
+
+        src/features/financial-year/validation.ts
+        Deliverables
+
+        Replace
+
+        members: ObjectId[]
+
+        with
+
+        members[]
+
+            memberId
+
+            openingContribution
+
+            openingLoan
+
+            openingSpecialLoan
+
+            specialLoanExpiry
+
+        No UI changes.
+
+Phase 2 — Update Service
+
+        Objective
+
+        Allow updating the new member opening balance fields.
+
+        Files
+        src/features/financial-year/services/update.ts
+        Deliverables
+        Update member opening balances
+        Validation
+        Duplicate member validation
+        Loan values ≥ 0
+        Contribution ≥ 0
+
+        No UI yet.
+
+Phase 3 — Members Tab UI ====
+Part 3A — Member Row Model ====
+Part 3B — Member Table UI =====
+Part 3C — Save Integration ====
+Part 3D — Client Validation
+Part 3E — UX Improvements
+Part 3E.3 — Improved Save Button
+<Button
+  variant="contained"
+  onClick={saveMembers}
+  disabled={
+    saving ||
+    !dirty ||
+    rows.length === 0
+  }
+  startIcon={
+    saving ? (
+      <CircularProgress
+        size={18}
+        color="inherit"
+      />
+    ) : undefined
+  }
+>
+  {saving
+    ? "Saving..."
+    : "Save Members"}
+</Button>
+Part 3E.4 — Success Snackbar
+
+Instead of a permanent success alert.
+
+Add state:
+
+const [showSuccess, setShowSuccess] =
+  useState(false);
+
+After save:
+
+setShowSuccess(true);
+
+Snackbar:
+
+<Snackbar
+  open={showSuccess}
+  autoHideDuration={3000}
+  onClose={() =>
+    setShowSuccess(false)
+  }
+>
+  <Alert severity="success">
+    Members updated successfully.
+  </Alert>
+</Snackbar>
+Part 3E.5 — Empty State
+
+When there are no members:
+
+{rows.length === 0 && (
+  <Alert severity="info">
+    No members have been assigned.
+    Click <strong>Add Member</strong> to
+    begin.
+  </Alert>
+)}
+Part 3E.6 — Better Number Inputs
+
+For every numeric field:
+
+<TextField
+  type="number"
+  inputProps={{
+    min: 0,
+    step: 1,
+  }}
+/>
+
+This prevents negative values from being entered via the spinner controls.
+
+Part 3E.7 — Disable Remove for Last Row (Optional)
+
+If you always want at least one row:
+
+<IconButton
+  disabled={
+    disabled ||
+    totalRows === 1
+  }
+>
+
+If zero members are allowed, you can skip this.
+
+Part 3E.8 — Better Toolbar
+
+
+Phase 4 — Member Row Component=====
+
+Phase 5 — Summary
+
+        Update the Summary tab.
+
+        Display
+
+        Total Members
+
+        Total Opening Contribution
+
+        Total Existing Loan
+
+        Total Special Loan
+
+        These values come from
+
+        financialYear.members
+Phase 6 — Validation
+
+        Extend
+
+        validateFinancialYear()
+
+        Rules
+
+        Every selected member has an opening record.
+        Opening contribution ≥ 0.
+        Opening loan ≥ 0.
+        Opening special loan ≥ 0.
+        Expiry required only when special loan > 0.
+Phase 7 — Activation
+
+            During activation
+
+            DRAFT
+
+            ↓
+
+            IN_PROGRESS
+
+            Freeze member opening balances.
+
+            After activation
+
+            Members
+
+            Read Only
+
+            No edits allowed.
+
+            Final Financial Year Structure
+            Financial Year
+
+            ├── General
+
+            ├── Members
+            │      ├── Member
+            │      ├── Opening Contribution
+            │      ├── Existing Loan
+            │      ├── Existing Special Loan
+            │      └── Special Loan Expiry
+
+            ├── Executive Committee
+
+            ├── Opening Accounts
+
+            ├── Summary
+
+            └── Activate

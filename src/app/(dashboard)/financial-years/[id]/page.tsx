@@ -19,7 +19,10 @@ import { format } from "date-fns";
 import { get } from "@/features/financial-year/services/get";
 import connectMongo from "@/lib/db/mongodb";
 import { AppError } from "@/lib/errors";
-import type { FinancialYearStatus } from "@/models/FinancialYear";
+// import type { FinancialYearStatus } from "@/models/FinancialYear";
+import type { FinancialYearStatus } from "@/features/financial-year/types";
+import FinancialYearTabs from "@/features/financial-year/ui/FinancialYearTabs";
+import { list as listMembers } from "@/features/member/services/list";
 
 type PageProps = {
   params: Promise<{
@@ -65,6 +68,7 @@ export default async function FinancialYearDetailsPage({
     const { id } = await params;
 
     const financialYear = await get(id);
+    const members = await listMembers();
 
     return (
       <Container
@@ -74,20 +78,20 @@ export default async function FinancialYearDetailsPage({
         }}
       >
         <Stack spacing={3}>
-            <Link
-   href="/financial-years"
-  style={{ textDecoration: "none" }}
->
-          <Button
-            
-           
-            startIcon={<ArrowBackIcon />}
-            sx={{
-              alignSelf: "flex-start",
-            }}
+          <Link
+            href="/financial-years"
+            style={{ textDecoration: "none" }}
           >
-            Back
-          </Button>
+            <Button
+
+
+              startIcon={<ArrowBackIcon />}
+              sx={{
+                alignSelf: "flex-start",
+              }}
+            >
+              Back
+            </Button>
           </Link>
 
           <Stack
@@ -119,7 +123,7 @@ export default async function FinancialYearDetailsPage({
             />
           </Stack>
 
-          <Card variant="outlined">
+          {/* <Card variant="outlined">
             <CardContent>
               <Stack spacing={2}>
                 <Box>
@@ -173,7 +177,12 @@ export default async function FinancialYearDetailsPage({
                 </Box>
               </Stack>
             </CardContent>
-          </Card>
+          </Card> */}
+          <FinancialYearTabs
+            financialYear={financialYear}
+            members={members}
+          />
+          <pre>{JSON.stringify(financialYear, null, 2)}</pre>
         </Stack>
       </Container>
     );

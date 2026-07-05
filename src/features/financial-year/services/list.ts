@@ -1,4 +1,5 @@
 import FinancialYear from "@/models/FinancialYear";
+import connectMongo from "@/lib/db/mongodb";
 
 /**
  * List Financial Years
@@ -6,6 +7,7 @@ import FinancialYear from "@/models/FinancialYear";
  * Returns newest financial years first.
  */
 export async function list() {
+  await connectMongo();
   return FinancialYear.find()
     .select({
       name: 1,

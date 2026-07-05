@@ -1,6 +1,7 @@
 import {
   InferSchemaType,
   Model,
+  Schema,
   Types,
   model,
   models,
@@ -44,43 +45,71 @@ const financialYearSchema = createSchema({
       "CLOSED",
     ],
     default: "DRAFT",
-    required: true,
+    index: true,
   },
 
   members: [
     {
-      type: Types.ObjectId,
-      ref: "Member",
+      memberId: {
+        type: Schema.Types.ObjectId,
+        ref: "Member",
+        required: true,
+      },
+
+      opening: {
+        contribution: {
+          type: Number,
+          default: 0,
+          min: 0,
+        },
+
+        loan: {
+          type: Number,
+          default: 0,
+          min: 0,
+        },
+
+        specialLoan: {
+          type: Number,
+          default: 0,
+          min: 0,
+        },
+
+        specialLoanExpiry: {
+          type: Date,
+          default: null,
+        },
+      },
     },
   ],
 
   executiveCommittee: {
     president: {
-      type: Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Member",
       default: null,
     },
 
     vicePresident: {
-      type: Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Member",
       default: null,
     },
 
     secretary: {
-      type: Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Member",
       default: null,
     },
 
     jointSecretary: {
-      type: Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Member",
       default: null,
     },
 
     treasurer: {
-      type: Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Member",
       default: null,
     },
@@ -124,30 +153,28 @@ const financialYearSchema = createSchema({
  */
 
 financialYearSchema.index(
-  {
-    name: 1,
-  },
-  {
-    unique: true,
-  },
+  { name: 1 },
+  { unique: true },
 );
+
+financialYearSchema.index({
+  startDate: 1,
+  endDate: 1,
+});
 
 financialYearSchema.index({
   status: 1,
 });
 
-financialYearSchema.index({
-  startDate: 1,
-});
-
-financialYearSchema.index({
-  endDate: 1,
-});
-
-financialYearSchema.index({
-  startDate: 1,
-  endDate: 1,
-});
+financialYearSchema.index(
+  { status: 1 },
+  {
+    unique: true,
+    partialFilterExpression: {
+      status: "IN_PROGRESS",
+    },
+  },
+);
 
 /**
  * Document type

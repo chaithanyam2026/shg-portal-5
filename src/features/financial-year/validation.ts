@@ -1,4 +1,4 @@
-import { Types } from "mongoose";
+// import { Types } from "mongoose";
 import { z } from "zod";
 
 /**
@@ -17,9 +17,10 @@ export const FinancialYearStatusSchema = z.enum([
  */
 const ObjectIdSchema = z
   .string()
-  .refine((value) => Types.ObjectId.isValid(value), {
-    message: "Invalid id.",
-  });
+  .regex(
+    /^[0-9a-fA-F]{24}$/,
+    "Invalid id.",
+  );
 
 /**
  * Create Financial Year
@@ -76,9 +77,32 @@ export const UpdateFinancialYearSchema = z
       .max(1000)
       .optional(),
 
-    members: z
-      .array(ObjectIdSchema)
-      .optional(),
+members: z
+  .array(
+    z.object({
+      memberId: ObjectIdSchema,
+
+      openingContribution: z.coerce
+        .number()
+        .min(0),
+
+      openingLoan: z.coerce
+        .number()
+        .min(0),
+
+      openingSpecialLoan: z.coerce
+        .number()
+        .min(0),
+
+      specialLoanExpiry: z
+        .union([
+          z.coerce.date(),
+          z.null(),
+        ])
+        .optional(),
+    }),
+  )
+  .optional(),
 
     executiveCommittee: z
       .object({
@@ -107,22 +131,27 @@ export const UpdateFinancialYearSchema = z
     openingBalances: z
       .object({
         bankBalance: z
+          .coerce
           .number()
           .min(0),
 
         cashInHand: z
+          .coerce
           .number()
           .min(0),
 
         excessCorpus: z
+          .coerce
           .number()
           .min(0),
 
         investments: z
+          .coerce
           .number()
           .min(0),
 
         otherLoans: z
+          .coerce
           .number()
           .min(0),
       })

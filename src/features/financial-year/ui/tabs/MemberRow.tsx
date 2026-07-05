@@ -1,0 +1,190 @@
+"use client";
+
+import DeleteIcon from "@mui/icons-material/Delete";
+import {
+  IconButton,
+  MenuItem,
+  TableCell,
+  TableRow,
+  TextField,
+} from "@mui/material";
+
+import type { MemberLookup } from "../../types";
+
+export type MemberRowData = {
+  memberId: string;
+  openingContribution: number;
+  openingLoan: number;
+  openingSpecialLoan: number;
+  specialLoanExpiry: string;
+};
+
+type Props = {
+  row: MemberRowData;
+
+  members: MemberLookup[];
+
+  selectedMemberIds: string[];
+
+  disabled?: boolean;
+
+  onChange: (
+    changes: Partial<MemberRowData>,
+  ) => void;
+
+  onRemove: () => void;
+};
+
+export default function MemberRow({
+  row,
+  members,
+  selectedMemberIds,
+  disabled = false,
+  onChange,
+  onRemove,
+}: Props) {
+
+
+  return (
+    <TableRow hover>
+      <TableCell sx={{ minWidth: 240 }}>
+        <TextField
+          select
+          fullWidth
+          size="small"
+          value={row.memberId}
+          disabled={disabled}
+          onChange={(event) =>
+            onChange({
+              memberId: event.target.value,
+            })
+          }
+        >
+          <MenuItem value="">
+            Select Member
+          </MenuItem>
+
+          {members.map((member) => {
+            const alreadySelected =
+              selectedMemberIds.includes(
+                member._id,
+              ) &&
+              member._id !== row.memberId;
+
+            return (
+              <MenuItem
+                key={member._id}
+                value={member._id}
+                disabled={alreadySelected}
+              >
+                {member.memberCode} - {member.name}
+              </MenuItem>
+            );
+          })}
+        </TextField>
+      </TableCell>
+
+      <TableCell>
+        <TextField
+          fullWidth
+          size="small"
+          type="number"
+          value={row.openingContribution}
+          disabled={disabled}
+          inputProps={{
+            min: 0,
+            step: 1,
+          }}
+          onChange={(event) =>
+            onChange({
+              openingContribution:
+                Number(
+                  event.target.value,
+                ),
+            })
+          }
+        />
+      </TableCell>
+
+      <TableCell>
+        <TextField
+          fullWidth
+          size="small"
+          type="number"
+          value={row.openingLoan}
+          disabled={disabled}
+          inputProps={{
+            min: 0,
+            step: 1,
+          }}
+          onChange={(event) =>
+            onChange({
+              openingLoan: Number(
+                event.target.value,
+              ),
+            })
+          }
+        />
+      </TableCell>
+
+      <TableCell>
+        <TextField
+          fullWidth
+          size="small"
+          type="number"
+          value={row.openingSpecialLoan}
+          disabled={disabled}
+          inputProps={{
+            min: 0,
+            step: 1,
+          }}
+          onChange={(event) => {
+            const value = Number(
+              event.target.value,
+            );
+
+            onChange({
+              openingSpecialLoan: value,
+              specialLoanExpiry:
+                value > 0
+                  ? row.specialLoanExpiry
+                  : "",
+            });
+          }}
+        />
+      </TableCell>
+
+      <TableCell>
+        <TextField
+          fullWidth
+          size="small"
+          type="date"
+          value={row.specialLoanExpiry}
+          disabled={
+            disabled ||
+            row.openingSpecialLoan <= 0
+          }
+          InputLabelProps={{
+            shrink: true,
+          }}
+          onChange={(event) =>
+            onChange({
+              specialLoanExpiry:
+                event.target.value,
+            })
+          }
+        />
+      </TableCell>
+
+      <TableCell align="center">
+        <IconButton
+          color="error"
+          disabled={disabled}
+          onClick={onRemove}
+        >
+          <DeleteIcon />
+        </IconButton>
+      </TableCell>
+    </TableRow>
+  );
+}

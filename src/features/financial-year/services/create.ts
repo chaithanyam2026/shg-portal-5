@@ -5,6 +5,7 @@ import {
   validateCreateFinancialYear,
 } from "../validation";
 import { AppError } from "@/lib/errors";
+import connectMongo from "@/lib/db/mongodb";
 
 /**
  * Create a Financial Year
@@ -17,6 +18,7 @@ import { AppError } from "@/lib/errors";
 export async function create(
   input: unknown,
 ) {
+  await connectMongo();
   const data: CreateFinancialYearInput =
     validateCreateFinancialYear(input);
 

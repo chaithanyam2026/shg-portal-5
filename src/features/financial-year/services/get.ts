@@ -1,16 +1,46 @@
-import { Types } from "mongoose";
-
+import connectMongo from "@/lib/db/mongodb";
 import FinancialYear from "@/models/FinancialYear";
+import { AppError } from "@/lib/errors";
+import { Types } from "mongoose";
+import "@/models/Member";
 
 export async function get(id: string) {
+  await connectMongo();
+
   if (!Types.ObjectId.isValid(id)) {
-    throw new Error("Invalid financial year id.");
+    throw new AppError("Invalid financial year id.", 400);
   }
 
-  const financialYear = await FinancialYear.findById(id).lean();
+  const financialYear = await FinancialYear.findById(id)
+    .populate({
+      path: "members.memberId",
+      select: "memberCode name",
+    })
+    .populate({
+      path: "executiveCommittee.president",
+      select: "memberCode name",
+    })
+    .populate({
+      path: "executiveCommittee.vicePresident",
+      select: "memberCode name",
+    })
+    .populate({
+      path: "executiveCommittee.secretary",
+      select: "memberCode name",
+    })
+    .populate({
+      path: "executiveCommittee.jointSecretary",
+      select: "memberCode name",
+    })
+    .populate({
+      path: "executiveCommittee.treasurer",
+      select: "memberCode name",
+    })
+    .lean()
+    .exec();
 
   if (!financialYear) {
-    throw new Error("Financial year not found.");
+    throw new AppError("Financial year not found.", 404);
   }
 
   return financialYear;

@@ -14,6 +14,14 @@ type FinancialYearListProps = {
   financialYears: FinancialYear[];
 };
 
+const statusOrder = {
+  IN_PROGRESS: 0,
+  DRAFT: 1,
+  VALIDATED: 2,
+  APPROVED: 3,
+  CLOSED: 4,
+};
+
 export default function FinancialYearList({
   financialYears,
 }: FinancialYearListProps) {
@@ -29,9 +37,26 @@ export default function FinancialYearList({
     );
   }
 
+  const sortedFinancialYears = [...financialYears].sort(
+  (a, b) => {
+    const statusComparison =
+      statusOrder[a.status] -
+      statusOrder[b.status];
+
+    if (statusComparison !== 0) {
+      return statusComparison;
+    }
+
+    return (
+      new Date(b.startDate).getTime() -
+      new Date(a.startDate).getTime()
+    );
+  },
+);
+
   return (
     <Stack spacing={2}>
-      {financialYears.map((financialYear) => (
+      {sortedFinancialYears.map((financialYear) => (
         <FinancialYearCard
           key={financialYear._id}
           financialYear={financialYear}

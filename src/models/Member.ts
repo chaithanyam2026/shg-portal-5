@@ -19,7 +19,7 @@ const memberSchema = createSchema({
     memberCode: {
         type: String,
         required: true,
-        unique: true,
+       // unique: true,
         trim: true,
         uppercase: true,
         minlength: 1,

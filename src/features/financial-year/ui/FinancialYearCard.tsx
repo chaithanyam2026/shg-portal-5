@@ -12,7 +12,8 @@ import {
     Typography,
 } from "@mui/material";
 
-import type { FinancialYearStatus } from "@/models/FinancialYear";
+
+import type { FinancialYearStatus } from "../types";
 
 type FinancialYearCardProps = {
     financialYear: {
@@ -25,30 +26,30 @@ type FinancialYearCardProps = {
 };
 
 function getStatusColor(
-    status: FinancialYearStatus,
+  status: FinancialYearSummary["status"],
 ):
-    | "default"
-    | "primary"
-    | "success"
-    | "warning"
-    | "error" {
-    switch (status) {
-        case "APPROVED":
-            return "success";
+  | "default"
+  | "primary"
+  | "success"
+  | "warning"
+  | "error" {
+  switch (status) {
+    case "IN_PROGRESS":
+      return "success";
 
-        case "CLOSED":
-            return "default";
+    case "APPROVED":
+      return "primary";
 
-        case "VALIDATED":
-            return "primary";
+    case "VALIDATED":
+      return "warning";
 
-        case "IN_PROGRESS":
-            return "warning";
+    case "CLOSED":
+      return "default";
 
-        case "DRAFT":
-        default:
-            return "default";
-    }
+    case "DRAFT":
+    default:
+      return "default";
+  }
 }
 
 export default function FinancialYearCard({
