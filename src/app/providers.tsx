@@ -36,14 +36,10 @@ export default function Providers({
   children,
 }: Props) {
   return (
-     <html lang="en">
-      <body>
     <ThemeProvider theme={theme}>
       <CssBaseline />
 
       {children}
     </ThemeProvider>
-    </body>
-    </html>
   );
 }
