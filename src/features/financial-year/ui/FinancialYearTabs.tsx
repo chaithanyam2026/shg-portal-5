@@ -14,6 +14,8 @@ import MembersTab from "./tabs/MembersTab";
 import OpeningAccountsTab from "./tabs/OpeningAccountsTab";
 import SummaryTab from "./tabs/SummaryTab";
 import { FinancialYearDetails } from "../types";
+import { IncomeExpenseReport } from "@/features/reports/ui";
+import type { IncomeExpenseReport as IncomeExpenseReportModel } from "@/features/reports/types";
 
 type MemberLookup = {
   _id: string;
@@ -24,11 +26,13 @@ type MemberLookup = {
 type Props = {
   financialYear: FinancialYearDetails;
   members: MemberLookup[];
+    report: IncomeExpenseReportModel;
 };
 
 export default function FinancialYearTabs({
   financialYear,
-  members
+  members,
+  report
 }: Props) {
   const [tab, setTab] = useState(0);
 
@@ -45,6 +49,9 @@ export default function FinancialYearTabs({
         <Tab label="Committee" />
         <Tab label="Accounts" />
         <Tab label="Summary" />
+        <Tab
+          label="Income & Expense"
+        />
       </Tabs>
 
       <Box sx={{ mt: 3 }}>
@@ -57,7 +64,7 @@ export default function FinancialYearTabs({
         {tab === 1 && (
           <MembersTab
             financialYear={financialYear}
-             members={members}
+            members={members}
           />
         )}
 
@@ -80,6 +87,12 @@ export default function FinancialYearTabs({
           />
         )}
       </Box>
+
+      {tab === 5 && (
+    <IncomeExpenseReport
+        report={report}
+    />
+)}
     </>
   );
 }

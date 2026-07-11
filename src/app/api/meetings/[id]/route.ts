@@ -42,10 +42,12 @@ export async function PATCH(
   request: NextRequest,
   { params }: RouteContext,
 ) {
+    console.log("\n\n\nPATCH /api/meetings/[id] HIT");
   try {
     const { id } = await params;
 
     const body = await request.json();
+
 
     const meeting = await updateMeeting(
       id,

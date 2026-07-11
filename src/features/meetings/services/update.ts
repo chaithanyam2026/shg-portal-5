@@ -15,9 +15,9 @@ export async function updateMeeting(
   userId?: string | null,
 ) {
   await connectMongo();
-
+console.log("INPUT", input);
   const data = UpdateMeetingSchema.parse(input);
-
+console.log("PARSED", data);
   const meeting = await Meeting.findById(id);
 
   if (!meeting) {
@@ -92,6 +92,28 @@ export async function updateMeeting(
     meeting.remarks = data.remarks;
   }
 
+  if ("attendance" in data) {
+    meeting.attendance = data.attendance;
+  }
+
+  if ("payments" in data) {
+    meeting.payments = data.payments;
+  }
+
+  if ("bankTransactions" in data) {
+    meeting.bankTransactions =
+      data.bankTransactions;
+  }
+
+  if ("otherIncomes" in data) {
+    meeting.otherIncomes =
+      data.otherIncomes;
+  }
+
+  if ("expenses" in data) {
+    meeting.expenses = data.expenses;
+  }
+
   if (userId) {
     meeting.updatedBy = userId;
   }
@@ -112,6 +134,18 @@ export async function updateMeeting(
     agenda: meeting.agenda,
 
     remarks: meeting.remarks,
+
+    attendance: meeting.attendance,
+
+    payments: meeting.payments,
+
+    bankTransactions:
+      meeting.bankTransactions,
+
+    otherIncomes:
+      meeting.otherIncomes,
+
+    expenses: meeting.expenses,
 
     status: meeting.status,
 

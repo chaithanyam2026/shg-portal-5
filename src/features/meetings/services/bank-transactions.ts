@@ -42,21 +42,16 @@ export async function updateBankTransactions(
     );
   }
 
- /*  meeting.bankTransactions =
-    data.bankTransactions.map(
-      (transaction) => ({
-        transactionDate:
-          transaction.transactionDate,
-
-        type: transaction.type,
-
-        amount:
-          transaction.amount,
-
-        remarks:
-          transaction.remarks,
-      }),
-    ); */
+  meeting.bankTransactions =
+  data.bankTransactions.map(
+    (transaction) => ({
+      transactionDate:
+        transaction.transactionDate,
+      type: transaction.type,
+      amount: transaction.amount,
+      remarks: transaction.remarks ?? "",
+    }),
+  );
     
 
   await meeting.save();

@@ -81,8 +81,7 @@ export type UpdateAttendanceInput =
     typeof UpdateAttendanceSchema
   >;
 
-export const UpdateMeetingSchema =
-  CreateMeetingSchema.partial();
+
 
 export type CreateMeetingInput =
   z.infer<typeof CreateMeetingSchema>;
@@ -90,7 +89,7 @@ export type CreateMeetingInput =
 export type UpdateMeetingInput =
   z.infer<typeof UpdateMeetingSchema>;
 
-  export const PaymentRecordSchema =
+export const PaymentRecordSchema =
   z.object({
     memberId: ObjectIdSchema,
 
@@ -130,7 +129,7 @@ export type UpdatePaymentsInput =
     typeof UpdatePaymentsSchema
   >;
 
-  export const BankTransactionRecordSchema =
+export const BankTransactionRecordSchema =
   z.object({
     transactionDate:
       z.coerce.date(),
@@ -166,7 +165,7 @@ export type UpdateBankTransactionsInput =
     typeof UpdateBankTransactionsSchema
   >;
 
-  export const IncomeRecordSchema =
+export const IncomeRecordSchema =
   z.object({
     transactionDate:
       z.coerce.date(),
@@ -202,7 +201,7 @@ export type UpdateIncomeInput =
     typeof UpdateIncomeSchema
   >;
 
-  export const ExpenseRecordSchema =
+export const ExpenseRecordSchema =
   z.object({
     transactionDate:
       z.coerce.date(),
@@ -237,3 +236,33 @@ export type UpdateExpensesInput =
   z.infer<
     typeof UpdateExpensesSchema
   >;
+
+  export const UpdateMeetingSchema =
+  CreateMeetingSchema
+    .partial()
+    .extend({
+      attendance:
+        AttendanceRecordSchema
+          .array()
+          .optional(),
+
+      payments:
+        PaymentRecordSchema
+          .array()
+          .optional(),
+
+      bankTransactions:
+        BankTransactionRecordSchema
+          .array()
+          .optional(),
+
+      otherIncomes:
+        IncomeRecordSchema
+          .array()
+          .optional(),
+
+      expenses:
+        ExpenseRecordSchema
+          .array()
+          .optional(),
+    });

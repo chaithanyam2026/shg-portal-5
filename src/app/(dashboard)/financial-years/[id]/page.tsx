@@ -6,23 +6,19 @@ import {
   Alert,
   Box,
   Button,
-  Card,
-  CardContent,
   Chip,
   Container,
-  Divider,
   Stack,
   Typography,
 } from "@mui/material";
-import { format } from "date-fns";
 
 import { get } from "@/features/financial-year/services/get";
-import connectMongo from "@/lib/db/mongodb";
-import { AppError } from "@/lib/errors";
-// import type { FinancialYearStatus } from "@/models/FinancialYear";
 import type { FinancialYearStatus } from "@/features/financial-year/types";
 import FinancialYearTabs from "@/features/financial-year/ui/FinancialYearTabs";
 import { list as listMembers } from "@/features/member/services/list";
+import { buildIncomeExpenseReport } from "@/features/reports/services";
+import connectMongo from "@/lib/db/mongodb";
+import { AppError } from "@/lib/errors";
 
 type PageProps = {
   params: Promise<{
@@ -68,7 +64,11 @@ export default async function FinancialYearDetailsPage({
     const { id } = await params;
 
     const financialYear = await get(id);
-    const members = await listMembers();
+
+    const [members, report] = await Promise.all([
+      listMembers(),
+      buildIncomeExpenseReport(id),
+    ]);
 
     return (
       <Container
@@ -80,11 +80,11 @@ export default async function FinancialYearDetailsPage({
         <Stack spacing={3}>
           <Link
             href="/financial-years"
-            style={{ textDecoration: "none" }}
+            style={{
+              textDecoration: "none",
+            }}
           >
             <Button
-
-
               startIcon={<ArrowBackIcon />}
               sx={{
                 alignSelf: "flex-start",
@@ -119,70 +119,17 @@ export default async function FinancialYearDetailsPage({
 
             <Chip
               label={financialYear.status}
-              color={getStatusColor(financialYear.status)}
+              color={getStatusColor(
+                financialYear.status,
+              )}
             />
           </Stack>
 
-          {/* <Card variant="outlined">
-            <CardContent>
-              <Stack spacing={2}>
-                <Box>
-                  <Typography
-                    variant="caption"
-                    color="text.secondary"
-                  >
-                    Start Date
-                  </Typography>
-
-                  <Typography variant="body1">
-                    {format(
-                      new Date(financialYear.startDate),
-                      "dd MMM yyyy",
-                    )}
-                  </Typography>
-                </Box>
-
-                <Divider />
-
-                <Box>
-                  <Typography
-                    variant="caption"
-                    color="text.secondary"
-                  >
-                    End Date
-                  </Typography>
-
-                  <Typography variant="body1">
-                    {format(
-                      new Date(financialYear.endDate),
-                      "dd MMM yyyy",
-                    )}
-                  </Typography>
-                </Box>
-
-                <Divider />
-
-                <Box>
-                  <Typography
-                    variant="caption"
-                    color="text.secondary"
-                  >
-                    Remarks
-                  </Typography>
-
-                  <Typography variant="body1">
-                    {financialYear.remarks ||
-                      "No remarks"}
-                  </Typography>
-                </Box>
-              </Stack>
-            </CardContent>
-          </Card> */}
           <FinancialYearTabs
             financialYear={financialYear}
             members={members}
+            report={report}
           />
-          <pre>{JSON.stringify(financialYear, null, 2)}</pre>
         </Stack>
       </Container>
     );
