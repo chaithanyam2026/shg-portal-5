@@ -9,6 +9,7 @@ import type {
   PaymentRecord,
   PaymentSummary,
 } from "../types";
+import { loadFinancialYearMembers } from "./internal/load-financial-year-members";
 
 function createSummary(
   meetingId: string,
@@ -75,13 +76,10 @@ export async function getPayments(
     meeting.payments ?? [];
 
   if (payments.length === 0) {
-    const members = await Member.find({
-      active: true,
-    })
-      .sort({
-        memberCode: 1,
-      })
-      .lean();
+    const members =
+      await loadFinancialYearMembers(
+        meeting.financialYearId.toString(),
+      );
 
     const records: PaymentRecord[] =
       members.map((member) => ({
@@ -114,14 +112,10 @@ export async function getPayments(
     );
   }
 
-  const members = await Member.find({
-    _id: {
-      $in: payments.map(
-        (payment) =>
-          payment.memberId,
-      ),
-    },
-  }).lean();
+ const members =
+  await loadFinancialYearMembers(
+    meeting.financialYearId.toString(),
+  );
 
   const memberMap = new Map(
     members.map((member) => [

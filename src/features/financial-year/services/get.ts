@@ -43,5 +43,33 @@ export async function get(id: string) {
     throw new AppError("Financial year not found.", 404);
   }
 
-  return financialYear;
+  const openingMemberTotals =
+  financialYear.members.reduce(
+    (totals, member) => {
+      totals.contribution +=
+        member.opening?.contribution ??
+        0;
+
+      totals.loan +=
+        member.opening?.loan ??
+        0;
+
+      totals.specialLoan +=
+        member.opening?.specialLoan ??
+        0;
+
+      return totals;
+    },
+    {
+      contribution: 0,
+      loan: 0,
+      specialLoan: 0,
+    },
+  );
+
+  return {
+  ...financialYear,
+
+  openingMemberTotals,
+};
 }

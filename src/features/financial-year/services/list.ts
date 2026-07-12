@@ -6,8 +6,9 @@ import connectMongo from "@/lib/db/mongodb";
  *
  * Returns newest financial years first.
  */
-export async function list() {
+export async function listFinancialYears() {
   await connectMongo();
+  
   return FinancialYear.find()
     .select({
       name: 1,

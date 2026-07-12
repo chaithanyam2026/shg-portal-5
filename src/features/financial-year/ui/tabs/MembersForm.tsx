@@ -62,7 +62,7 @@ export default function MembersForm({
   financialYear,
   members
 }: Props) {
-  console.log('financialYear memebers', financialYear.members)
+
   const router = useRouter();
 
   //const [members, setMembers] = useState<Member[]>([]);
@@ -263,6 +263,8 @@ export default function MembersForm({
     return null;
   }
   function buildPayload() {
+
+    console.log('\n\n\ buildPayload')
     return {
       members: rows.map((row) => ({
         memberId: row.memberId,
@@ -324,6 +326,8 @@ export default function MembersForm({
   }
 
   async function save() {
+
+    console.log('\n\n Save')
     try {
       setSaving(true);
       setError("");
@@ -383,6 +387,8 @@ export default function MembersForm({
    } */
 
   async function saveMembers() {
+
+    console.log('\n\n saveMembers')
     const validationError = validateRows();
 
     if (validationError) {
@@ -481,15 +487,15 @@ export default function MembersForm({
                     </TableCell>
 
                     <TableCell>
-                      Contribution
+                      Member_Contribution
                     </TableCell>
 
                     <TableCell>
-                      Loan
+                      Member_Initial_Loan
                     </TableCell>
 
                     <TableCell>
-                      Special Loan
+                      Member_Special_Loan
                     </TableCell>
 
                     <TableCell>

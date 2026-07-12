@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { create } from "@/features/financial-year/services/create";
-import { list } from "@/features/financial-year/services/list";
+import { listFinancialYears } from "@/features/financial-year/services/list";
 import connectMongo from "@/lib/db/mongodb";
 import { AppError } from "@/lib/errors";
 
@@ -9,7 +9,7 @@ export async function GET() {
   try {
     await connectMongo();
 
-    const financialYears = await list();
+    const financialYears = await listFinancialYears();
 
     return NextResponse.json(financialYears);
   } catch (error) {

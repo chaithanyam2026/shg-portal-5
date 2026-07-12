@@ -9,7 +9,9 @@ import {
     Typography,
 } from "@mui/material";
 
-import { list } from "@/features/financial-year/services/list";
+import {
+  listFinancialYears,
+} from "@/features/financial-year/services";
 import connectMongo from "@/lib/db/mongodb";
 
 import FinancialYearList from "@/features/financial-year/ui/FinancialYearList";
@@ -20,7 +22,7 @@ export default async function FinancialYearsPage() {
     try {
         await connectMongo();
 
-        const financialYears = await list();
+        const financialYears = await listFinancialYears();
 
         return (
             <Container

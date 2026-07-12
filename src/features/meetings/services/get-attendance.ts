@@ -6,6 +6,7 @@ import Member from "@/models/Member";
 import type {
   AttendanceSummary,
 } from "../types";
+import { loadFinancialYearMembers } from "./internal/load-financial-year-members";
 
 export async function getAttendance(
   meetingId: string,
@@ -21,22 +22,26 @@ export async function getAttendance(
   }
 
   const attendance =
-  meeting.attendance ?? [];
+    meeting.attendance ?? [];
   if (
-   attendance.length === 0
+    attendance.length === 0
   ) {
-    const members =
+   /*  const members =
       await Member.find({
         active: true,
       })
         .sort({
           memberCode: 1,
         })
-        .lean();
+        .lean(); */
+      const members =
+  await loadFinancialYearMembers(
+    meeting.financialYearId.toString(),
+  );
 
     return {
       meetingId,
-status: meeting.status,
+      status: meeting.status,
       records: members.map(
         (member) => ({
           memberId:
@@ -56,15 +61,10 @@ status: meeting.status,
     };
   }
 
-  const members =
-    await Member.find({
-      _id: {
-        $in: meeting.attendance.map(
-          (record) =>
-            record.memberId,
-        ),
-      },
-    }).lean();
+ const members =
+  await loadFinancialYearMembers(
+    meeting.financialYearId.toString(),
+  );
 
   const memberMap = new Map(
     members.map((member) => [
@@ -75,7 +75,7 @@ status: meeting.status,
 
   return {
     meetingId,
-status: meeting.status,
+    status: meeting.status,
     records: meeting.attendance.map(
       (record) => {
         const member =

@@ -4,6 +4,9 @@ import connectMongo from "@/lib/db/mongodb";
 import { validateFinancialYear } from "@/features/financial-year/services/validate";
 import { AppError } from "@/lib/errors";
 import FinancialYear from "@/models/FinancialYear";
+import {
+  createOpeningLoans,
+} from "@/features/loans/services";
 
 export async function activate(id: string) {
   await connectMongo();
@@ -91,6 +94,11 @@ export async function activate(id: string) {
 
   financialYear.status =
     "IN_PROGRESS";
+
+    await createOpeningLoans({
+  financialYearId:
+    financialYear._id.toString(),
+});
 
   await financialYear.save();
 
