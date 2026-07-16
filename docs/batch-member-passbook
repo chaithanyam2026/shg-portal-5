@@ -1,0 +1,22 @@
+Batch 1 – Attendance Register Domain
+Batch 2 – Attendance Register Builder
+Batch 3 – Service & API
+Batch 4 – UI
+Batch 5 – Print
+===========
+
+Batch 1 — Domain
+Batch 2 — Ledger Builder
+Batch 3 — Service
+Batch 4 — Summary
+Batch 5 — API
+Batch 6 — UI
+Batch 7 — Validation
+
+Validate
+
+Running balance never negative
+Running balance increases correctly
+Entries sorted by date
+Opening entry is first
+Only CLOSED meetings included
