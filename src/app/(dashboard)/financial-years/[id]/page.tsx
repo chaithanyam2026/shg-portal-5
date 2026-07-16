@@ -19,6 +19,7 @@ import { list as listMembers } from "@/features/member/services/list";
 import { buildIncomeExpenseReport } from "@/features/reports/services";
 import connectMongo from "@/lib/db/mongodb";
 import { AppError } from "@/lib/errors";
+import PageHeader from "@/components/layout/PageHeader";
 
 type PageProps = {
   params: Promise<{
@@ -69,8 +70,8 @@ export default async function FinancialYearDetailsPage({
       listMembers(),
       buildIncomeExpenseReport(id),
     ]);
-
     return (
+      <>
       <Container
         maxWidth="md"
         sx={{
@@ -78,7 +79,7 @@ export default async function FinancialYearDetailsPage({
         }}
       >
         <Stack spacing={3}>
-          <Link
+          {/* <Link
             href="/financial-years"
             style={{
               textDecoration: "none",
@@ -92,7 +93,7 @@ export default async function FinancialYearDetailsPage({
             >
               Back
             </Button>
-          </Link>
+          </Link> */}
 
           <Stack
             direction="row"
@@ -101,13 +102,10 @@ export default async function FinancialYearDetailsPage({
             spacing={2}
           >
             <Box>
-              <Typography
-                variant="h5"
-                component="h1"
-                fontWeight={700}
-              >
-                {financialYear.name}
-              </Typography>
+              <PageHeader
+                title="Financial Year"
+                backHref="/financial-years"
+              />
 
               <Typography
                 variant="body2"
@@ -132,6 +130,21 @@ export default async function FinancialYearDetailsPage({
           />
         </Stack>
       </Container>
+       <Link
+            href={`/reports/attendance/${id}`}
+            style={{
+              textDecoration: "none",
+            }}
+          >
+            <Button
+              sx={{
+                alignSelf: "flex-start",
+              }}
+            >
+              Attendance
+            </Button>
+          </Link>
+          </>
     );
   } catch (error) {
     if (

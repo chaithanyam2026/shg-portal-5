@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import {
   Box,
+  Stack,
   Tab,
   Tabs,
 } from "@mui/material";
@@ -16,6 +17,7 @@ import GeneralTab from "./tabs/GeneralTab";
 import PassbookTab from "./tabs/PassbookTab";
 import SummaryTab from "./tabs/SummaryTab";
 import type { LoanPassbook } from "../domain/loan-passbook";
+import PageHeader from "@/components/layout/PageHeader";
 
 
 type Props = {
@@ -32,6 +34,16 @@ export default function LoanTabs({
 
   return (
     <Box>
+        <Stack
+                  spacing={3}
+                  alignItems="center"
+                  textAlign="center"
+                >
+                  <PageHeader
+                    title="Loans"
+                    // showBack={false}
+                  />
+                  </Stack>
       <Tabs
         value={tab}
         onChange={(

@@ -10,11 +10,12 @@ import {
 } from "@mui/material";
 
 import {
-  listFinancialYears,
+    listFinancialYears,
 } from "@/features/financial-year/services";
 import connectMongo from "@/lib/db/mongodb";
 
 import FinancialYearList from "@/features/financial-year/ui/FinancialYearList";
+import PageHeader from "@/components/layout/PageHeader";
 
 export const dynamic = "force-dynamic";
 
@@ -39,13 +40,10 @@ export default async function FinancialYearsPage() {
                         spacing={2}
                     >
                         <Box>
-                            <Typography
-                                variant="h5"
-                                component="h1"
-                                fontWeight={700}
-                            >
-                                Financial Years
-                            </Typography>
+                            <PageHeader
+                                title="Financial Years"
+                                showBack={false}
+                            />
 
                             <Typography
                                 variant="body2"

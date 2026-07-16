@@ -91,12 +91,11 @@ export default function DashboardPage() {
                     height: "100%",
                   }}
                 >
-                  <Link href={
-                      module.href
-                    }>
                   <CardActionArea
-                   
-                    
+                    component={Link}
+                    href={
+                      module.href
+                    }
                     sx={{
                       height:
                         "100%",
@@ -141,7 +140,6 @@ export default function DashboardPage() {
                       </Typography>
                     </CardContent>
                   </CardActionArea>
-                  </Link>
                 </Card>
               </Grid>
             );

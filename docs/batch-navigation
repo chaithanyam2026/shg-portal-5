@@ -1,0 +1,53 @@
+Phase 1 — Attendance Fine Foundation
+Batch 1 — Attendance Fine Domain
+Batch 2 — Fine Rule Engine
+Phase 2 — Attendance Fine Builder
+Batch 3 — Attendance Fine Ledger Builder
+Batch 4 — Attendance Payment Loader
+Batch 5 — Pending Fine Calculator
+Batch 6 — Builder Integration
+Batch 7 — Meeting Summary
+Batch 8 — Register UI
+Batch 9 — Tooltip
+Batch 10 — Attendance Fine History
+Batch 11 — Summary Cards
+Batch 12 — Fine Register
+Batch 13 — Defaulters Report
+
+Batch 14 — Fine Collection Report
+
+Batch 15 — Print Attendance Register
+
+Landscape
+
+Meeting headers
+
+Fine columns
+
+Legend
+
+Final Attendance Register
+Financial Year : 2026-27
+
+┌────┬──────┬───────────────┬────────┬────────┬────────┬────────┬────────┬────────┬────────┬─────────┐
+│Sl# │Code  │Member         │01/04   │08/04   │15/04   │22/04   │29/04   │Total   │Paid    │Balance  │
+├────┼──────┼───────────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┼─────────┤
+│1   │M001  │Anitha         │✓       │A(10)   │L       │A(20)   │A(70)   │100     │30      │70       │
+│2   │M002  │Bindu          │✓       │✓       │✓       │✓       │✓       │0       │0       │0        │
+│3   │M003  │Deepa          │A(10)   │A(20)   │A(70)   │✓       │✓       │100     │100     │0        │
+└────┴──────┴───────────────┴────────┴────────┴────────┴────────┴────────┴────────┴────────┴─────────┘
+
+This implementation keeps the project aligned with your architecture:
+
+Domain encapsulates the attendance fine rules.
+Builder computes streaks and incremental fines.
+Services load attendance and payment data.
+UI simply renders the calculated results.
+The same fine ledger can later power member history, fine collection, dashboards, and financial reports without duplicating business logic.
+
+
+regenrete:
+src/features/reports/services/internal/build-attendance-fine-ledger.ts - 
+src/features/reports/services/build-attendance-fine-register.ts --
+src/features/members/ui/tabs/AttendanceFineTab.tsx
+src/app/(dashboard)/reports/attendance-fines/[financialYearId]/page.tsx

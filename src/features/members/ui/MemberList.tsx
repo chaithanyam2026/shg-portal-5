@@ -24,6 +24,7 @@ import type {
 import {
   formatDate,
 } from "@/lib/utils/format";
+import PageHeader from "@/components/layout/PageHeader";
 
 type Props = {
   members: MemberSummary[];
@@ -54,9 +55,10 @@ export default function MemberList({
         justifyContent="space-between"
         alignItems="center"
       >
-        <Typography variant="h5">
-          Members
-        </Typography>
+        <PageHeader
+          title="Members"
+          showBack={false}
+        />
 
         <Button
           component={Link}
@@ -125,8 +127,8 @@ export default function MemberList({
                   <TableCell>
                     {member.joinedDate
                       ? formatDate(
-                          member.joinedDate,
-                        )
+                        member.joinedDate,
+                      )
                       : "-"}
                   </TableCell>
 
@@ -137,7 +139,7 @@ export default function MemberList({
                       }
                       color={
                         member.status ===
-                        "ACTIVE"
+                          "ACTIVE"
                           ? "success"
                           : "default"
                       }

@@ -1,9 +1,9 @@
 import type {
   AttendanceStatus,
-} from "@/features/meetings/domain/attendance-status";
+} from "./attendance-fine";
 
 /**
- * Meeting column.
+ * One meeting column.
  */
 export type AttendanceRegisterMeeting = {
   meetingId: string;
@@ -12,16 +12,42 @@ export type AttendanceRegisterMeeting = {
 };
 
 /**
- * Attendance cell.
+ * Cell shown inside the register.
  */
 export type AttendanceRegisterCell = {
   meetingId: string;
 
+  meetingDate: Date;
+
   status: AttendanceStatus;
+
+  /**
+   * Consecutive absence after
+   * this meeting.
+   */
+  consecutiveAbsence: number;
+
+  /**
+   * Fine generated during
+   * this meeting.
+   */
+  fineCharged: number;
+
+  /**
+   * Running outstanding fine
+   * after this meeting.
+   */
+  pendingFine: number;
+
+  /**
+   * Fine paid during
+   * this meeting.
+   */
+  finePaid: number;
 };
 
 /**
- * Member attendance row.
+ * One member row.
  */
 export type AttendanceRegisterRow = {
   memberId: string;
@@ -32,17 +58,16 @@ export type AttendanceRegisterRow = {
 
   attendance: AttendanceRegisterCell[];
 
-  presentCount: number;
+  totalFine: number;
 
-  absentCount: number;
+  paidFine: number;
 
-  leaveCount: number;
-
-  attendancePercentage: number;
+  pendingFine: number;
 };
 
 /**
- * Meeting summary.
+ * Totals displayed in footer for
+ * each meeting column.
  */
 export type AttendanceRegisterMeetingSummary =
   {
@@ -56,25 +81,19 @@ export type AttendanceRegisterMeetingSummary =
 
     leaveCount: number;
 
-    attendancePercentage: number;
+    fineGenerated: number;
   };
 
 /**
- * Attendance register.
+ * Complete register.
  */
 export type AttendanceRegister = {
-  financialYearId: string;
-
-  financialYearName: string;
-
   meetings:
     AttendanceRegisterMeeting[];
 
   rows:
     AttendanceRegisterRow[];
 
-  meetingSummary:
+  summary:
     AttendanceRegisterMeetingSummary[];
-
-  totalMembers: number;
 };

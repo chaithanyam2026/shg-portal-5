@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 
 import FinancialYearForm from "@/features/financial-year/ui/FinancialYearForm";
+import PageHeader from "@/components/layout/PageHeader";
 
 export const metadata = {
   title: "Create Financial Year",
@@ -24,29 +25,26 @@ export default function NewFinancialYearPage() {
     >
       <Stack spacing={3}>
         <Link
-href="/financial-years"
-  style={{ textDecoration: "none" }}
->
-        <Button
-         
-          
-          startIcon={<ArrowBackIcon />}
-          sx={{
-            alignSelf: "flex-start",
-          }}
+          href="/financial-years"
+          style={{ textDecoration: "none" }}
         >
-          Back
-        </Button>
+          <Button
+
+
+            startIcon={<ArrowBackIcon />}
+            sx={{
+              alignSelf: "flex-start",
+            }}
+          >
+            Back
+          </Button>
         </Link>
 
         <Stack spacing={1}>
-          <Typography
-            variant="h5"
-            component="h1"
-            fontWeight={700}
-          >
-            Create Financial Year
-          </Typography>
+          <PageHeader
+          title="New Financial Year"
+            backHref="/financial-years"
+          />
 
           <Typography
             variant="body2"

@@ -19,6 +19,7 @@ import type {
   MeetingListResult,
   MeetingSummary,
 } from "@/features/meetings/types";
+import PageHeader from "@/components/layout/PageHeader";
 
 export default function MeetingsPage() {
   const [meetings, setMeetings] = useState<MeetingSummary[]>([]);
@@ -66,18 +67,20 @@ export default function MeetingsPage() {
           justifyContent="space-between"
           alignItems="center"
         >
-          <Typography variant="h4">
-            Meetings
-          </Typography>
+          <PageHeader
+            title="Meetings"
+            showBack={false}
+          />
 
-          <Button
+         
+        </Stack>
+         <Button
             component={Link}
             href="/meetings/new"
             variant="contained"
           >
             Create Meeting
           </Button>
-        </Stack>
 
         {error && (
           <Alert severity="error">

@@ -17,6 +17,7 @@ import { getMeeting } from "@/features/meetings/services/get";
 import MeetingStatusChip from "@/features/meetings/ui/MeetingStatusChip";
 import MeetingActionButton from "@/features/meetings/ui/MeetingActionButton";
 import MeetingTabs from "@/features/meetings/ui/MeetingTabs";
+import PageHeader from "@/components/layout/PageHeader";
 
 type Props = {
   params: Promise<{
@@ -51,18 +52,25 @@ export default async function MeetingDetailsPage({
       sx={{ py: 3 }}
     >
       <Stack spacing={3}>
+          <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+           <PageHeader
+            title="Meeting"
+            backHref="/meetings"
+          />
+          </Stack>
+          
+         
         <Stack
           direction="row"
           justifyContent="space-between"
           alignItems="center"
         >
-          <Typography variant="h4">
-            Meeting Details
-          </Typography>
-          <MeetingTabs
-            meetingId={meeting.id}
-            status={meeting.status}
-          />
+         
+       
           <Link href={`/meetings/${meeting.id}/edit`}>
             <Button>
               Edit
@@ -95,6 +103,16 @@ export default async function MeetingDetailsPage({
             disabled={meeting.status !== "IN_PROGRESS"}
           />
 
+        </Stack>
+         <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+   <MeetingTabs
+            meetingId={meeting.id}
+            status={meeting.status}
+          />
         </Stack>
 
         {meeting.status === "CLOSED" && (

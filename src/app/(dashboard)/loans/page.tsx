@@ -17,6 +17,7 @@ import {
 } from "@/features/loans/services";
 
 import LoanList from "@/features/loans/ui/LoanList";
+import PageHeader from "@/components/layout/PageHeader";
 
 export default async function Page() {
   try {
@@ -42,23 +43,24 @@ export default async function Page() {
             alignItems="center"
             textAlign="center"
           >
-            <Typography variant="h4">
-              Loans
-            </Typography>
+            <PageHeader
+              title="Loans"
+              showBack={false}
+            />
 
             <Alert severity="info">
               No loans have been
               created yet.
             </Alert>
 
-<Link  href="/loans/new">
-            <Button
-             
-             
-              variant="contained"
-            >
-              Create Loan
-            </Button>
+            <Link href="/loans/new">
+              <Button
+
+
+                variant="contained"
+              >
+                Create Loan
+              </Button>
             </Link>
           </Stack>
         </Box>

@@ -2,11 +2,20 @@
 
 import { useState } from "react";
 
+import Link from "next/link";
+
 import {
   Box,
+  Button,
+  Stack,
   Tab,
   Tabs,
 } from "@mui/material";
+
+import PageHeader from "@/components/layout/PageHeader";
+import type {
+  AttendanceFineSummary,
+} from "@/features/reports/domain";
 
 import type {
   MemberDetails,
@@ -15,63 +24,91 @@ import type {
 import GeneralTab from "./tabs/GeneralTab";
 import LoansTab from "./tabs/LoansTab";
 import PassbookTab from "./tabs/PassbookTab";
+import AttendanceFineTab from "./tabs/AttendanceFineTab";
 
 type Props = {
+  attendanceFine: AttendanceFineSummary;
   member: MemberDetails;
 };
 
 export default function MemberTabs({
   member,
+  attendanceFine,
 }: Props) {
   const [tab, setTab] =
     useState(0);
 
   return (
-    <Box>
-      <Tabs
-        value={tab}
-        onChange={(
-          _event,
-          value: number,
-        ) => setTab(value)}
-        variant="fullWidth"
+    <Stack spacing={3}>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
       >
-        <Tab
-          label="General"
+        <PageHeader
+          title={member.name}
+          subtitle={member.memberCode}
+          backHref="/members"
         />
 
-         <Tab
-          label="Loans"
-        /> 
+        <Button
+          component={Link}
+          href="/members/new"
+          variant="contained"
+        >
+          New Member
+        </Button>
+      </Stack>
 
-        <Tab
-          label="Passbook"
-        />
-      </Tabs>
+      <Box>
+        <Tabs
+          value={tab}
+          onChange={(
+            _event,
+            value: number,
+          ) => setTab(value)}
+          variant="scrollable"
+          scrollButtons="auto"
+        >
+          <Tab label="General" />
 
-      <Box
-        sx={{
-          mt: 3,
-        }}
-      >
-        {tab === 0 && (
-          <GeneralTab
-            member={member}
+          <Tab label="Loans" />
+
+          <Tab label="Passbook" />
+
+          <Tab
+            label="Attendance Fine"
           />
-        )}
+        </Tabs>
 
-         {tab === 1 && (
-           <LoansTab
-             member={member}
-          />
-         )} 
+        <Box sx={{ mt: 3 }}>
+          {tab === 0 && (
+            <GeneralTab
+              member={member}
+            />
+          )}
 
-        {tab === 2 && (
-          <PassbookTab
-            member={member}
-          />
-        )}
+          {tab === 1 && (
+            <LoansTab
+              member={member}
+            />
+          )}
+
+          {tab === 2 && (
+            <PassbookTab
+              member={member}
+            />
+          )}
+
+          {tab === 3 && (
+            <AttendanceFineTab
+              attendanceFine={
+                attendanceFine
+              }
+            />
+          )}
+        </Box>
       </Box>
-    </Box>
+    </Stack>
   );
 }

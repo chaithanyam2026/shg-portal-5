@@ -14,6 +14,7 @@ import {
 import MeetingForm from "@/features/meetings/ui/MeetingForm";
 
 import type { CreateMeetingInput } from "@/features/meetings/validation";
+import PageHeader from "@/components/layout/PageHeader";
 
 export default function CreateMeetingPage() {
   const router = useRouter();
@@ -51,7 +52,7 @@ export default function CreateMeetingPage() {
 
         throw new Error(
           body.message ??
-            "Unable to create meeting.",
+          "Unable to create meeting.",
         );
       }
 
@@ -74,9 +75,10 @@ export default function CreateMeetingPage() {
       sx={{ py: 3 }}
     >
       <Stack spacing={3}>
-        <Typography variant="h4">
-          Create Meeting
-        </Typography>
+        <PageHeader
+          title="New Meeting"
+          backHref="/meetings"
+        />
 
         {error && (
           <Alert severity="error">
