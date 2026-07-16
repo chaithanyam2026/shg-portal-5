@@ -26,7 +26,7 @@ import {
  * Collection report.
  */
 export async function buildAttendanceFineCollection(
-  financialYearId: string,
+  financialYearId?: string,
 ): Promise<AttendanceFineCollectionReport> {
   await connectMongo();
 

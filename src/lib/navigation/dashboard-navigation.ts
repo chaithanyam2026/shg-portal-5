@@ -29,6 +29,27 @@ export const dashboardNavigation: NavigationItem[] =
         DashboardOutlinedIcon,
     },
 
+
+    {
+      title: "Meetings",
+      href: "/meetings",
+      icon:
+        EventOutlinedIcon,
+    },
+
+     {
+      title: "Loans",
+      href: "/loans",
+      icon:
+        AccountBalanceWalletOutlinedIcon,
+    },
+
+     {
+      title: "Attendance",
+      href: "/reports/attendance",
+      icon:
+        AssessmentOutlinedIcon,
+    },
     {
       title:
         "Financial Years",
@@ -45,19 +66,8 @@ export const dashboardNavigation: NavigationItem[] =
         GroupsOutlinedIcon,
     },
 
-    {
-      title: "Meetings",
-      href: "/meetings",
-      icon:
-        EventOutlinedIcon,
-    },
 
-    {
-      title: "Loans",
-      href: "/loans",
-      icon:
-        AccountBalanceWalletOutlinedIcon,
-    },
+   
 
     {
       title: "Reports",

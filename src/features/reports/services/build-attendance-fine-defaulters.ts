@@ -21,7 +21,7 @@ import {
  * pending attendance fine.
  */
 export async function buildAttendanceFineDefaulters(
-  financialYearId: string,
+  financialYearId?: string,
 ): Promise<AttendanceFineDefaultersReport> {
   await connectMongo();
 

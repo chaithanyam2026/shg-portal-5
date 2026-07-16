@@ -29,7 +29,7 @@ import {
  * register for a financial year.
  */
 export async function buildAttendanceRegister(
-  financialYearId: string,
+  financialYearId?: string,
 ): Promise<AttendanceRegister> {
   await connectMongo();
 

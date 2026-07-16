@@ -51,3 +51,14 @@ src/features/reports/services/internal/build-attendance-fine-ledger.ts -
 src/features/reports/services/build-attendance-fine-register.ts --
 src/features/members/ui/tabs/AttendanceFineTab.tsx
 src/app/(dashboard)/reports/attendance-fines/[financialYearId]/page.tsx
+
+
+
+Batch 1 — Financial Year Selector Domain & Services --
+Batch 2 — FinancialYearSelector UI Component ---
+Batch 3 — Attendance Register Migration ---
+Batch 4 — Attendance Fine Register Migration ---
+Batch 5 — Attendance Fine Defaulters Migration ---
+Batch 6 — Attendance Fine Collection Migration ---
+Batch 7 — Reports Home Navigation
+Batch 8 — Cleanup (remove old [financialYearId] routes)
