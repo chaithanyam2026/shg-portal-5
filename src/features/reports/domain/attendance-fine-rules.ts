@@ -19,12 +19,8 @@ export const ATTENDANCE_FINE = {
  * Returns the fine generated
  * for the current meeting.
  */
-export function getAttendanceFine(
-  consecutiveAbsence: number,
-): number {
-  switch (
-    consecutiveAbsence
-  ) {
+export function getAttendanceFine(consecutiveAbsence: number): number {
+  switch (consecutiveAbsence) {
     case 1:
       return ATTENDANCE_FINE.FIRST_ABSENCE;
 
@@ -35,8 +31,6 @@ export function getAttendanceFine(
       return ATTENDANCE_FINE.THIRD_ABSENCE;
 
     default:
-      return consecutiveAbsence >= 4
-        ? ATTENDANCE_FINE.ADDITIONAL_ABSENCE
-        : 0;
+      return consecutiveAbsence >= 4 ? ATTENDANCE_FINE.ADDITIONAL_ABSENCE : 0;
   }
 }

@@ -1,6 +1,4 @@
-import {
-  LOAN_NUMBER_PREFIX,
-} from "./loan-rules";
+import { LOAN_NUMBER_PREFIX } from "./loan-rules";
 
 /**
  * Generates a loan number.
@@ -11,24 +9,15 @@ import {
  * LN-000025
  * LN-001257
  */
-export function generateLoanNumber(
-  sequence: number,
-): string {
-  return `${LOAN_NUMBER_PREFIX}-${sequence
-    .toString()
-    .padStart(6, "0")}`;
+export function generateLoanNumber(sequence: number): string {
+  return `${LOAN_NUMBER_PREFIX}-${sequence.toString().padStart(6, "0")}`;
 }
 
 /**
  * Validates a loan number.
  */
-export function isLoanNumber(
-  value: string,
-): boolean {
-  const pattern =
-    new RegExp(
-      `^${LOAN_NUMBER_PREFIX}-\\d{6}$`,
-    );
+export function isLoanNumber(value: string): boolean {
+  const pattern = new RegExp(`^${LOAN_NUMBER_PREFIX}-\\d{6}$`);
 
   return pattern.test(value);
 }
@@ -41,20 +30,10 @@ export function isLoanNumber(
  *
  * LN-000123 -> 123
  */
-export function getLoanSequence(
-  loanNumber: string,
-): number {
-  if (
-    !isLoanNumber(
-      loanNumber,
-    )
-  ) {
-    throw new Error(
-      "Invalid loan number.",
-    );
+export function getLoanSequence(loanNumber: string): number {
+  if (!isLoanNumber(loanNumber)) {
+    throw new Error("Invalid loan number.");
   }
 
-  return Number(
-    loanNumber.split("-")[1],
-  );
+  return Number(loanNumber.split("-")[1]);
 }

@@ -11,9 +11,7 @@ type MeetingOtherIncomes = {
   }[];
 };
 
-export function buildIncomeEntries(
-  meeting: MeetingOtherIncomes,
-): LedgerEntry[] {
+export function buildIncomeEntries(meeting: MeetingOtherIncomes): LedgerEntry[] {
   return meeting.otherIncomes.flatMap((income) => {
     if (income.amount <= 0) {
       return [];

@@ -1,22 +1,18 @@
-import type {
-  AttendanceFineEntry,
-} from "../../domain";
+import type { AttendanceFineEntry } from "../../domain";
 
-export type CalculatePendingAttendanceFineInput =
-  {
-    entries: AttendanceFineEntry[];
-  };
+export type CalculatePendingAttendanceFineInput = {
+  entries: AttendanceFineEntry[];
+};
 
-export type CalculatePendingAttendanceFineResult =
-  {
-    totalFine: number;
+export type CalculatePendingAttendanceFineResult = {
+  totalFine: number;
 
-    paidFine: number;
+  paidFine: number;
 
-    pendingFine: number;
+  pendingFine: number;
 
-    entries: AttendanceFineEntry[];
-  };
+  entries: AttendanceFineEntry[];
+};
 
 /**
  * Calculates running attendance
@@ -38,26 +34,19 @@ export function calculatePendingAttendanceFine({
 
   let pendingFine = 0;
 
-  const updatedEntries =
-    entries.map((entry) => {
-      totalFine +=
-        entry.fineCharged;
+  const updatedEntries = entries.map((entry) => {
+    totalFine += entry.fineCharged;
 
-      paidFine +=
-        entry.finePaid;
+    paidFine += entry.finePaid;
 
-      pendingFine =
-        Math.max(
-          0,
-          totalFine - paidFine,
-        );
+    pendingFine = Math.max(0, totalFine - paidFine);
 
-      return {
-        ...entry,
+    return {
+      ...entry,
 
-        pendingFine,
-      };
-    });
+      pendingFine,
+    };
+  });
 
   return {
     totalFine,
@@ -66,7 +55,6 @@ export function calculatePendingAttendanceFine({
 
     pendingFine,
 
-    entries:
-      updatedEntries,
+    entries: updatedEntries,
   };
 }

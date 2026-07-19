@@ -1,12 +1,8 @@
-import {
-  Container,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Container, Stack, Typography } from "@mui/material";
 
 import { getIncome } from "@/features/meetings/services/get-income";
-import MeetingTabs from "@/features/meetings/ui/MeetingTabs";
 import IncomeForm from "@/features/meetings/ui/IncomeForm";
+import MeetingTabs from "@/features/meetings/ui/MeetingTabs";
 
 type Props = {
   params: Promise<{
@@ -14,13 +10,10 @@ type Props = {
   }>;
 };
 
-export default async function IncomePage({
-  params,
-}: Props) {
+export default async function IncomePage({ params }: Props) {
   const { id } = await params;
 
-  const summary =
-    await getIncome(id);
+  const summary = await getIncome(id);
 
   return (
     <Container
@@ -30,19 +23,11 @@ export default async function IncomePage({
       }}
     >
       <Stack spacing={3}>
-        <Typography variant="h4">
-          Other Income
-        </Typography>
+        <Typography variant="h4">Other Income</Typography>
 
-        <MeetingTabs
-          meetingId={id}
-          status={summary.status}
-        />
+        <MeetingTabs meetingId={id} status={summary.status} />
 
-        <IncomeForm
-          meetingId={id}
-          initialSummary={summary}
-        />
+        <IncomeForm meetingId={id} initialSummary={summary} />
       </Stack>
     </Container>
   );

@@ -8,10 +8,7 @@ type RouteContext = {
   }>;
 };
 
-export async function DELETE(
-  _request: NextRequest,
-  { params }: RouteContext,
-) {
+export async function DELETE(_request: NextRequest, { params }: RouteContext) {
   try {
     const { id } = await params;
 
@@ -21,20 +18,14 @@ export async function DELETE(
       status: 204,
     });
   } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : "Unable to delete meeting.";
+    const message = error instanceof Error ? error.message : "Unable to delete meeting.";
 
     return NextResponse.json(
       {
         message,
       },
       {
-        status:
-          message === "Meeting not found."
-            ? 404
-            : 400,
+        status: message === "Meeting not found." ? 404 : 400,
       },
     );
   }

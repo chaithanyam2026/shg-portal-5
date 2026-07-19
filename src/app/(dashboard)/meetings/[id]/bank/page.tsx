@@ -1,12 +1,8 @@
-import {
-  Container,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Container, Stack, Typography } from "@mui/material";
 
 import { getBankTransactions } from "@/features/meetings/services/get-bank-transactions";
-import MeetingTabs from "@/features/meetings/ui/MeetingTabs";
 import BankTransactionForm from "@/features/meetings/ui/BankTransactionForm";
+import MeetingTabs from "@/features/meetings/ui/MeetingTabs";
 
 type Props = {
   params: Promise<{
@@ -14,13 +10,10 @@ type Props = {
   }>;
 };
 
-export default async function BankTransactionsPage({
-  params,
-}: Props) {
+export default async function BankTransactionsPage({ params }: Props) {
   const { id } = await params;
 
-  const summary =
-    await getBankTransactions(id);
+  const summary = await getBankTransactions(id);
 
   return (
     <Container
@@ -30,19 +23,11 @@ export default async function BankTransactionsPage({
       }}
     >
       <Stack spacing={3}>
-        <Typography variant="h4">
-          Bank Transactions
-        </Typography>
+        <Typography variant="h4">Bank Transactions</Typography>
 
-        <MeetingTabs
-          meetingId={id}
-          status={summary.status}
-        />
+        <MeetingTabs meetingId={id} status={summary.status} />
 
-        <BankTransactionForm
-          meetingId={id}
-          initialSummary={summary}
-        />
+        <BankTransactionForm meetingId={id} initialSummary={summary} />
       </Stack>
     </Container>
   );

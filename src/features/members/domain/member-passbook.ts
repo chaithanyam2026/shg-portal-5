@@ -1,6 +1,4 @@
-import type {
-  MemberPassbookEntryType,
-} from "./passbook-entry-type";
+import type { MemberPassbookEntryType } from "./passbook-entry-type";
 
 /**
  * Single contribution transaction.
@@ -65,33 +63,33 @@ export type MemberPassbook = {
 
   financialYearName: string;
 
- /**
- * Opening contribution.
- */
-openingContribution: number;
+  /**
+   * Opening contribution.
+   */
+  openingContribution: number;
 
-/**
- * Total contribution from
- * weekly meetings.
- */
-meetingContribution: number;
+  /**
+   * Total contribution from
+   * weekly meetings.
+   */
+  meetingContribution: number;
 
-/**
- * Current contribution balance.
- */
-currentBalance: number;
+  /**
+   * Current contribution balance.
+   */
+  currentBalance: number;
 
-/**
- * Number of contribution
- * transactions excluding the
- * opening contribution.
- */
-contributionCount: number;
+  /**
+   * Number of contribution
+   * transactions excluding the
+   * opening contribution.
+   */
+  contributionCount: number;
 
-/**
- * Last contribution date.
- */
-lastContributionDate?: Date;
+  /**
+   * Last contribution date.
+   */
+  lastContributionDate?: Date;
 
   /**
    * Ledger entries.

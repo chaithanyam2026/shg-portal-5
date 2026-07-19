@@ -1,41 +1,17 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { useRouter } from "next/navigation";
 
-import {
-  Alert,
-  Button,
-  Card,
-  CardContent,
-  Checkbox,
-  CircularProgress,
-  FormControlLabel,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Alert, Button, Card, CardContent, Stack } from "@mui/material";
 
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import type { FinancialYearDetails, MemberLookup } from "../../types";
-import {
-
-
-
-
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
 
-import MemberRow, {
-  MemberRowData,
-} from "./MemberRow";
-
+import MemberRow from "./MemberRow";
 
 type Member = {
   _id: string;
@@ -51,28 +27,19 @@ type MemberRow = {
   specialLoanExpiry?: string;
 };
 
-
 type Props = {
   financialYear: FinancialYearDetails;
   members: MemberLookup[];
 };
 
-
-export default function MembersForm({
-  financialYear,
-  members
-}: Props) {
-
+export default function MembersForm({ financialYear, members }: Props) {
   const router = useRouter();
 
   //const [members, setMembers] = useState<Member[]>([]);
 
-  const [selected, setSelected] = useState(
-    financialYear.members.map((m) => m._id),
-  );
+  const [selected, setSelected] = useState(financialYear.members.map((m) => m._id));
 
   // const [loading, setLoading] = useState(false);
-
 
   const [saving, setSaving] = useState(false);
 
@@ -87,38 +54,27 @@ export default function MembersForm({
         openingLoan: member.opening.loan ?? 0,
         openingSpecialLoan: member.opening.specialLoan ?? 0,
         specialLoanExpiry: member.opening.specialLoan
-          ? new Date(member.opening.specialLoanExpiry)
-            .toISOString()
-            .slice(0, 10)
+          ? new Date(member.opening.specialLoanExpiry).toISOString().slice(0, 10)
           : "",
       })),
     [financialYear],
   );
 
-  const [success, setSuccess] =
-    useState(false);
+  const [success, setSuccess] = useState(false);
 
   const [rows, setRows] = useState<MemberRow[]>(
     financialYear.members.map((member) => ({
       memberId: getMemberId(member),
 
-      openingContribution:
-        member.opening.contribution,
+      openingContribution: member.opening.contribution,
 
-      openingLoan:
-        member.opening.loan,
+      openingLoan: member.opening.loan,
 
-      openingSpecialLoan:
-        member.opening.specialLoan,
+      openingSpecialLoan: member.opening.specialLoan,
 
-      specialLoanExpiry:
-        member.opening.specialLoan
-          ? new Date(
-            member.opening.specialLoanExpiry,
-          )
-            .toISOString()
-            .slice(0, 10)
-          : "",
+      specialLoanExpiry: member.opening.specialLoan
+        ? new Date(member.opening.specialLoanExpiry).toISOString().slice(0, 10)
+        : "",
     })),
   );
 
@@ -139,12 +95,7 @@ export default function MembersForm({
     ]);
   }
   function removeMember(index: number) {
-    setRows((previous) =>
-      previous.filter(
-        (_, currentIndex) =>
-          currentIndex !== index,
-      ),
-    );
+    setRows((previous) => previous.filter((_, currentIndex) => currentIndex !== index));
   }
   function resetMembers() {
     setRows(initialRows);
@@ -152,17 +103,14 @@ export default function MembersForm({
     setError("");
   }
 
-  function updateMember(
-    index: number,
-    changes: Partial<MemberRow>,
-  ) {
+  function updateMember(index: number, changes: Partial<MemberRow>) {
     setRows((previous) =>
       previous.map((row, currentIndex) =>
         currentIndex === index
           ? {
-            ...row,
-            ...changes,
-          }
+              ...row,
+              ...changes,
+            }
           : row,
       ),
     );
@@ -175,9 +123,7 @@ export default function MembersForm({
     }
 
     // memberId is already a string/ObjectId
-    if (
-      typeof member.memberId === "string"
-    ) {
+    if (typeof member.memberId === "string") {
       return member.memberId;
     }
 
@@ -216,13 +162,8 @@ export default function MembersForm({
     );
   } */
 
-
-  function isMemberSelected(
-    memberId: string,
-  ) {
-    return rows.some(
-      (row) => row.memberId === memberId,
-    );
+  function isMemberSelected(memberId: string) {
+    return rows.some((row) => row.memberId === memberId);
   }
   function validateRows(): string | null {
     const selectedMembers = new Set<string>();
@@ -252,10 +193,7 @@ export default function MembersForm({
         return `Opening special loan cannot be negative (row ${index + 1}).`;
       }
 
-      if (
-        row.openingSpecialLoan > 0 &&
-        !row.specialLoanExpiry
-      ) {
+      if (row.openingSpecialLoan > 0 && !row.specialLoanExpiry) {
         return `Special loan expiry is required (row ${index + 1}).`;
       }
     }
@@ -263,23 +201,18 @@ export default function MembersForm({
     return null;
   }
   function buildPayload() {
-
-    console.log('\n\n\ buildPayload')
+    console.log("\n\n\ buildPayload");
     return {
       members: rows.map((row) => ({
         memberId: row.memberId,
 
-        openingContribution:
-          row.openingContribution,
+        openingContribution: row.openingContribution,
 
-        openingLoan:
-          row.openingLoan,
+        openingLoan: row.openingLoan,
 
-        openingSpecialLoan:
-          row.openingSpecialLoan,
+        openingSpecialLoan: row.openingSpecialLoan,
 
-        specialLoanExpiry:
-          row.specialLoanExpiry || null,
+        specialLoanExpiry: row.specialLoanExpiry || null,
       })),
     };
   }
@@ -319,42 +252,32 @@ export default function MembersForm({
 
   function toggleMember(id: string) {
     setSelected((previous) =>
-      previous.includes(id)
-        ? previous.filter((x) => x !== id)
-        : [...previous, id],
+      previous.includes(id) ? previous.filter((x) => x !== id) : [...previous, id],
     );
   }
 
   async function save() {
-
-    console.log('\n\n Save')
+    console.log("\n\n Save");
     try {
       setSaving(true);
       setError("");
 
-      const response = await fetch(
-        `/api/financial-years/${financialYear._id}`,
-        {
-          method: "PATCH",
+      const response = await fetch(`/api/financial-years/${financialYear._id}`, {
+        method: "PATCH",
 
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-
-          body: JSON.stringify({
-            members: selected,
-          }),
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+
+        body: JSON.stringify({
+          members: selected,
+        }),
+      });
 
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          result.message ??
-          "Unable to save members.",
-        );
+        throw new Error(result.message ?? "Unable to save members.");
       }
 
       router.refresh();
@@ -362,9 +285,7 @@ export default function MembersForm({
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError(
-          "Unable to save members.",
-        );
+        setError("Unable to save members.");
       }
     } finally {
       setSaving(false);
@@ -387,8 +308,7 @@ export default function MembersForm({
    } */
 
   async function saveMembers() {
-
-    console.log('\n\n saveMembers')
+    console.log("\n\n saveMembers");
     const validationError = validateRows();
 
     if (validationError) {
@@ -397,37 +317,25 @@ export default function MembersForm({
     }
 
     try {
-
       setSaving(true);
       setError("");
       setSuccess(false);
 
-      const response = await fetch(
-        `/api/financial-years/${financialYear._id}`,
-        {
-          method: "PATCH",
+      const response = await fetch(`/api/financial-years/${financialYear._id}`, {
+        method: "PATCH",
 
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-
-          body: JSON.stringify(
-            buildPayload(),
-          ),
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
 
-      const result =
-        await response.json();
+        body: JSON.stringify(buildPayload()),
+      });
+
+      const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          result.message ??
-          "Unable to save members.",
-        );
+        throw new Error(result.message ?? "Unable to save members.");
       }
-
 
       setSuccess(true);
 
@@ -436,9 +344,7 @@ export default function MembersForm({
       if (error instanceof Error) {
         setError(error.message);
       } else {
-        setError(
-          "Unable to save members.",
-        );
+        setError("Unable to save members.");
       }
     } finally {
       setDirty(false);
@@ -446,23 +352,13 @@ export default function MembersForm({
     }
   }
 
-  const selectedMemberIds = rows.map(
-    (row) => row.memberId,
-  );
+  const selectedMemberIds = rows.map((row) => row.memberId);
   {
-    error && (
-      <Alert severity="error">
-        {error}
-      </Alert>
-    )
+    error && <Alert severity="error">{error}</Alert>;
   }
 
   {
-    success && (
-      <Alert severity="success">
-        Members updated successfully.
-      </Alert>
-    )
+    success && <Alert severity="success">Members updated successfully.</Alert>;
   }
 
   return (
@@ -470,11 +366,7 @@ export default function MembersForm({
       <Card variant="outlined">
         <CardContent>
           <Stack spacing={3}>
-            <Button
-              variant="outlined"
-              startIcon={<AddIcon />}
-              onClick={addMember}
-            >
+            <Button variant="outlined" startIcon={<AddIcon />} onClick={addMember}>
               Add Member
             </Button>
 
@@ -482,83 +374,44 @@ export default function MembersForm({
               <Table size="small">
                 <TableHead>
                   <TableRow>
-                    <TableCell>
-                      Member
-                    </TableCell>
+                    <TableCell>Member</TableCell>
 
-                    <TableCell>
-                      Member_Contribution
-                    </TableCell>
+                    <TableCell>Member_Contribution</TableCell>
 
-                    <TableCell>
-                      Member_Initial_Loan
-                    </TableCell>
+                    <TableCell>Member_Initial_Loan</TableCell>
 
-                    <TableCell>
-                      Member_Special_Loan
-                    </TableCell>
+                    <TableCell>Member_Special_Loan</TableCell>
 
-                    <TableCell>
-                      Expiry
-                    </TableCell>
+                    <TableCell>Expiry</TableCell>
 
-                    <TableCell
-                      align="center"
-                    >
-                      Action
-                    </TableCell>
+                    <TableCell align="center">Action</TableCell>
                   </TableRow>
                 </TableHead>
 
                 <TableBody>
-                  {rows.map(
-                    (row, index) => (
-                      <MemberRow
-                        disabled={saving}
-                        key={index}
-                        row={row}
-                        members={members}
-                        selectedMemberIds={selectedMemberIds}
-                        onRemove={() =>
-                          removeMember(index)
-                        }
-                        onChange={(
-                          changes,
-                        ) =>
-                          updateMember(
-                            index,
-                            changes,
-                          )
-                        }
-                      />
-                    ),
-                  )}
+                  {rows.map((row, index) => (
+                    <MemberRow
+                      disabled={saving}
+                      key={index}
+                      row={row}
+                      members={members}
+                      selectedMemberIds={selectedMemberIds}
+                      onRemove={() => removeMember(index)}
+                      onChange={(changes) => updateMember(index, changes)}
+                    />
+                  ))}
                 </TableBody>
               </Table>
             </TableContainer>
           </Stack>
         </CardContent>
       </Card>
-      <Stack
-        direction="row"
-        justifyContent="flex-end"
-      >
-        <Button
-          onClick={resetMembers}
-          disabled={!dirty || saving}
-        >
+      <Stack direction="row" justifyContent="flex-end">
+        <Button onClick={resetMembers} disabled={!dirty || saving}>
           Reset
         </Button>
-        <Button
-          variant="contained"
-          onClick={saveMembers}
-          disabled={
-            saving || rows.length === 0
-          }
-        >
-          {saving
-            ? "Saving..."
-            : "Save Members"}
+        <Button variant="contained" onClick={saveMembers} disabled={saving || rows.length === 0}>
+          {saving ? "Saving..." : "Save Members"}
         </Button>
       </Stack>
     </>

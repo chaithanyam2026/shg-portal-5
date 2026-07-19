@@ -1,14 +1,8 @@
 import type { LedgerEntry } from "@/features/reports/domain/ledger-entry";
-import {
-  LEDGER_TRANSACTION_TYPE,
-} from "@/features/reports/domain/transaction-type";
-import type {
-  MonthlyLedger,
-} from "@/features/reports/types";
+import { LEDGER_TRANSACTION_TYPE } from "@/features/reports/domain/transaction-type";
+import type { MonthlyLedger } from "@/features/reports/types";
 
-export function groupMonthlyLedger(
-  entries: LedgerEntry[],
-): MonthlyLedger[] {
+export function groupMonthlyLedger(entries: LedgerEntry[]): MonthlyLedger[] {
   const months = new Map<string, MonthlyLedger>();
 
   for (const entry of entries) {
@@ -23,16 +17,14 @@ export function groupMonthlyLedger(
       const openingCash =
         entry.transactionType === LEDGER_TRANSACTION_TYPE.BANK_DEPOSIT
           ? entry.cashInHand + entry.expense
-          : entry.transactionType ===
-              LEDGER_TRANSACTION_TYPE.BANK_WITHDRAWAL
+          : entry.transactionType === LEDGER_TRANSACTION_TYPE.BANK_WITHDRAWAL
             ? entry.cashInHand - entry.income
             : entry.cashInHand - entry.income + entry.expense;
 
       const openingBank =
         entry.transactionType === LEDGER_TRANSACTION_TYPE.BANK_DEPOSIT
           ? entry.bankBalance - entry.expense
-          : entry.transactionType ===
-              LEDGER_TRANSACTION_TYPE.BANK_WITHDRAWAL
+          : entry.transactionType === LEDGER_TRANSACTION_TYPE.BANK_WITHDRAWAL
             ? entry.bankBalance + entry.income
             : entry.bankBalance;
 

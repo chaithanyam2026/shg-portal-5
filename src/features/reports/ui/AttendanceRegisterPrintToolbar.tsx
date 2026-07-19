@@ -1,13 +1,10 @@
 "use client";
 
-import {
-  Button,
-  Stack,
-} from "@mui/material";
+import { Button, Stack } from "@mui/material";
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import PrintIcon from "@mui/icons-material/Print";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import PrintIcon from "@mui/icons-material/Print";
 
 import { useRouter } from "next/navigation";
 
@@ -15,11 +12,8 @@ type Props = {
   backHref: string;
 };
 
-export default function AttendanceRegisterPrintToolbar({
-  backHref,
-}: Props) {
-  const router =
-    useRouter();
+export default function AttendanceRegisterPrintToolbar({ backHref }: Props) {
+  const router = useRouter();
 
   function print() {
     window.print();
@@ -36,36 +30,18 @@ export default function AttendanceRegisterPrintToolbar({
       }}
     >
       <Button
-        startIcon={
-          <ArrowBackIcon />
-        }
+        startIcon={<ArrowBackIcon />}
         variant="outlined"
-        onClick={() =>
-          router.push(
-            backHref,
-          )
-        }
+        onClick={() => router.push(backHref)}
       >
         Back
       </Button>
 
-      <Button
-        startIcon={
-          <PictureAsPdfIcon />
-        }
-        variant="outlined"
-        onClick={print}
-      >
+      <Button startIcon={<PictureAsPdfIcon />} variant="outlined" onClick={print}>
         Download PDF
       </Button>
 
-      <Button
-        startIcon={
-          <PrintIcon />
-        }
-        variant="contained"
-        onClick={print}
-      >
+      <Button startIcon={<PrintIcon />} variant="contained" onClick={print}>
         Print
       </Button>
     </Stack>

@@ -1,20 +1,11 @@
 import connectMongo from "@/lib/db/mongodb";
 
-import {
-  getLoanPassbook,
-} from "./get-passbook";
+import { getLoanPassbook } from "./get-passbook";
 
-import type {
-  LoanSummaryResult,
-} from "../types";
+import type { LoanSummaryResult } from "../types";
 
-import {
-  LoanIdInput,
-  LoanIdSchema,
-} from "../validation";
-import {
-  calculateLoanSummary,
-} from "../domain";
+import { calculateLoanSummary } from "../domain";
+import { LoanIdInput, LoanIdSchema } from "../validation";
 
 /**
  * Returns computed loan summary.
@@ -23,22 +14,14 @@ import {
  * the loan passbook, which acts as the
  * single source of truth.
  */
-export async function getLoanSummary(
-  loanId: LoanIdInput,
-): Promise<LoanSummaryResult> {
+export async function getLoanSummary(loanId: LoanIdInput): Promise<LoanSummaryResult> {
   await connectMongo();
 
-  const id =
-    LoanIdSchema.parse(
-      loanId,
-    );
+  const id = LoanIdSchema.parse(loanId);
 
-  const passbook =
-    await getLoanPassbook(id);
+  const passbook = await getLoanPassbook(id);
 
-    return calculateLoanSummary(
-  passbook,
-);
+  return calculateLoanSummary(passbook);
   // const entries =
   //   passbook.entries;
 

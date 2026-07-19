@@ -1,9 +1,4 @@
-import {
-  model,
-  models,
-  Schema,
-  type InferSchemaType,
-} from "mongoose";
+import { model, models, Schema, type InferSchemaType } from "mongoose";
 
 const LoanSchema = new Schema(
   {
@@ -94,11 +89,8 @@ LoanSchema.index({
   status: 1,
 });
 
-export type LoanDocument =
-  InferSchemaType<typeof LoanSchema>;
+export type LoanDocument = InferSchemaType<typeof LoanSchema>;
 
-const Loan =
-  models.Loan ??
-  model("Loan", LoanSchema);
+const Loan = models.Loan ?? model("Loan", LoanSchema);
 
 export default Loan;

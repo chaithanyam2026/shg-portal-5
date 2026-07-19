@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  TableCell,
-  TableRow,
-  TextField,
-} from "@mui/material";
+import { TableCell, TableRow, TextField } from "@mui/material";
 
 import type { PaymentRecord } from "../types";
 
@@ -14,38 +10,23 @@ type Props = {
   onChange(record: PaymentRecord): void;
 };
 
-export default function PaymentRow({
-  record,
-  disabled = false,
-  onChange,
-}: Props) {
-  function update<K extends keyof PaymentRecord>(
-    key: K,
-    value: PaymentRecord[K],
-  ) {
+export default function PaymentRow({ record, disabled = false, onChange }: Props) {
+  function update<K extends keyof PaymentRecord>(key: K, value: PaymentRecord[K]) {
     const next = {
       ...record,
       [key]: value,
     };
 
-    next.total =
-      next.contribution +
-      next.loanRepayment +
-      next.absentFine +
-      next.specialLoanFine;
+    next.total = next.contribution + next.loanRepayment + next.absentFine + next.specialLoanFine;
 
     onChange(next);
   }
 
   return (
     <TableRow hover>
-      <TableCell>
-        {record.memberCode}
-      </TableCell>
+      <TableCell>{record.memberCode}</TableCell>
 
-      <TableCell>
-        {record.memberName}
-      </TableCell>
+      <TableCell>{record.memberName}</TableCell>
 
       <TableCell width={120}>
         <TextField
@@ -61,12 +42,7 @@ export default function PaymentRow({
               },
             },
           }}
-          onChange={(event) =>
-            update(
-              "contribution",
-              Number(event.target.value),
-            )
-          }
+          onChange={(event) => update("contribution", Number(event.target.value))}
         />
       </TableCell>
 
@@ -77,12 +53,7 @@ export default function PaymentRow({
           type="number"
           disabled={disabled}
           value={record.loanRepayment}
-          onChange={(event) =>
-            update(
-              "loanRepayment",
-              Number(event.target.value),
-            )
-          }
+          onChange={(event) => update("loanRepayment", Number(event.target.value))}
         />
       </TableCell>
 
@@ -93,12 +64,7 @@ export default function PaymentRow({
           type="number"
           disabled={disabled}
           value={record.absentFine}
-          onChange={(event) =>
-            update(
-              "absentFine",
-              Number(event.target.value),
-            )
-          }
+          onChange={(event) => update("absentFine", Number(event.target.value))}
         />
       </TableCell>
 
@@ -109,18 +75,11 @@ export default function PaymentRow({
           type="number"
           disabled={disabled}
           value={record.specialLoanFine}
-          onChange={(event) =>
-            update(
-              "specialLoanFine",
-              Number(event.target.value),
-            )
-          }
+          onChange={(event) => update("specialLoanFine", Number(event.target.value))}
         />
       </TableCell>
 
-      <TableCell width={120}>
-        {record.total}
-      </TableCell>
+      <TableCell width={120}>{record.total}</TableCell>
 
       <TableCell>
         <TextField
@@ -128,12 +87,7 @@ export default function PaymentRow({
           size="small"
           disabled={disabled}
           value={record.remarks}
-          onChange={(event) =>
-            update(
-              "remarks",
-              event.target.value,
-            )
-          }
+          onChange={(event) => update("remarks", event.target.value)}
         />
       </TableCell>
     </TableRow>

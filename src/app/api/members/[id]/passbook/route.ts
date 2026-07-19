@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import {
-  getMemberPassbook,
-} from "@/features/members/services";
+import { getMemberPassbook } from "@/features/members/services";
 
 type RouteContext = {
   params: Promise<{
@@ -10,27 +8,17 @@ type RouteContext = {
   }>;
 };
 
-export async function GET(
-  _request: NextRequest,
-  context: RouteContext,
-) {
+export async function GET(_request: NextRequest, context: RouteContext) {
   try {
-    const { id } =
-      await context.params;
+    const { id } = await context.params;
 
-    const passbook =
-      await getMemberPassbook(id);
+    const passbook = await getMemberPassbook(id);
 
-    return NextResponse.json(
-      passbook,
-    );
+    return NextResponse.json(passbook);
   } catch (error) {
     return NextResponse.json(
       {
-        message:
-          error instanceof Error
-            ? error.message
-            : "Unable to load member passbook.",
+        message: error instanceof Error ? error.message : "Unable to load member passbook.",
       },
       {
         status: 500,

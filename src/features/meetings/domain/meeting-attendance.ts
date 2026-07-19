@@ -1,6 +1,4 @@
-import type {
-  AttendanceStatus,
-} from "./attendance-status";
+import type { AttendanceStatus } from "./attendance-status";
 
 export type MeetingAttendance = {
   memberId: string;

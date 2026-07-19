@@ -1,12 +1,9 @@
-import type {
-  BankTransactionType,
-} from "./bank-transaction-type";
+import type { BankTransactionType } from "./bank-transaction-type";
 
-export type MeetingBankTransaction =
-  {
-    transactionType: BankTransactionType;
+export type MeetingBankTransaction = {
+  transactionType: BankTransactionType;
 
-    amount: number;
+  amount: number;
 
-    remarks?: string;
-  };
+  remarks?: string;
+};

@@ -1,6 +1,4 @@
-import type {
-  AttendanceStatus,
-} from "./attendance-fine";
+import type { AttendanceStatus } from "./attendance-fine";
 
 /**
  * Calculates the next consecutive

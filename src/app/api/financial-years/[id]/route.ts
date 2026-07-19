@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 
 import { get } from "@/features/financial-year/services/get";
+import { update } from "@/features/financial-year/services/update";
 import connectMongo from "@/lib/db/mongodb";
 import { AppError } from "@/lib/errors";
-import { update } from "@/features/financial-year/services/update";
 
 type RouteContext = {
   params: Promise<{
@@ -11,10 +11,7 @@ type RouteContext = {
   }>;
 };
 
-export async function GET(
-  _request: Request,
-  { params }: RouteContext,
-) {
+export async function GET(_request: Request, { params }: RouteContext) {
   try {
     await connectMongo();
 
@@ -27,23 +24,14 @@ export async function GET(
     console.error(error);
 
     if (error instanceof AppError) {
-      return NextResponse.json(
-        { message: error.message },
-        { status: error.status },
-      );
+      return NextResponse.json({ message: error.message }, { status: error.status });
     }
 
-    return NextResponse.json(
-      { message: "Internal Server Error" },
-      { status: 500 },
-    );
+    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
 }
 
-export async function PATCH(
-  request: Request,
-  { params }: RouteContext,
-) {
+export async function PATCH(request: Request, { params }: RouteContext) {
   try {
     await connectMongo();
 
@@ -52,7 +40,7 @@ export async function PATCH(
     const body = await request.json();
 
     console.log("API BODY");
-console.dir(body, { depth: null });
+    console.dir(body, { depth: null });
 
     const financialYear = await update(id, body);
 

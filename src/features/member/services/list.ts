@@ -1,7 +1,8 @@
 import connectMongo from "@/lib/db/mongodb";
 import Member from "@/models/Member";
+import type { MemberLookup } from "../types";
 
-export async function list() {
+export async function list(): Promise<MemberLookup[]> {
   await connectMongo();
 
   /* return Member.find({
@@ -16,22 +17,22 @@ export async function list() {
     })
     .lean()
     .exec(); */
-    const members = await Member.find({
-  active: true,
-})
-  .select({
-    memberCode: 1,
-    name: 1,
+  const members = await Member.find({
+    active: true,
   })
-  .sort({
-    memberCode: 1,
-  })
-  .lean()
-  .exec();
+    .select({
+      memberCode: 1,
+      name: 1,
+    })
+    .sort({
+      memberCode: 1,
+    })
+    .lean()
+    .exec();
 
-return members.map((member) => ({
-  _id: member._id.toString(),
-  memberCode: member.memberCode,
-  name: member.name,
-}));
+  return members.map((member): MemberLookup => ({
+    _id: member._id.toString(),
+    memberCode: String(member.memberCode),
+    name: String(member.name),
+  }));
 }

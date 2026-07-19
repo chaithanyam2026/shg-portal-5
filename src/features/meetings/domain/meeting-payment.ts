@@ -1,6 +1,4 @@
-import type {
-  PaymentType,
-} from "./payment-type";
+import type { PaymentType } from "./payment-type";
 
 export type MeetingPayment = {
   memberId: string;

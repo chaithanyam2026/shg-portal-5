@@ -6,12 +6,6 @@ type Props = {
   financialYear: FinancialYearDetails;
 };
 
-export default function OpeningAccountsTab({
-  financialYear,
-}: Props) {
-  return (
-    <OpeningAccountsForm
-      financialYear={financialYear}
-    />
-  );
+export default function OpeningAccountsTab({ financialYear }: Props) {
+  return <OpeningAccountsForm financialYear={financialYear} />;
 }

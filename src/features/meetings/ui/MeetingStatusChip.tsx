@@ -8,52 +8,21 @@ type Props = {
   status: MeetingStatus;
 };
 
-export default function MeetingStatusChip({
-  status,
-}: Props) {
+export default function MeetingStatusChip({ status }: Props) {
   switch (status) {
     case "DRAFT":
-      return (
-        <Chip
-          label="Draft"
-          color="default"
-          size="small"
-        />
-      );
+      return <Chip label="Draft" color="default" size="small" />;
 
     case "IN_PROGRESS":
-      return (
-        <Chip
-          label="In Progress"
-          color="warning"
-          size="small"
-        />
-      );
+      return <Chip label="In Progress" color="warning" size="small" />;
 
     case "APPROVED":
-      return (
-        <Chip
-          label="Approved"
-          color="success"
-          size="small"
-        />
-      );
+      return <Chip label="Approved" color="success" size="small" />;
 
     case "CLOSED":
-      return (
-        <Chip
-          label="Closed"
-          color="primary"
-          size="small"
-        />
-      );
+      return <Chip label="Closed" color="primary" size="small" />;
 
     default:
-      return (
-        <Chip
-          label={status}
-          size="small"
-        />
-      );
+      return <Chip label={status} size="small" />;
   }
 }

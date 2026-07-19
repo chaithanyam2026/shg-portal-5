@@ -1,28 +1,20 @@
 "use client";
 
-import {
-  Chip,
-  Stack,
-} from "@mui/material";
+import { Chip, Stack } from "@mui/material";
 
-import type {
-  MeetingSummary,
-} from "../types";
+import type { MeetingSummary } from "../types";
 
+import MeetingActionButton from "@/features/meetings/ui/MeetingActionButton";
 import SummaryCard from "./SummaryCard";
 import SummaryTotals from "./SummaryTotals";
 import ValidationItem from "./ValidationItem";
-import MeetingActionButton from "@/features/meetings/ui/MeetingActionButton";
 
 type Props = {
   meetingId: string;
   summary: MeetingSummary;
 };
 
-export default function SummaryView({
-  meetingId,
-  summary,
-}: Props) {
+export default function SummaryView({ meetingId, summary }: Props) {
   return (
     <Stack spacing={3}>
       <SummaryCard title="Meeting">
@@ -30,20 +22,15 @@ export default function SummaryView({
           rows={[
             {
               label: "Date",
-              value:
-                new Date(
-                  summary.meetingDate,
-                ).toLocaleDateString(),
+              value: new Date(summary.meetingDate).toLocaleDateString(),
             },
             {
               label: "Place",
-              value:
-                summary.place,
+              value: summary.place,
             },
             {
               label: "Status",
-              value:
-                summary.status,
+              value: summary.status,
             },
           ]}
         />
@@ -53,36 +40,20 @@ export default function SummaryView({
         <SummaryTotals
           rows={[
             {
-              label:
-                "Total Members",
-              value:
-                summary
-                  .attendance
-                  .totalMembers,
+              label: "Total Members",
+              value: summary.attendance.totalMembers,
             },
             {
-              label:
-                "Present",
-              value:
-                summary
-                  .attendance
-                  .present,
+              label: "Present",
+              value: summary.attendance.present,
             },
             {
-              label:
-                "Absent",
-              value:
-                summary
-                  .attendance
-                  .absent,
+              label: "Absent",
+              value: summary.attendance.absent,
             },
             {
-              label:
-                "Excused",
-              value:
-                summary
-                  .attendance
-                  .excused,
+              label: "Excused",
+              value: summary.attendance.excused,
             },
           ]}
         />
@@ -92,28 +63,23 @@ export default function SummaryView({
         <SummaryTotals
           rows={[
             {
-              label:
-                "Contribution",
+              label: "Contribution",
               value: `₹${summary.payments.contribution}`,
             },
             {
-              label:
-                "Loan Repayment",
+              label: "Loan Repayment",
               value: `₹${summary.payments.loanRepayment}`,
             },
             {
-              label:
-                "Absent Fine",
+              label: "Absent Fine",
               value: `₹${summary.payments.absentFine}`,
             },
             {
-              label:
-                "Special Loan Fine",
+              label: "Special Loan Fine",
               value: `₹${summary.payments.specialLoanFine}`,
             },
             {
-              label:
-                "Total Collection",
+              label: "Total Collection",
               value: `₹${summary.payments.totalCollection}`,
             },
           ]}
@@ -124,18 +90,15 @@ export default function SummaryView({
         <SummaryTotals
           rows={[
             {
-              label:
-                "Deposits",
+              label: "Deposits",
               value: `₹${summary.bank.totalDeposits}`,
             },
             {
-              label:
-                "Withdrawals",
+              label: "Withdrawals",
               value: `₹${summary.bank.totalWithdrawals}`,
             },
             {
-              label:
-                "Net Movement",
+              label: "Net Movement",
               value: `₹${summary.bank.netAmount}`,
             },
           ]}
@@ -146,28 +109,23 @@ export default function SummaryView({
         <SummaryTotals
           rows={[
             {
-              label:
-                "Member Collection",
+              label: "Member Collection",
               value: `₹${summary.financial.memberCollection}`,
             },
             {
-              label:
-                "Other Income",
+              label: "Other Income",
               value: `₹${summary.financial.otherIncome}`,
             },
             {
-              label:
-                "Expenses",
+              label: "Expenses",
               value: `₹${summary.financial.expenses}`,
             },
             {
-              label:
-                "Net Collection",
+              label: "Net Collection",
               value: `₹${summary.financial.netMeetingCollection}`,
             },
             {
-              label:
-                "Net Bank Movement",
+              label: "Net Bank Movement",
               value: `₹${summary.financial.netBankMovement}`,
             },
           ]}
@@ -176,31 +134,13 @@ export default function SummaryView({
 
       <SummaryCard title="Validation">
         <Stack spacing={2}>
-          {summary.validations.map(
-            (
-              validation,
-              index,
-            ) => (
-              <ValidationItem
-                key={index}
-                validation={
-                  validation
-                }
-              />
-            ),
-          )}
+          {summary.validations.map((validation, index) => (
+            <ValidationItem key={index} validation={validation} />
+          ))}
 
           <Chip
-            color={
-              summary.canClose
-                ? "success"
-                : "error"
-            }
-            label={
-              summary.canClose
-                ? "Ready to Close Meeting"
-                : "Meeting Cannot Be Closed"
-            }
+            color={summary.canClose ? "success" : "error"}
+            label={summary.canClose ? "Ready to Close Meeting" : "Meeting Cannot Be Closed"}
           />
           <MeetingActionButton
             meetingId={meetingId}

@@ -1,30 +1,13 @@
 // import Meeting from "@/models/Meeting";
-import {
-  loadLoanRepayments,
-} from "./meeting-loader";
+import { loadLoanRepayments } from "./meeting-loader";
 
-import {
-  LOAN_DISBURSED_ENTRY,
-  LOAN_REPAYMENT_ENTRY,
-} from "../../domain/passbook-entry-type";
+import { LOAN_DISBURSED_ENTRY } from "../../domain/passbook-entry-type";
 
-import {
-  processRepayments,
-} from "./process-repayments";
+import { processRepayments } from "./process-repayments";
 
-import type {
-  LoanPassbook,
-} from "../../domain/loan-passbook";
+import type { LoanPassbook } from "../../domain/loan-passbook";
 
-import {
-  allocateLoanPayment,
-  calculateInterest,
-  calculateMonthlyFine,
-  createLedgerEntry,
-  getRepaymentCycle,
-  updateOutstandingBalance,
-  validateLoanPassbook
-} from "../../domain";
+import { validateLoanPassbook } from "../../domain";
 
 export type BuildLoanLedgerInput = {
   _id: unknown;
@@ -57,67 +40,55 @@ type LoanRepayment = {
 /**
  * Builds the complete loan ledger.
  */
-export async function buildLoanLedger(
-  loan: BuildLoanLedgerInput,
-): Promise<LoanPassbook> {
+export async function buildLoanLedger(loan: BuildLoanLedgerInput): Promise<LoanPassbook> {
   /**
    * Load meetings for the member.
    */
-  const repayments =
-    await loadLoanRepayments({
-      memberId:
-        loan.memberId,
-    });
+  const repayments = await loadLoanRepayments({
+    memberId: loan.memberId,
+  });
 
   /**
    * Running balances.
    */
-  let outstandingPrincipal =
-    loan.disbursedAmount;
+  let outstandingPrincipal = loan.disbursedAmount;
 
-  let pendingInterest =
-    0;
+  let pendingInterest = 0;
 
-  let pendingLoanFine =
-    0;
+  let pendingLoanFine = 0;
 
   /**
    * Loan passbook entries.
    */
-  const entries:
-    LoanPassbook["entries"] =
-    [
-      {
-        transactionDate:
-          loan.disbursedDate,
+  const entries: LoanPassbook["entries"] = [
+    {
+      transactionDate: loan.disbursedDate,
 
-        type:
-          LOAN_DISBURSED_ENTRY,
+      type: LOAN_DISBURSED_ENTRY,
 
-        description:
-          "Loan disbursed",
+      description: "Loan disbursed",
 
-        amountPaid: 0,
+      amountPaid: 0,
 
-        interestCharged: 0,
+      interestCharged: 0,
 
-        interestDays: 0,
+      interestDays: 0,
 
-        loanFineCharged: 0,
+      loanFineCharged: 0,
 
-        paidInterest: 0,
+      paidInterest: 0,
 
-        paidLoanFine: 0,
+      paidLoanFine: 0,
 
-        paidPrincipal: 0,
+      paidPrincipal: 0,
 
-        outstandingPrincipal,
+      outstandingPrincipal,
 
-        pendingInterest,
+      pendingInterest,
 
-        pendingLoanFine,
-      },
-    ];
+      pendingLoanFine,
+    },
+  ];
 
   /**
    * Previous repayment date.
@@ -310,8 +281,7 @@ export async function buildLoanLedger(
   //     repayment.meetingDate;
   // }
 
-  const balances =
-  processRepayments({
+  const balances = processRepayments({
     loan,
 
     repayments,
@@ -325,43 +295,31 @@ export async function buildLoanLedger(
     pendingLoanFine,
   });
 
-outstandingPrincipal =
-  balances.outstandingPrincipal;
+  outstandingPrincipal = balances.outstandingPrincipal;
 
-pendingInterest =
-  balances.pendingInterest;
+  pendingInterest = balances.pendingInterest;
 
-pendingLoanFine =
-  balances.pendingLoanFine;
+  pendingLoanFine = balances.pendingLoanFine;
 
-const passbook = {
-  loanId:
-    loan._id.toString(),
+  const passbook = {
+    loanId: loan._id.toString(),
 
-  loanNumber:
-    loan.loanNumber,
+    loanNumber: loan.loanNumber,
 
-  memberId:
-    loan.memberId.toString(),
+    memberId: loan.memberId.toString(),
 
-  memberName:
-    loan.memberName,
+    memberName: loan.memberName,
 
-  loanType:
-    loan.loanType,
+    loanType: loan.loanType,
 
-  disbursedAmount:
-    loan.disbursedAmount,
+    disbursedAmount: loan.disbursedAmount,
 
-  disbursedDate:
-    loan.disbursedDate,
+    disbursedDate: loan.disbursedDate,
 
-  entries,
-};
+    entries,
+  };
 
-validateLoanPassbook(
-  passbook,
-);
+  validateLoanPassbook(passbook);
 
-return passbook;
+  return passbook;
 }

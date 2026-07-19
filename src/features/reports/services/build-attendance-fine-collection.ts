@@ -5,21 +5,13 @@ import type {
   AttendanceFineCollectionRow,
 } from "../domain/attendance-fine-collection";
 
-import {
-  buildAttendanceFineLedger,
-} from "./internal/build-attendance-fine-ledger";
+import { buildAttendanceFineLedger } from "./internal/build-attendance-fine-ledger";
 
-import {
-  loadAttendanceFinePayments,
-} from "./internal/load-attendance-fine-payments";
+import { loadAttendanceFinePayments } from "./internal/load-attendance-fine-payments";
 
-import {
-  loadAttendanceMeetings,
-} from "./internal/load-attendance-meetings";
+import { loadAttendanceMeetings } from "./internal/load-attendance-meetings";
 
-import {
-  loadAttendanceMembers,
-} from "./internal/load-attendance-members";
+import { loadAttendanceMembers } from "./internal/load-attendance-members";
 
 /**
  * Builds the Attendance Fine
@@ -33,179 +25,127 @@ export async function buildAttendanceFineCollection(
   /**
    * Load report data.
    */
-  const [
-    members,
-    meetings,
-    payments,
-  ] = await Promise.all([
-    loadAttendanceMembers(
-      financialYearId,
-    ),
+  const [members, meetings, payments] = await Promise.all([
+    loadAttendanceMembers(financialYearId),
 
-    loadAttendanceMeetings(
-      financialYearId,
-    ),
+    loadAttendanceMeetings(financialYearId),
 
-    loadAttendanceFinePayments(
-      financialYearId,
-    ),
+    loadAttendanceFinePayments(financialYearId),
   ]);
 
   /**
    * Build attendance input.
    */
-  const attendanceMembers =
-    members.map((member) => ({
-      memberId:
-        member.memberId,
+  const attendanceMembers = members.map((member) => ({
+    memberId: member.memberId,
 
-      memberCode:
-        member.memberCode,
+    memberCode: member.memberCode,
 
-      memberName:
-        member.memberName,
+    memberName: member.memberName,
 
-      meetings: meetings.map(
-        (meeting) => ({
-          meetingId:
-            meeting.meetingId,
+    meetings: meetings.map((meeting) => ({
+      meetingId: meeting.meetingId,
 
-          meetingDate:
-            meeting.meetingDate,
+      meetingDate: meeting.meetingDate,
 
-          status:
-            meeting.attendance.get(
-              member.memberId,
-            ) ?? "PRESENT",
+      status: meeting.attendance.get(member.memberId) ?? "PRESENT",
 
-          finePaid:
-            payments.find(
-              (payment) =>
-                payment.memberId ===
-                  member.memberId &&
-                payment.meetingId ===
-                  meeting.meetingId,
-            )?.finePaid ?? 0,
-        }),
-      ),
-    }));
+      finePaid:
+        payments.find(
+          (payment) =>
+            payment.memberId === member.memberId && payment.meetingId === meeting.meetingId,
+        )?.finePaid ?? 0,
+    })),
+  }));
 
   /**
    * Member ledgers.
    */
-  const ledger =
-    buildAttendanceFineLedger(
-      attendanceMembers,
-    );
+  const ledger = buildAttendanceFineLedger(attendanceMembers);
 
   /**
    * Running balance.
    */
   let runningPending = 0;
 
-  const rows:
-    AttendanceFineCollectionRow[] =
-    meetings.map(
-      (meeting) => {
-        let presentCount = 0;
+  const rows: AttendanceFineCollectionRow[] = meetings.map((meeting) => {
+    let presentCount = 0;
 
-        let absentCount = 0;
+    let absentCount = 0;
 
-        let leaveCount = 0;
+    let leaveCount = 0;
 
-        let generatedFine = 0;
+    let generatedFine = 0;
 
-        let collectedFine = 0;
+    let collectedFine = 0;
 
-        for (const member of ledger) {
-          const entry =
-            member.entries.find(
-              (item) =>
-                item.meetingId ===
-                meeting.meetingId,
-            );
+    for (const member of ledger) {
+      const entry = member.entries.find((item) => item.meetingId === meeting.meetingId);
 
-          if (!entry) {
-            continue;
-          }
+      if (!entry) {
+        continue;
+      }
 
-          switch (
-            entry.status
-          ) {
-            case "PRESENT":
-              presentCount++;
-              break;
+      switch (entry.status) {
+        case "PRESENT":
+          presentCount++;
+          break;
 
-            case "ABSENT":
-              absentCount++;
-              break;
+        case "ABSENT":
+          absentCount++;
+          break;
 
-            case "LEAVE":
-              leaveCount++;
-              break;
-          }
+        case "LEAVE":
+          leaveCount++;
+          break;
+      }
 
-          generatedFine +=
-            entry.fineCharged;
+      generatedFine += entry.fineCharged;
 
-          collectedFine +=
-            entry.finePaid;
-        }
+      collectedFine += entry.finePaid;
+    }
 
-        runningPending +=
-          generatedFine;
+    runningPending += generatedFine;
 
-        runningPending -=
-          collectedFine;
+    runningPending -= collectedFine;
 
-        return {
-          meetingId:
-            meeting.meetingId,
+    return {
+      meetingId: meeting.meetingId,
 
-          meetingDate:
-            meeting.meetingDate,
+      meetingDate: meeting.meetingDate,
 
-          presentCount,
+      presentCount,
 
-          absentCount,
+      absentCount,
 
-          leaveCount,
+      leaveCount,
 
-          generatedFine,
+      generatedFine,
 
-          collectedFine,
+      collectedFine,
 
-          pendingFine:
-            runningPending,
-        };
-      },
-    );
+      pendingFine: runningPending,
+    };
+  });
 
-  const totals =
-    rows.reduce(
-      (
-        totals,
-        row,
-      ) => {
-        totals.generatedFine +=
-          row.generatedFine;
+  const totals = rows.reduce(
+    (totals, row) => {
+      totals.generatedFine += row.generatedFine;
 
-        totals.collectedFine +=
-          row.collectedFine;
+      totals.collectedFine += row.collectedFine;
 
-        totals.pendingFine =
-          row.pendingFine;
+      totals.pendingFine = row.pendingFine;
 
-        return totals;
-      },
-      {
-        generatedFine: 0,
+      return totals;
+    },
+    {
+      generatedFine: 0,
 
-        collectedFine: 0,
+      collectedFine: 0,
 
-        pendingFine: 0,
-      },
-    );
+      pendingFine: 0,
+    },
+  );
 
   return {
     rows,

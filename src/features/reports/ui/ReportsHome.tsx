@@ -1,57 +1,34 @@
 "use client";
 
-import {
-  Grid,
-  Stack,
-} from "@mui/material";
+import { Grid, Stack } from "@mui/material";
 
-import FinancialYearSelector
-  from "@/features/financial-year/ui/FinancialYearSelector";
+import FinancialYearSelector from "@/features/financial-year/ui/FinancialYearSelector";
 
-import type {
-  FinancialYearOption,
-} from "@/features/financial-year/domain/financial-year-option";
+import type { FinancialYearOption } from "@/features/financial-year/domain/financial-year-option";
 
-import ReportCategory
-  from "./ReportCategory";
+import ReportCategory from "./ReportCategory";
 
-import ReportCard
-  from "./ReportCard";
+import ReportCard from "./ReportCard";
 
 type Props = {
   financialYearId: string;
 
   options: FinancialYearOption[];
 
-  onFinancialYearChange(
-    id: string,
-  ): void;
+  onFinancialYearChange(id: string): void;
 };
 
-export default function ReportsHome({
-  financialYearId,
-  options,
-  onFinancialYearChange,
-}: Props) {
+export default function ReportsHome({ financialYearId, options, onFinancialYearChange }: Props) {
   return (
     <Stack spacing={4}>
       <FinancialYearSelector
-        value={
-          financialYearId
-        }
+        value={financialYearId}
         options={options}
-        onChange={
-          onFinancialYearChange
-        }
+        onChange={onFinancialYearChange}
       />
 
-      <ReportCategory
-        title="Attendance Reports"
-      >
-        <Grid
-          container
-          spacing={2}
-        >
+      <ReportCategory title="Attendance Reports">
+        <Grid container spacing={2}>
           <Grid
             size={{
               xs: 12,
@@ -106,13 +83,8 @@ export default function ReportsHome({
         </Grid>
       </ReportCategory>
 
-      <ReportCategory
-        title="Financial Reports"
-      >
-        <Grid
-          container
-          spacing={2}
-        >
+      <ReportCategory title="Financial Reports">
+        <Grid container spacing={2}>
           <Grid
             size={{
               xs: 12,
@@ -128,13 +100,8 @@ export default function ReportsHome({
         </Grid>
       </ReportCategory>
 
-      <ReportCategory
-        title="Loan Reports"
-      >
-        <Grid
-          container
-          spacing={2}
-        >
+      <ReportCategory title="Loan Reports">
+        <Grid container spacing={2}>
           <Grid
             size={{
               xs: 12,

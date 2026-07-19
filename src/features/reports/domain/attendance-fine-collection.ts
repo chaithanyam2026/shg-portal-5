@@ -16,16 +16,14 @@ export type AttendanceFineCollectionRow = {
   pendingFine: number;
 };
 
-export type AttendanceFineCollectionReport =
-  {
-    rows:
-      AttendanceFineCollectionRow[];
+export type AttendanceFineCollectionReport = {
+  rows: AttendanceFineCollectionRow[];
 
-    totals: {
-      generatedFine: number;
+  totals: {
+    generatedFine: number;
 
-      collectedFine: number;
+    collectedFine: number;
 
-      pendingFine: number;
-    };
+    pendingFine: number;
   };
+};

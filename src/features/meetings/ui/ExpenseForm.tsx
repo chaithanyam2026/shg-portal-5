@@ -1,24 +1,12 @@
 "use client";
 
-import {
-  useMemo,
-  useState,
-} from "react";
+import { useMemo, useState } from "react";
 
 import { useRouter } from "next/navigation";
 
-import {
-  Alert,
-  Button,
-  Card,
-  CardContent,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Alert, Button, Card, CardContent, Stack, Typography } from "@mui/material";
 
-import type {
-  ExpenseSummary,
-} from "../types";
+import type { ExpenseSummary } from "../types";
 
 import ExpenseTable from "./ExpenseTable";
 
@@ -27,30 +15,17 @@ type Props = {
   initialSummary: ExpenseSummary;
 };
 
-export default function ExpenseForm({
-  meetingId,
-  initialSummary,
-}: Props) {
+export default function ExpenseForm({ meetingId, initialSummary }: Props) {
   const router = useRouter();
 
-  const [records, setRecords] =
-    useState(
-      initialSummary.records,
-    );
+  const [records, setRecords] = useState(initialSummary.records);
 
-  const [saving, setSaving] =
-    useState(false);
+  const [saving, setSaving] = useState(false);
 
-  const [error, setError] =
-    useState("");
+  const [error, setError] = useState("");
 
   const totalExpense = useMemo(
-    () =>
-      records.reduce(
-        (sum, record) =>
-          sum + record.amount,
-        0,
-      ),
+    () => records.reduce((sum, record) => sum + record.amount, 0),
     [records],
   );
 
@@ -59,38 +34,25 @@ export default function ExpenseForm({
       setSaving(true);
       setError("");
 
-      const response =
-        await fetch(
-          `/api/meetings/${meetingId}/expenses`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type":
-                "application/json",
-            },
-            body: JSON.stringify({
-              expenses: records,
-            }),
-          },
-        );
+      const response = await fetch(`/api/meetings/${meetingId}/expenses`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          expenses: records,
+        }),
+      });
 
       if (!response.ok) {
-        const body =
-          await response.json();
+        const body = await response.json();
 
-        throw new Error(
-          body.message ??
-            "Unable to save expenses.",
-        );
+        throw new Error(body.message ?? "Unable to save expenses.");
       }
 
       router.refresh();
     } catch (error) {
-      setError(
-        error instanceof Error
-          ? error.message
-          : "Unable to save expenses.",
-      );
+      setError(error instanceof Error ? error.message : "Unable to save expenses.");
     } finally {
       setSaving(false);
     }
@@ -98,32 +60,17 @@ export default function ExpenseForm({
 
   return (
     <Stack spacing={3}>
-      {error && (
-        <Alert severity="error">
-          {error}
-        </Alert>
-      )}
+      {error && <Alert severity="error">{error}</Alert>}
 
-      <ExpenseTable
-        records={records}
-        disabled={saving}
-        onChange={setRecords}
-      />
+      <ExpenseTable records={records} disabled={saving} onChange={setRecords} />
 
       <Card>
         <CardContent>
-          <Typography variant="h6">
-            Total Expense: ₹
-            {totalExpense}
-          </Typography>
+          <Typography variant="h6">Total Expense: ₹{totalExpense}</Typography>
         </CardContent>
       </Card>
 
-      <Button
-        variant="contained"
-        disabled={saving}
-        onClick={save}
-      >
+      <Button variant="contained" disabled={saving} onClick={save}>
         Save Expenses
       </Button>
     </Stack>

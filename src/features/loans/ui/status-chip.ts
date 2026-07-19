@@ -1,12 +1,8 @@
 import type { ChipProps } from "@mui/material";
 
-import type {
-  LoanStatus,
-} from "../domain";
+import type { LoanStatus } from "../domain";
 
-export function getLoanStatusChipColor(
-  status: LoanStatus,
-): ChipProps["color"] {
+export function getLoanStatusChipColor(status: LoanStatus): ChipProps["color"] {
   switch (status) {
     case "ACTIVE":
       return "success";

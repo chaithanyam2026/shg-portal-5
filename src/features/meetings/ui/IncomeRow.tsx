@@ -1,37 +1,20 @@
 "use client";
 
-import {
-  IconButton,
-  MenuItem,
-  TableCell,
-  TableRow,
-  TextField,
-} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { IconButton, MenuItem, TableCell, TableRow, TextField } from "@mui/material";
 
-import {
-  INCOME_CATEGORY_OPTIONS,
-} from "../domain/income";
+import { INCOME_CATEGORY_OPTIONS } from "../domain/income";
 
-import type {
-  IncomeRecord,
-} from "../types";
+import type { IncomeRecord } from "../types";
 
 type Props = {
   record: IncomeRecord;
   disabled?: boolean;
-  onChange(
-    record: IncomeRecord,
-  ): void;
+  onChange(record: IncomeRecord): void;
   onDelete(): void;
 };
 
-export default function IncomeRow({
-  record,
-  disabled = false,
-  onChange,
-  onDelete,
-}: Props) {
+export default function IncomeRow({ record, disabled = false, onChange, onDelete }: Props) {
   return (
     <TableRow hover>
       <TableCell width={160}>
@@ -44,8 +27,7 @@ export default function IncomeRow({
           onChange={(event) =>
             onChange({
               ...record,
-              transactionDate:
-                event.target.value,
+              transactionDate: event.target.value,
             })
           }
           slotProps={{
@@ -66,22 +48,15 @@ export default function IncomeRow({
           onChange={(event) =>
             onChange({
               ...record,
-              category:
-                event.target
-                  .value as typeof record.category,
+              category: event.target.value as typeof record.category,
             })
           }
         >
-          {INCOME_CATEGORY_OPTIONS.map(
-            (option) => (
-              <MenuItem
-                key={option.value}
-                value={option.value}
-              >
-                {option.label}
-              </MenuItem>
-            ),
-          )}
+          {INCOME_CATEGORY_OPTIONS.map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
         </TextField>
       </TableCell>
 
@@ -95,9 +70,7 @@ export default function IncomeRow({
           onChange={(event) =>
             onChange({
               ...record,
-              amount: Number(
-                event.target.value,
-              ),
+              amount: Number(event.target.value),
             })
           }
           slotProps={{
@@ -117,19 +90,14 @@ export default function IncomeRow({
           onChange={(event) =>
             onChange({
               ...record,
-              remarks:
-                event.target.value,
+              remarks: event.target.value,
             })
           }
         />
       </TableCell>
 
       <TableCell width={70}>
-        <IconButton
-          color="error"
-          disabled={disabled}
-          onClick={onDelete}
-        >
+        <IconButton color="error" disabled={disabled} onClick={onDelete}>
           <DeleteIcon />
         </IconButton>
       </TableCell>

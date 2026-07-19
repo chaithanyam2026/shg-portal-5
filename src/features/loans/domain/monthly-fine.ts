@@ -1,14 +1,8 @@
-import {
-  getFineEligibility,
-} from "./fine-eligibility";
+import { getFineEligibility } from "./fine-eligibility";
 
-import {
-  calculateLoanFine,
-} from "./loan-fine";
+import { calculateLoanFine } from "./loan-fine";
 
-import type {
-  RepaymentCycle,
-} from "./repayment-cycle";
+import type { RepaymentCycle } from "./repayment-cycle";
 
 /**
  * Monthly fine calculation input.
@@ -80,53 +74,42 @@ export function calculateMonthlyFine({
   expectedMonthlyRepayment,
   principalPaidThisMonth,
 }: MonthlyFineInput): MonthlyFineResult {
-  const eligibility =
-    getFineEligibility({
-      disbursedDate,
-      repaymentCycle,
-    });
+  const eligibility = getFineEligibility({
+    disbursedDate,
+    repaymentCycle,
+  });
 
-  if (
-    !eligibility.isEligible
-  ) {
+  if (!eligibility.isEligible) {
     return {
       isApplicable: false,
 
       fineAmount: 0,
 
-      evaluationMonth:
-        eligibility.evaluationMonth,
+      evaluationMonth: eligibility.evaluationMonth,
 
-      evaluationYear:
-        eligibility.evaluationYear,
+      evaluationYear: eligibility.evaluationYear,
 
-      reason:
-        eligibility.reason,
+      reason: eligibility.reason,
     };
   }
 
-  const fine =
-    calculateLoanFine({
-      expectedMonthlyRepayment,
+  const fine = calculateLoanFine({
+    expectedMonthlyRepayment,
 
-      principalPaidThisMonth,
-    });
+    principalPaidThisMonth,
+  });
 
   return {
     isApplicable: true,
 
-    fineAmount:
-      fine.fineAmount,
+    fineAmount: fine.fineAmount,
 
-    evaluationMonth:
-      eligibility.evaluationMonth,
+    evaluationMonth: eligibility.evaluationMonth,
 
-    evaluationYear:
-      eligibility.evaluationYear,
+    evaluationYear: eligibility.evaluationYear,
 
-    reason:
-      fine.shouldApplyFine
-        ? "Minimum monthly repayment not met."
-        : "Minimum monthly repayment achieved.",
+    reason: fine.shouldApplyFine
+      ? "Minimum monthly repayment not met."
+      : "Minimum monthly repayment achieved.",
   };
 }

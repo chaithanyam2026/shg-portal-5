@@ -29,48 +29,29 @@ type OpeningBalances = {
   otherLoans: number;
 };
 
-export default function OpeningAccountsForm({
-  financialYear,
-}: Props) {
+export default function OpeningAccountsForm({ financialYear }: Props) {
   const router = useRouter();
 
   const [saving, setSaving] = useState(false);
 
   const [error, setError] = useState("");
 
-  const [balances, setBalances] =
-    useState<OpeningBalances>({
-      bankBalance:
-        financialYear.openingBalances
-          .bankBalance,
+  const [balances, setBalances] = useState<OpeningBalances>({
+    bankBalance: financialYear.openingBalances.bankBalance,
 
-      cashInHand:
-        financialYear.openingBalances
-          .cashInHand,
+    cashInHand: financialYear.openingBalances.cashInHand,
 
-      excessCorpus:
-        financialYear.openingBalances
-          .excessCorpus,
+    excessCorpus: financialYear.openingBalances.excessCorpus,
 
-      investments:
-        financialYear.openingBalances
-          .investments,
+    investments: financialYear.openingBalances.investments,
 
-      otherLoans:
-        financialYear.openingBalances
-          .otherLoans,
-    });
+    otherLoans: financialYear.openingBalances.otherLoans,
+  });
 
-  function updateField(
-    field: keyof OpeningBalances,
-    value: string,
-  ) {
+  function updateField(field: keyof OpeningBalances, value: string) {
     setBalances((previous) => ({
       ...previous,
-      [field]:
-        value === ""
-          ? 0
-          : Number(value),
+      [field]: value === "" ? 0 : Number(value),
     }));
   }
 
@@ -79,29 +60,22 @@ export default function OpeningAccountsForm({
       setSaving(true);
       setError("");
 
-      const response = await fetch(
-        `/api/financial-years/${financialYear._id}`,
-        {
-          method: "PATCH",
+      const response = await fetch(`/api/financial-years/${financialYear._id}`, {
+        method: "PATCH",
 
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-
-          body: JSON.stringify({
-            openingBalances: balances,
-          }),
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+
+        body: JSON.stringify({
+          openingBalances: balances,
+        }),
+      });
 
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          result.message ??
-            "Unable to save opening balances.",
-        );
+        throw new Error(result.message ?? "Unable to save opening balances.");
       }
 
       router.refresh();
@@ -109,9 +83,7 @@ export default function OpeningAccountsForm({
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError(
-          "Unable to save opening balances.",
-        );
+        setError("Unable to save opening balances.");
       }
     } finally {
       setSaving(false);
@@ -122,27 +94,16 @@ export default function OpeningAccountsForm({
     <Card variant="outlined">
       <CardContent>
         <Stack spacing={3}>
-          <Typography variant="h6">
-            Opening Accounts
-          </Typography>
+          <Typography variant="h6">Opening Accounts</Typography>
 
-          {error && (
-            <Alert severity="error">
-              {error}
-            </Alert>
-          )}
+          {error && <Alert severity="error">{error}</Alert>}
 
           <TextField
             label="Bank Balance"
             type="number"
             fullWidth
             value={balances.bankBalance}
-            onChange={(e) =>
-              updateField(
-                "bankBalance",
-                e.target.value,
-              )
-            }
+            onChange={(e) => updateField("bankBalance", e.target.value)}
           />
 
           <TextField
@@ -150,12 +111,7 @@ export default function OpeningAccountsForm({
             type="number"
             fullWidth
             value={balances.cashInHand}
-            onChange={(e) =>
-              updateField(
-                "cashInHand",
-                e.target.value,
-              )
-            }
+            onChange={(e) => updateField("cashInHand", e.target.value)}
           />
 
           <TextField
@@ -163,12 +119,7 @@ export default function OpeningAccountsForm({
             type="number"
             fullWidth
             value={balances.excessCorpus}
-            onChange={(e) =>
-              updateField(
-                "excessCorpus",
-                e.target.value,
-              )
-            }
+            onChange={(e) => updateField("excessCorpus", e.target.value)}
           />
 
           <TextField
@@ -176,12 +127,7 @@ export default function OpeningAccountsForm({
             type="number"
             fullWidth
             value={balances.investments}
-            onChange={(e) =>
-              updateField(
-                "investments",
-                e.target.value,
-              )
-            }
+            onChange={(e) => updateField("investments", e.target.value)}
           />
 
           <TextField
@@ -189,26 +135,14 @@ export default function OpeningAccountsForm({
             type="number"
             fullWidth
             value={balances.otherLoans}
-            onChange={(e) =>
-              updateField(
-                "otherLoans",
-                e.target.value,
-              )
-            }
+            onChange={(e) => updateField("otherLoans", e.target.value)}
           />
 
           <Button
             variant="contained"
             onClick={save}
             disabled={saving}
-            startIcon={
-              saving ? (
-                <CircularProgress
-                  size={18}
-                  color="inherit"
-                />
-              ) : undefined
-            }
+            startIcon={saving ? <CircularProgress size={18} color="inherit" /> : undefined}
           >
             Save Opening Accounts
           </Button>

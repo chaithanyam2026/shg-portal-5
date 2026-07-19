@@ -76,38 +76,20 @@ export type PaymentAllocation = {
  * ↓
  * Principal
  */
-export function allocateLoanPayment(
-  input: PaymentAllocationInput,
-): PaymentAllocation {
-  let remaining =
-    input.payment;
+export function allocateLoanPayment(input: PaymentAllocationInput): PaymentAllocation {
+  let remaining = input.payment;
 
-  const paidLoanFine =
-    Math.min(
-      remaining,
-      input.outstandingFine,
-    );
+  const paidLoanFine = Math.min(remaining, input.outstandingFine);
 
-  remaining -=
-    paidLoanFine;
+  remaining -= paidLoanFine;
 
-  const paidInterest =
-    Math.min(
-      remaining,
-      input.outstandingInterest,
-    );
+  const paidInterest = Math.min(remaining, input.outstandingInterest);
 
-  remaining -=
-    paidInterest;
+  remaining -= paidInterest;
 
-  const paidPrincipal =
-    Math.min(
-      remaining,
-      input.outstandingPrincipal,
-    );
+  const paidPrincipal = Math.min(remaining, input.outstandingPrincipal);
 
-  remaining -=
-    paidPrincipal;
+  remaining -= paidPrincipal;
 
   return {
     paidPrincipal,
@@ -116,20 +98,16 @@ export function allocateLoanPayment(
 
     paidLoanFine,
 
-    remainingAmount:
-      remaining,
+    remainingAmount: remaining,
 
     /**
      * Backward compatibility.
      */
-    principal:
-      paidPrincipal,
+    principal: paidPrincipal,
 
-    interest:
-      paidInterest,
+    interest: paidInterest,
 
-    fine:
-      paidLoanFine,
+    fine: paidLoanFine,
 
     remaining,
   };
@@ -138,5 +116,4 @@ export function allocateLoanPayment(
 /**
  * Backward compatibility alias.
  */
-export const allocatePayment =
-  allocateLoanPayment;
+export const allocatePayment = allocateLoanPayment;

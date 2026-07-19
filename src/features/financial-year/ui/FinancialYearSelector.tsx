@@ -1,46 +1,21 @@
 "use client";
 
-import {
-  useMemo,
-} from "react";
+import { useMemo } from "react";
 
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { FormControl, InputLabel, MenuItem, Select, Stack, Typography } from "@mui/material";
 
-import type {
-  FinancialYearOption,
-} from "../domain/financial-year-option";
+import type { FinancialYearOption } from "../domain/financial-year-option";
 
 type Props = {
   options: FinancialYearOption[];
 
   value: string;
 
-  onChange: (
-    financialYearId: string,
-  ) => void;
+  onChange: (financialYearId: string) => void;
 };
 
-export default function FinancialYearSelector({
-  options,
-  value,
-  onChange,
-}: Props) {
-  const selected =
-    useMemo(
-      () =>
-        options.find(
-          (option) =>
-            option.id === value,
-        ),
-      [options, value],
-    );
+export default function FinancialYearSelector({ options, value, onChange }: Props) {
+  const selected = useMemo(() => options.find((option) => option.id === value), [options, value]);
 
   return (
     <Stack
@@ -49,74 +24,39 @@ export default function FinancialYearSelector({
         minWidth: 260,
       }}
     >
-      <Typography
-        variant="body2"
-        color="text.secondary"
-      >
+      <Typography variant="body2" color="text.secondary">
         Financial Year
       </Typography>
 
-      <FormControl
-        fullWidth
-        size="small"
-      >
-        <InputLabel>
-          Financial Year
-        </InputLabel>
+      <FormControl fullWidth size="small">
+        <InputLabel>Financial Year</InputLabel>
 
         <Select
           label="Financial Year"
           value={value}
-          onChange={(
-            event,
-          ) =>
-            onChange(
-              event.target.value,
-            )
-          }
+          onChange={(event) => onChange(event.target.value)}
         >
-          {options.map(
-            (option) => (
-              <MenuItem
-                key={option.id}
-                value={
-                  option.id
-                }
-              >
-                {option.name}
+          {options.map((option) => (
+            <MenuItem key={option.id} value={option.id}>
+              {option.name}
 
-                {option.status ===
-                  "IN_PROGRESS" &&
-                  " (In Progress)"}
+              {option.status === "IN_PROGRESS" && " (In Progress)"}
 
-                {option.status ===
-                  "CLOSED" &&
-                  " (Closed)"}
+              {option.status === "CLOSED" && " (Closed)"}
 
-                {option.status ===
-                  "APPROVED" &&
-                  " (Approved)"}
+              {option.status === "APPROVED" && " (Approved)"}
 
-                {option.status ===
-                  "VALIDATED" &&
-                  " (Validated)"}
+              {option.status === "VALIDATED" && " (Validated)"}
 
-                {option.status ===
-                  "DRAFT" &&
-                  " (Draft)"}
-              </MenuItem>
-            ),
-          )}
+              {option.status === "DRAFT" && " (Draft)"}
+            </MenuItem>
+          ))}
         </Select>
       </FormControl>
 
       {selected && (
-        <Typography
-          variant="caption"
-          color="text.secondary"
-        >
-          Current Selection :{" "}
-          {selected.name}
+        <Typography variant="caption" color="text.secondary">
+          Current Selection : {selected.name}
         </Typography>
       )}
     </Stack>

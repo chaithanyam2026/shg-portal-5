@@ -1,7 +1,4 @@
-import type {
-  LoanStatus,
-  LoanType,
-} from "../domain";
+import type { LoanStatus, LoanType } from "../domain";
 
 /**
  * Loan filter values.
@@ -23,19 +20,11 @@ export type LoanFilters = {
 export type LoanFilterState = {
   filters: LoanFilters;
 
-  setSearch(
-    value: string,
-  ): void;
+  setSearch(value: string): void;
 
-  setFinancialYear(
-    value: string,
-  ): void;
+  setFinancialYear(value: string): void;
 
-  setLoanType(
-    value: LoanType | "",
-  ): void;
+  setLoanType(value: LoanType | ""): void;
 
-  setStatus(
-    value: LoanStatus | "",
-  ): void;
+  setStatus(value: LoanStatus | ""): void;
 };

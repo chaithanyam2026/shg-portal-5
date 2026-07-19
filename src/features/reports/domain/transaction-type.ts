@@ -10,9 +10,7 @@ export const LEDGER_TRANSACTION_TYPE = {
   LOAN_DISBURSEMENT: "LOAN_DISBURSEMENT",
 } as const;
 
-export const LEDGER_TRANSACTION_TYPE_VALUES = Object.values(
-  LEDGER_TRANSACTION_TYPE,
-);
+export const LEDGER_TRANSACTION_TYPE_VALUES = Object.values(LEDGER_TRANSACTION_TYPE);
 
 export type LedgerTransactionType =
   (typeof LEDGER_TRANSACTION_TYPE)[keyof typeof LEDGER_TRANSACTION_TYPE];

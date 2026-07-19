@@ -5,21 +5,13 @@ import type {
   AttendanceFineRegisterRow,
 } from "../domain/attendance-fine-register";
 
-import {
-  buildAttendanceFineLedger,
-} from "./internal/build-attendance-fine-ledger";
+import { buildAttendanceFineLedger } from "./internal/build-attendance-fine-ledger";
 
-import {
-  loadAttendanceFinePayments,
-} from "./internal/load-attendance-fine-payments";
+import { loadAttendanceFinePayments } from "./internal/load-attendance-fine-payments";
 
-import {
-  loadAttendanceMembers,
-} from "./internal/load-attendance-members";
+import { loadAttendanceMembers } from "./internal/load-attendance-members";
 
-import {
-  loadAttendanceMeetings,
-} from "./internal/load-attendance-meetings";
+import { loadAttendanceMeetings } from "./internal/load-attendance-meetings";
 
 /**
  * Builds the Attendance Fine
@@ -33,143 +25,91 @@ export async function buildAttendanceFineRegister(
   /**
    * Load members.
    */
-  const members =
-    await loadAttendanceMembers(
-      financialYearId,
-    );
+  const members = await loadAttendanceMembers(financialYearId);
 
   /**
    * Load CLOSED meetings.
    */
-  const meetings =
-    await loadAttendanceMeetings(
-      financialYearId,
-    );
+  const meetings = await loadAttendanceMeetings(financialYearId);
 
   /**
    * Load attendance fine
    * payments.
    */
-  const payments =
-    await loadAttendanceFinePayments(
-      financialYearId,
-    );
+  const payments = await loadAttendanceFinePayments(financialYearId);
 
   /**
    * Build attendance member
    * input for ledger.
    */
-  const attendanceMembers =
-    members.map((member) => ({
-      memberId:
-        member.memberId,
+  const attendanceMembers = members.map((member) => ({
+    memberId: member.memberId,
 
-      memberCode:
-        member.memberCode,
+    memberCode: member.memberCode,
 
-      memberName:
-        member.memberName,
+    memberName: member.memberName,
 
-      meetings: meetings.map(
-        (meeting) => ({
-          meetingId:
-            meeting.meetingId,
+    meetings: meetings.map((meeting) => ({
+      meetingId: meeting.meetingId,
 
-          meetingDate:
-            meeting.meetingDate,
+      meetingDate: meeting.meetingDate,
 
-          status:
-            meeting.attendance.get(
-              member.memberId,
-            ) ?? "PRESENT",
+      status: meeting.attendance.get(member.memberId) ?? "PRESENT",
 
-          finePaid:
-            payments.find(
-              (payment) =>
-                payment.memberId ===
-                  member.memberId &&
-                payment.meetingId ===
-                  meeting.meetingId,
-            )?.finePaid ?? 0,
-        }),
-      ),
-    }));
+      finePaid:
+        payments.find(
+          (payment) =>
+            payment.memberId === member.memberId && payment.meetingId === meeting.meetingId,
+        )?.finePaid ?? 0,
+    })),
+  }));
 
   /**
    * Build attendance fine
    * ledger.
    */
-  const ledger =
-    buildAttendanceFineLedger(
-      attendanceMembers,
-    );
+  const ledger = buildAttendanceFineLedger(attendanceMembers);
 
-  const rows:
-    AttendanceFineRegisterRow[] =
-    ledger.map(
-      (member) => ({
-        memberId:
-          member.memberId,
+  const rows: AttendanceFineRegisterRow[] = ledger.map((member) => ({
+    memberId: member.memberId,
 
-        memberCode:
-          member.memberCode,
+    memberCode: member.memberCode,
 
-        memberName:
-          member.memberName,
+    memberName: member.memberName,
 
-        presentCount:
-          member.presentCount,
+    presentCount: member.presentCount,
 
-        absentCount:
-          member.absentCount,
+    absentCount: member.absentCount,
 
-        leaveCount:
-          member.leaveCount,
+    leaveCount: member.leaveCount,
 
-        attendancePercentage:
-          member.attendancePercentage,
+    attendancePercentage: member.attendancePercentage,
 
-        totalFine:
-          member.totalFine,
+    totalFine: member.totalFine,
 
-        paidFine:
-          member.paidFine,
+    paidFine: member.paidFine,
 
-        pendingFine:
-          member.pendingFine,
-      }),
-    );
+    pendingFine: member.pendingFine,
+  }));
 
-  rows.sort(
-    (a, b) =>
-      a.memberCode.localeCompare(
-        b.memberCode,
-      ),
+  rows.sort((a, b) => a.memberCode.localeCompare(b.memberCode));
+
+  const totals = rows.reduce(
+    (totals, row) => {
+      totals.totalFine += row.totalFine;
+
+      totals.paidFine += row.paidFine;
+
+      totals.pendingFine += row.pendingFine;
+
+      return totals;
+    },
+    {
+      totalFine: 0,
+      paidFine: 0,
+      pendingFine: 0,
+    },
   );
-
-  const totals =
-    rows.reduce(
-      (
-        totals,
-        row,
-      ) => {
-        totals.totalFine +=
-          row.totalFine;
-
-        totals.paidFine +=
-          row.paidFine;
-
-        totals.pendingFine +=
-          row.pendingFine;
-
-        return totals;
-      },
-      {
-        totalFine: 0,
-        paidFine: 0,
-        pendingFine: 0,
-      },
-    );
 
   return {
     rows,

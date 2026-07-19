@@ -5,20 +5,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Alert,
-  Box,
-  Button,
-  CircularProgress,
-  Stack,
-  TextField,
-} from "@mui/material";
+import { Alert, Box, Button, CircularProgress, Stack, TextField } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 
-import {
-  CreateFinancialYearInput,
-  CreateFinancialYearSchema,
-} from "../validation";
+import { CreateFinancialYearInput, CreateFinancialYearSchema } from "../validation";
 
 export default function FinancialYearForm() {
   const router = useRouter();
@@ -73,17 +63,9 @@ export default function FinancialYearForm() {
   }
 
   return (
-    <Box
-      component="form"
-      onSubmit={handleSubmit(onSubmit)}
-      noValidate
-    >
+    <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
       <Stack spacing={3}>
-        {serverError && (
-          <Alert severity="error">
-            {serverError}
-          </Alert>
-        )}
+        {serverError && <Alert severity="error">{serverError}</Alert>}
 
         <Controller
           name="name"
@@ -109,16 +91,8 @@ export default function FinancialYearForm() {
               type="date"
               fullWidth
               required
-              value={
-                field.value
-                  ? new Date(field.value)
-                      .toISOString()
-                      .split("T")[0]
-                  : ""
-              }
-              onChange={(event) =>
-                field.onChange(event.target.value)
-              }
+              value={field.value ? new Date(field.value).toISOString().split("T")[0] : ""}
+              onChange={(event) => field.onChange(event.target.value)}
               InputLabelProps={{
                 shrink: true,
               }}
@@ -137,16 +111,8 @@ export default function FinancialYearForm() {
               type="date"
               fullWidth
               required
-              value={
-                field.value
-                  ? new Date(field.value)
-                      .toISOString()
-                      .split("T")[0]
-                  : ""
-              }
-              onChange={(event) =>
-                field.onChange(event.target.value)
-              }
+              value={field.value ? new Date(field.value).toISOString().split("T")[0] : ""}
+              onChange={(event) => field.onChange(event.target.value)}
               InputLabelProps={{
                 shrink: true,
               }}
@@ -172,16 +138,8 @@ export default function FinancialYearForm() {
           )}
         />
 
-        <Stack
-          direction="row"
-          spacing={2}
-          justifyContent="flex-end"
-        >
-          <Button
-            variant="outlined"
-            onClick={() => router.back()}
-            disabled={isSubmitting}
-          >
+        <Stack direction="row" spacing={2} justifyContent="flex-end">
+          <Button variant="outlined" onClick={() => router.back()} disabled={isSubmitting}>
             Cancel
           </Button>
 
@@ -189,18 +147,9 @@ export default function FinancialYearForm() {
             type="submit"
             variant="contained"
             disabled={isSubmitting}
-            startIcon={
-              isSubmitting ? (
-                <CircularProgress
-                  size={18}
-                  color="inherit"
-                />
-              ) : undefined
-            }
+            startIcon={isSubmitting ? <CircularProgress size={18} color="inherit" /> : undefined}
           >
-            {isSubmitting
-              ? "Creating..."
-              : "Create Financial Year"}
+            {isSubmitting ? "Creating..." : "Create Financial Year"}
           </Button>
         </Stack>
       </Stack>

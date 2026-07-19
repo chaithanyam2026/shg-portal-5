@@ -1,6 +1,4 @@
-import {
-  BANK_TRANSACTION_TYPE,
-} from "@/features/meetings/domain/bank-transaction";
+import { BANK_TRANSACTION_TYPE } from "@/features/meetings/domain/bank-transaction";
 import type { LedgerEntry } from "@/features/reports/domain/ledger-entry";
 import { LEDGER_TRANSACTION_TYPE } from "@/features/reports/domain/transaction-type";
 
@@ -14,9 +12,7 @@ type MeetingBankTransactions = {
   }[];
 };
 
-export function buildBankEntries(
-  meeting: MeetingBankTransactions,
-): LedgerEntry[] {
+export function buildBankEntries(meeting: MeetingBankTransactions): LedgerEntry[] {
   return meeting.bankTransactions.flatMap((transaction) => {
     if (transaction.amount <= 0) {
       return [];

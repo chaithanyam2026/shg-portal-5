@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { getAttendance } from "@/features/meetings/services/get-attendance";
 import { updateAttendance } from "@/features/meetings/services/attendance";
+import { getAttendance } from "@/features/meetings/services/get-attendance";
 
 type RouteContext = {
   params: Promise<{
@@ -9,10 +9,7 @@ type RouteContext = {
   }>;
 };
 
-export async function GET(
-  _request: NextRequest,
-  { params }: RouteContext,
-) {
+export async function GET(_request: NextRequest, { params }: RouteContext) {
   try {
     const { id } = await params;
 
@@ -20,46 +17,30 @@ export async function GET(
 
     return NextResponse.json(attendance);
   } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : "Failed to load attendance.";
+    const message = error instanceof Error ? error.message : "Failed to load attendance.";
 
     return NextResponse.json(
       {
         message,
       },
       {
-        status:
-          message === "Meeting not found."
-            ? 404
-            : 500,
+        status: message === "Meeting not found." ? 404 : 500,
       },
     );
   }
 }
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: RouteContext,
-) {
+export async function PATCH(request: NextRequest, { params }: RouteContext) {
   try {
     const { id } = await params;
 
     const body = await request.json();
 
-    const result =
-      await updateAttendance(
-        id,
-        body,
-      );
+    const result = await updateAttendance(id, body);
 
     return NextResponse.json(result);
   } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : "Failed to update attendance.";
+    const message = error instanceof Error ? error.message : "Failed to update attendance.";
 
     let status = 400;
 

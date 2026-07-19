@@ -9,64 +9,38 @@ type RouteContext = {
   }>;
 };
 
-export async function GET(
-  _request: NextRequest,
-  { params }: RouteContext,
-) {
+export async function GET(_request: NextRequest, { params }: RouteContext) {
   try {
     const { id } = await params;
 
-    const summary =
-      await getIncome(id);
+    const summary = await getIncome(id);
 
-    return NextResponse.json(
-      summary,
-    );
+    return NextResponse.json(summary);
   } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : "Failed to load income.";
+    const message = error instanceof Error ? error.message : "Failed to load income.";
 
     return NextResponse.json(
       {
         message,
       },
       {
-        status:
-          message ===
-          "Meeting not found."
-            ? 404
-            : 500,
+        status: message === "Meeting not found." ? 404 : 500,
       },
     );
   }
 }
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: RouteContext,
-) {
+export async function PATCH(request: NextRequest, { params }: RouteContext) {
   try {
     const { id } = await params;
 
-    const body =
-      await request.json();
+    const body = await request.json();
 
-    const result =
-      await updateIncome(
-        id,
-        body,
-      );
+    const result = await updateIncome(id, body);
 
-    return NextResponse.json(
-      result,
-    );
+    return NextResponse.json(result);
   } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : "Failed to update income.";
+    const message = error instanceof Error ? error.message : "Failed to update income.";
 
     let status = 400;
 

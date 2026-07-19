@@ -1,6 +1,4 @@
-import type {
-  AttendanceStatus,
-} from "../../domain";
+import type { AttendanceStatus } from "../../domain";
 
 export type AttendanceMeeting = {
   meetingId: string;

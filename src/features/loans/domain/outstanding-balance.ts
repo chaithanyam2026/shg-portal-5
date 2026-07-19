@@ -42,25 +42,10 @@ export function updateOutstandingBalance({
   paidLoanFine,
 }: OutstandingBalanceInput): OutstandingBalance {
   return {
-    outstandingPrincipal:
-      Math.max(
-        outstandingPrincipal -
-          paidPrincipal,
-        0,
-      ),
+    outstandingPrincipal: Math.max(outstandingPrincipal - paidPrincipal, 0),
 
-    pendingInterest:
-      Math.max(
-        pendingInterest -
-          paidInterest,
-        0,
-      ),
+    pendingInterest: Math.max(pendingInterest - paidInterest, 0),
 
-    pendingLoanFine:
-      Math.max(
-        pendingLoanFine -
-          paidLoanFine,
-        0,
-      ),
+    pendingLoanFine: Math.max(pendingLoanFine - paidLoanFine, 0),
   };
 }

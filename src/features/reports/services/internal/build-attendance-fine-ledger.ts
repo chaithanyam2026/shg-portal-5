@@ -1,19 +1,10 @@
-import type {
-  AttendanceFineEntry,
-  AttendanceFineSummary,
-} from "../../domain";
+import type { AttendanceFineEntry, AttendanceFineSummary } from "../../domain";
 
-import {
-  processAttendance,
-} from "../../domain";
+import { processAttendance } from "../../domain";
 
-import type {
-  AttendanceMember,
-} from "./attendance-fine-types";
+import type { AttendanceMember } from "./attendance-fine-types";
 
-import {
-  calculatePendingAttendanceFine,
-} from "./calculate-pending-attendance-fine";
+import { calculatePendingAttendanceFine } from "./calculate-pending-attendance-fine";
 
 /**
  * Builds the attendance fine ledger
@@ -22,20 +13,14 @@ import {
  * This is the single source of truth
  * for attendance fine calculation.
  */
-export function buildAttendanceFineLedger(
-  members: AttendanceMember[],
-): AttendanceFineSummary[] {
+export function buildAttendanceFineLedger(members: AttendanceMember[]): AttendanceFineSummary[] {
   return members.map((member) => {
     /**
      * Meetings must always be processed
      * chronologically.
      */
-    const meetings = [
-      ...member.meetings,
-    ].sort(
-      (a, b) =>
-        a.meetingDate.getTime() -
-        b.meetingDate.getTime(),
+    const meetings = [...member.meetings].sort(
+      (a, b) => a.meetingDate.getTime() - b.meetingDate.getTime(),
     );
 
     /**
@@ -55,14 +40,10 @@ export function buildAttendanceFineLedger(
     /**
      * Ledger entries.
      */
-    const entries:
-      AttendanceFineEntry[] =
-      [];
+    const entries: AttendanceFineEntry[] = [];
 
     for (const meeting of meetings) {
-      switch (
-        meeting.status
-      ) {
+      switch (meeting.status) {
         case "PRESENT":
           presentCount++;
           break;
@@ -76,32 +57,22 @@ export function buildAttendanceFineLedger(
           break;
       }
 
-      const result =
-        processAttendance(
-          consecutiveAbsence,
-          meeting.status,
-        );
+      const result = processAttendance(consecutiveAbsence, meeting.status);
 
-      consecutiveAbsence =
-        result.consecutiveAbsence;
+      consecutiveAbsence = result.consecutiveAbsence;
 
       entries.push({
-        meetingId:
-          meeting.meetingId,
+        meetingId: meeting.meetingId,
 
-        meetingDate:
-          meeting.meetingDate,
+        meetingDate: meeting.meetingDate,
 
-        status:
-          meeting.status,
+        status: meeting.status,
 
         consecutiveAbsence,
 
-        fineCharged:
-          result.fineCharged,
+        fineCharged: result.fineCharged,
 
-        finePaid:
-          meeting.finePaid,
+        finePaid: meeting.finePaid,
 
         /**
          * Updated later by the
@@ -114,10 +85,9 @@ export function buildAttendanceFineLedger(
     /**
      * Calculate running balances.
      */
-    const summary =
-      calculatePendingAttendanceFine({
-        entries,
-      });
+    const summary = calculatePendingAttendanceFine({
+      entries,
+    });
 
     /**
      * Attendance percentage.
@@ -126,25 +96,14 @@ export function buildAttendanceFineLedger(
      * but not as present.
      */
     const attendancePercentage =
-      meetings.length === 0
-        ? 0
-        : Number(
-            (
-              (presentCount /
-                meetings.length) *
-              100
-            ).toFixed(2),
-          );
+      meetings.length === 0 ? 0 : Number(((presentCount / meetings.length) * 100).toFixed(2));
 
     return {
-      memberId:
-        member.memberId,
+      memberId: member.memberId,
 
-      memberCode:
-        member.memberCode,
+      memberCode: member.memberCode,
 
-      memberName:
-        member.memberName,
+      memberName: member.memberName,
 
       presentCount,
 
@@ -154,17 +113,13 @@ export function buildAttendanceFineLedger(
 
       attendancePercentage,
 
-      totalFine:
-        summary.totalFine,
+      totalFine: summary.totalFine,
 
-      paidFine:
-        summary.paidFine,
+      paidFine: summary.paidFine,
 
-      pendingFine:
-        summary.pendingFine,
+      pendingFine: summary.pendingFine,
 
-      entries:
-        summary.entries,
+      entries: summary.entries,
     };
   });
 }

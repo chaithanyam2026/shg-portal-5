@@ -1,8 +1,4 @@
-import {
-  Card,
-  CardContent,
-  Typography,
-} from "@mui/material";
+import { Card, CardContent, Typography } from "@mui/material";
 
 type Props = {
   /**
@@ -16,10 +12,7 @@ type Props = {
   value: string | number;
 };
 
-export default function SummaryCard({
-  title,
-  value,
-}: Props) {
+export default function SummaryCard({ title, value }: Props) {
   return (
     <Card
       sx={{
@@ -27,18 +20,11 @@ export default function SummaryCard({
       }}
     >
       <CardContent>
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          gutterBottom
-        >
+        <Typography variant="body2" color="text.secondary" gutterBottom>
           {title}
         </Typography>
 
-        <Typography
-          variant="h5"
-          fontWeight={600}
-        >
+        <Typography variant="h5" fontWeight={600}>
           {value}
         </Typography>
       </CardContent>

@@ -6,59 +6,39 @@ import Member from "@/models/Member";
 
 import { AppError } from "@/lib/errors";
 
-import type {
-  MemberDetails,
-} from "../types";
+import type { MemberDetails } from "../types";
 
 /**
  * Returns complete member details.
  */
-export async function getMember(
-  id: string,
-): Promise<MemberDetails> {
+export async function getMember(id: string): Promise<MemberDetails> {
   await connectMongo();
 
   if (!Types.ObjectId.isValid(id)) {
-    throw new AppError(
-      "Invalid member id.",
-      400,
-    );
+    throw new AppError("Invalid member id.", 400);
   }
 
-  const member =
-    await Member.findById(id).lean();
+  const member = await Member.findById(id).lean();
 
   if (!member) {
-    throw new AppError(
-      "Member not found.",
-      404,
-    );
+    throw new AppError("Member not found.", 404);
   }
 
   return {
-    _id:
-      member._id.toString(),
+    _id: member._id.toString(),
 
-    memberCode:
-      member.memberCode,
+    memberCode: member.memberCode,
 
-    name:
-      member.name,
+    name: member.name,
 
-    phone:
-      member.phone ?? "",
+    phone: member.phone ?? "",
 
-    address:
-      member.address ?? "",
+    address: member.address ?? "",
 
-    status:
-      member.status,
+    status: member.status,
 
-    joinedDate:
-      member.joinedDate
-        ?.toISOString(),
+    joinedDate: member.joinedDate?.toISOString(),
 
-    remarks:
-      member.remarks ?? "",
+    remarks: member.remarks ?? "",
   };
 }

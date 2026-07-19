@@ -1,8 +1,7 @@
-export type MeetingOtherIncome =
-  {
-    category: string;
+export type MeetingOtherIncome = {
+  category: string;
 
-    description: string;
+  description: string;
 
-    amount: number;
-  };
+  amount: number;
+};

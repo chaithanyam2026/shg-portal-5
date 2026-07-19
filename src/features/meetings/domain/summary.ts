@@ -1,7 +1,4 @@
-export type ValidationSeverity =
-  | "SUCCESS"
-  | "WARNING"
-  | "ERROR";
+export type ValidationSeverity = "SUCCESS" | "WARNING" | "ERROR";
 
 export const VALIDATION_SEVERITY = {
   SUCCESS: "SUCCESS",
@@ -19,5 +16,4 @@ export const VALIDATION_CODE = {
   READY_TO_CLOSE: "READY_TO_CLOSE",
 } as const;
 
-export type ValidationCode =
-  (typeof VALIDATION_CODE)[keyof typeof VALIDATION_CODE];
+export type ValidationCode = (typeof VALIDATION_CODE)[keyof typeof VALIDATION_CODE];

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { getBankTransactions } from "@/features/meetings/services/get-bank-transactions";
 import { updateBankTransactions } from "@/features/meetings/services/bank-transactions";
+import { getBankTransactions } from "@/features/meetings/services/get-bank-transactions";
 
 type RouteContext = {
   params: Promise<{
@@ -9,58 +9,38 @@ type RouteContext = {
   }>;
 };
 
-export async function GET(
-  _request: NextRequest,
-  { params }: RouteContext,
-) {
+export async function GET(_request: NextRequest, { params }: RouteContext) {
   try {
     const { id } = await params;
 
-    const summary =
-      await getBankTransactions(id);
+    const summary = await getBankTransactions(id);
 
     return NextResponse.json(summary);
   } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : "Failed to load bank transactions.";
+    const message = error instanceof Error ? error.message : "Failed to load bank transactions.";
 
     return NextResponse.json(
       {
         message,
       },
       {
-        status:
-          message === "Meeting not found."
-            ? 404
-            : 500,
+        status: message === "Meeting not found." ? 404 : 500,
       },
     );
   }
 }
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: RouteContext,
-) {
+export async function PATCH(request: NextRequest, { params }: RouteContext) {
   try {
     const { id } = await params;
 
     const body = await request.json();
 
-    const result =
-      await updateBankTransactions(
-        id,
-        body,
-      );
+    const result = await updateBankTransactions(id, body);
 
     return NextResponse.json(result);
   } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : "Failed to update bank transactions.";
+    const message = error instanceof Error ? error.message : "Failed to update bank transactions.";
 
     let status = 400;
 

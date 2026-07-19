@@ -2,11 +2,7 @@
 
 import { useState } from "react";
 
-import {
-  Button,
-  Stack,
-  TextField,
-} from "@mui/material";
+import { Button, Stack, TextField } from "@mui/material";
 
 import type { CreateMeetingInput } from "../validation";
 
@@ -20,9 +16,7 @@ type MeetingFormValues = {
 type Props = {
   initialValues?: MeetingFormValues;
   loading?: boolean;
-  onSubmit(
-    values: CreateMeetingInput,
-  ): Promise<void>;
+  onSubmit(values: CreateMeetingInput): Promise<void>;
 };
 
 const defaultValues: MeetingFormValues = {
@@ -37,21 +31,16 @@ export default function MeetingForm({
   loading = false,
   onSubmit,
 }: Props) {
-  const [values, setValues] =
-    useState<MeetingFormValues>(initialValues);
+  const [values, setValues] = useState<MeetingFormValues>(initialValues);
 
-  function update<
-    K extends keyof MeetingFormValues,
-  >(key: K, value: MeetingFormValues[K]) {
+  function update<K extends keyof MeetingFormValues>(key: K, value: MeetingFormValues[K]) {
     setValues((previous) => ({
       ...previous,
       [key]: value,
     }));
   }
 
-  async function handleSubmit(
-    event: React.FormEvent<HTMLFormElement>,
-  ) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     await onSubmit({
@@ -63,11 +52,7 @@ export default function MeetingForm({
   }
 
   return (
-    <Stack
-      component="form"
-      spacing={2}
-      onSubmit={handleSubmit}
-    >
+    <Stack component="form" spacing={2} onSubmit={handleSubmit}>
       <TextField
         label="Meeting Date"
         type="date"
@@ -77,12 +62,7 @@ export default function MeetingForm({
           shrink: true,
         }}
         value={values.meetingDate}
-        onChange={(event) =>
-          update(
-            "meetingDate",
-            event.target.value,
-          )
-        }
+        onChange={(event) => update("meetingDate", event.target.value)}
       />
 
       <TextField
@@ -90,12 +70,7 @@ export default function MeetingForm({
         required
         fullWidth
         value={values.place}
-        onChange={(event) =>
-          update(
-            "place",
-            event.target.value,
-          )
-        }
+        onChange={(event) => update("place", event.target.value)}
       />
 
       <TextField
@@ -104,12 +79,7 @@ export default function MeetingForm({
         multiline
         minRows={3}
         value={values.agenda}
-        onChange={(event) =>
-          update(
-            "agenda",
-            event.target.value,
-          )
-        }
+        onChange={(event) => update("agenda", event.target.value)}
       />
 
       <TextField
@@ -118,19 +88,10 @@ export default function MeetingForm({
         multiline
         minRows={3}
         value={values.remarks}
-        onChange={(event) =>
-          update(
-            "remarks",
-            event.target.value,
-          )
-        }
+        onChange={(event) => update("remarks", event.target.value)}
       />
 
-      <Button
-        type="submit"
-        variant="contained"
-        disabled={loading}
-      >
+      <Button type="submit" variant="contained" disabled={loading}>
         Save Meeting
       </Button>
     </Stack>

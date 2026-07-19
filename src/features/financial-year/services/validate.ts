@@ -1,4 +1,6 @@
-import type { FinancialYearDetails } from "../types";
+// import type { FinancialYearDetails } from "../types";
+
+import { FinancialYearValidationInput } from "../domain/validation-input";
 
 export type ValidationResult = {
   valid: boolean;
@@ -8,44 +10,32 @@ export type ValidationResult = {
   }>;
 };
 
-export function validateFinancialYear(
-  financialYear: FinancialYearDetails,
-): ValidationResult {
+export function validateFinancialYear(financialYear: FinancialYearValidationInput): ValidationResult {
   const items = [
     {
       label: "General information completed",
       valid:
-        financialYear.name.trim().length > 0 &&
-        financialYear.startDate <
-          financialYear.endDate,
+        financialYear.name.trim().length > 0 && financialYear.startDate < financialYear.endDate,
     },
     {
       label: "Members assigned",
-      valid:
-        financialYear.members.length > 0,
+      valid: financialYear.members.length > 0,
     },
     {
-      label:
-        "Executive Committee configured",
+      label: "Executive Committee configured",
       valid:
-        !!financialYear.executiveCommittee
-          .president &&
-        !!financialYear.executiveCommittee
-          .secretary &&
-        !!financialYear.executiveCommittee
-          .treasurer,
+        !!financialYear.executiveCommittee.president &&
+        !!financialYear.executiveCommittee.secretary &&
+        !!financialYear.executiveCommittee.treasurer,
     },
     {
-      label:
-        "Opening accounts configured",
+      label: "Opening accounts configured",
       valid: true,
     },
   ];
 
   return {
-    valid: items.every(
-      (item) => item.valid,
-    ),
+    valid: items.every((item) => item.valid),
     items,
   };
 }

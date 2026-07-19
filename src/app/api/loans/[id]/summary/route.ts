@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import {
-  getLoanSummary,
-} from "@/features/loans/services";
+import { getLoanSummary } from "@/features/loans/services";
 
 type RouteContext = {
   params: Promise<{
@@ -15,32 +13,20 @@ type Context = {
   }>;
 };
 
-export async function GET(
-  _request: NextRequest,
-  { params }: RouteContext,
-) {
+export async function GET(_request: NextRequest, { params }: RouteContext) {
   try {
-    const { id } =
-      await params;
+    const { id } = await params;
 
-    const summary =
-      await getLoanSummary(
-        id,
-      );
+    const summary = await getLoanSummary(id);
 
-    return NextResponse.json(
-      summary,
-    );
+    return NextResponse.json(summary);
   } catch (error) {
     console.error(error);
 
-    if (
-      error instanceof Error
-    ) {
+    if (error instanceof Error) {
       return NextResponse.json(
         {
-          error:
-            error.message,
+          error: error.message,
         },
         {
           status: 400,
@@ -50,8 +36,7 @@ export async function GET(
 
     return NextResponse.json(
       {
-        error:
-          "Internal server error.",
+        error: "Internal server error.",
       },
       {
         status: 500,

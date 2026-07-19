@@ -1,60 +1,34 @@
-import Link from "next/link";
+import { Container, Stack, Typography } from "@mui/material";
 
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import {
-  Button,
-  Container,
-  Stack,
-  Typography,
-} from "@mui/material";
-
-import FinancialYearForm from "@/features/financial-year/ui/FinancialYearForm";
 import PageHeader from "@/components/layout/PageHeader";
 
+import { listClosedFinancialYears } from "@/features/financial-year/services/list-closed";
+
+import CreateFinancialYearWizard from "@/features/financial-year/ui/CreateFinancialYearWizard";
+
 export const metadata = {
-  title: "Create Financial Year",
+  title: "Create Next Financial Year",
 };
 
-export default function NewFinancialYearPage() {
+export default async function NewFinancialYearPage() {
+  const financialYears = await listClosedFinancialYears();
+
   return (
     <Container
-      maxWidth="sm"
+      maxWidth="md"
       sx={{
         py: 2,
       }}
     >
       <Stack spacing={3}>
-        <Link
-          href="/financial-years"
-          style={{ textDecoration: "none" }}
-        >
-          <Button
+        <PageHeader title="Create Next Financial Year" backHref="/financial-years" />
 
+        <Typography variant="body2" color="text.secondary">
+          Create the next financial year by selecting a previously closed financial year. Opening
+          balances and member balances will be carried forward automatically.
+        </Typography>
 
-            startIcon={<ArrowBackIcon />}
-            sx={{
-              alignSelf: "flex-start",
-            }}
-          >
-            Back
-          </Button>
-        </Link>
-
-        <Stack spacing={1}>
-          <PageHeader
-          title="New Financial Year"
-            backHref="/financial-years"
-          />
-
-          <Typography
-            variant="body2"
-            color="text.secondary"
-          >
-            Create a new financial year for your SHG.
-          </Typography>
-        </Stack>
-
-        <FinancialYearForm />
+        <CreateFinancialYearWizard financialYears={financialYears} />
       </Stack>
     </Container>
   );

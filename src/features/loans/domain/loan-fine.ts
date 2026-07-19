@@ -1,6 +1,4 @@
-import {
-  MONTHLY_LOAN_FINE,
-} from "./loan-rules";
+import { MONTHLY_LOAN_FINE } from "./loan-rules";
 
 /**
  * Monthly loan fine calculation.
@@ -34,29 +32,18 @@ export function calculateLoanFine({
   expectedMonthlyRepayment,
   principalPaidThisMonth,
 }: CalculateLoanFineInput): LoanFineResult {
-  const shortage =
-    Math.max(
-      expectedMonthlyRepayment -
-        principalPaidThisMonth,
-      0,
-    );
+  const shortage = Math.max(expectedMonthlyRepayment - principalPaidThisMonth, 0);
 
-  const shouldApplyFine =
-    shortage > 0;
+  const shouldApplyFine = shortage > 0;
 
   return {
-    expectedRepayment:
-      expectedMonthlyRepayment,
+    expectedRepayment: expectedMonthlyRepayment,
 
-    actualRepayment:
-      principalPaidThisMonth,
+    actualRepayment: principalPaidThisMonth,
 
     shortage,
 
-    fineAmount:
-      shouldApplyFine
-        ? MONTHLY_LOAN_FINE
-        : 0,
+    fineAmount: shouldApplyFine ? MONTHLY_LOAN_FINE : 0,
 
     shouldApplyFine,
   };

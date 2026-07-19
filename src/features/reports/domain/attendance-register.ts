@@ -1,6 +1,4 @@
-import type {
-  AttendanceStatus,
-} from "./attendance-fine";
+import type { AttendanceStatus } from "./attendance-fine";
 
 /**
  * One meeting column.
@@ -69,31 +67,27 @@ export type AttendanceRegisterRow = {
  * Totals displayed in footer for
  * each meeting column.
  */
-export type AttendanceRegisterMeetingSummary =
-  {
-    meetingId: string;
+export type AttendanceRegisterMeetingSummary = {
+  meetingId: string;
 
-    meetingDate: Date;
+  meetingDate: Date;
 
-    presentCount: number;
+  presentCount: number;
 
-    absentCount: number;
+  absentCount: number;
 
-    leaveCount: number;
+  leaveCount: number;
 
-    fineGenerated: number;
-  };
+  fineGenerated: number;
+};
 
 /**
  * Complete register.
  */
 export type AttendanceRegister = {
-  meetings:
-    AttendanceRegisterMeeting[];
+  meetings: AttendanceRegisterMeeting[];
 
-  rows:
-    AttendanceRegisterRow[];
+  rows: AttendanceRegisterRow[];
 
-  summary:
-    AttendanceRegisterMeetingSummary[];
+  summary: AttendanceRegisterMeetingSummary[];
 };

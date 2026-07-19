@@ -7,9 +7,7 @@ import {
 
 import AttendanceReportPage from "@/features/reports/ui/AttendanceReportPage";
 
-import {
-  buildAttendanceRegister,
-} from "@/features/reports/services/build-attendance-register";
+import { buildAttendanceRegister } from "@/features/reports/services/build-attendance-register";
 
 type Props = {
   searchParams: Promise<{
@@ -17,44 +15,27 @@ type Props = {
   }>;
 };
 
-const AttendancePage = async ({
-  searchParams,
-}: Props) => {
-  const params =
-    await searchParams;
+const AttendancePage = async ({ searchParams }: Props) => {
+  const params = await searchParams;
 
-  const financialYear =
-    await getSelectedFinancialYear(
-      params.financialYear,
-    );
+  const financialYear = await getSelectedFinancialYear(params.financialYear);
 
-  const options =
-    await listFinancialYearOptions();
+  const options = await listFinancialYearOptions();
 
-  const register =
-    await buildAttendanceRegister(
-      financialYear._id.toString(),
-    );
+  const register = await buildAttendanceRegister(financialYear._id.toString());
 
   return (
     <>
-      <PageHeader
-        title="Attendance Register"
-      />
+      <PageHeader title="Attendance Register" />
 
       <AttendanceReportPage
-        financialYearId={
-          financialYear._id.toString()
-        }
-        financialYearName={
-          financialYear.name
-        }
+        financialYearId={financialYear._id.toString()}
+        financialYearName={financialYear.name}
         options={options}
         register={register}
       />
     </>
   );
-}
-
+};
 
 export default AttendancePage;

@@ -8,32 +8,20 @@ type RouteContext = {
   }>;
 };
 
-export async function POST(
-  _request: NextRequest,
-  { params }: RouteContext,
-) {
+export async function POST(_request: NextRequest, { params }: RouteContext) {
   try {
     const { id } = await params;
 
-    const meeting = await closeMeeting(
-      id,
-      null,
-    );
+    const meeting = await closeMeeting(id, null);
 
     return NextResponse.json(meeting);
   } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : "Unable to close meeting.";
+    const message = error instanceof Error ? error.message : "Unable to close meeting.";
 
     return NextResponse.json(
       { message },
       {
-        status:
-          message === "Meeting not found."
-            ? 404
-            : 400,
+        status: message === "Meeting not found." ? 404 : 400,
       },
     );
   }

@@ -1,28 +1,16 @@
 import connectMongo from "@/lib/db/mongodb";
 
-import type {
-  AttendanceRegister,
-} from "../domain";
+import type { AttendanceRegister } from "../domain";
 
-import {
-  buildAttendanceFineLedger,
-} from "./internal/build-attendance-fine-ledger";
+import { buildAttendanceFineLedger } from "./internal/build-attendance-fine-ledger";
 
-import {
-  buildAttendanceRegister as buildRegister,
-} from "./internal/build-attendance-register";
+import { buildAttendanceRegister as buildRegister } from "./internal/build-attendance-register";
 
-import {
-  loadAttendanceFinePayments,
-} from "./internal/load-attendance-fine-payments";
+import { loadAttendanceFinePayments } from "./internal/load-attendance-fine-payments";
 
-import {
-  loadAttendanceMembers,
-} from "./internal/load-attendance-members";
+import { loadAttendanceMembers } from "./internal/load-attendance-members";
 
-import {
-  loadAttendanceMeetings,
-} from "./internal/load-attendance-meetings";
+import { loadAttendanceMeetings } from "./internal/load-attendance-meetings";
 
 /**
  * Builds the complete attendance
@@ -37,76 +25,50 @@ export async function buildAttendanceRegister(
    * Members belonging to the
    * financial year.
    */
-  const members =
-    await loadAttendanceMembers(
-      financialYearId,
-    );
+  const members = await loadAttendanceMembers(financialYearId);
 
   /**
    * CLOSED meetings ordered by
    * meeting date.
    */
-  const meetings =
-    await loadAttendanceMeetings(
-      financialYearId,
-    );
+  const meetings = await loadAttendanceMeetings(financialYearId);
 
   /**
    * Attendance fine payments
    * collected during meetings.
    */
-  const payments =
-    await loadAttendanceFinePayments(
-      financialYearId,
-    );
+  const payments = await loadAttendanceFinePayments(financialYearId);
 
   /**
    * Merge attendance with
    * attendance fine payments.
    */
-  const attendanceMembers =
-    members.map((member) => ({
-      memberId:
-        member.memberId,
+  const attendanceMembers = members.map((member) => ({
+    memberId: member.memberId,
 
-      memberCode:
-        member.memberCode,
+    memberCode: member.memberCode,
 
-      memberName:
-        member.memberName,
+    memberName: member.memberName,
 
-      meetings: meetings.map(
-        (meeting) => ({
-          meetingId:
-            meeting.meetingId,
+    meetings: meetings.map((meeting) => ({
+      meetingId: meeting.meetingId,
 
-          meetingDate:
-            meeting.meetingDate,
+      meetingDate: meeting.meetingDate,
 
-          status:
-            meeting.attendance.get(
-              member.memberId,
-            ) ?? "PRESENT",
+      status: meeting.attendance.get(member.memberId) ?? "PRESENT",
 
-          finePaid:
-            payments.find(
-              (payment) =>
-                payment.memberId ===
-                  member.memberId &&
-                payment.meetingId ===
-                  meeting.meetingId,
-            )?.finePaid ?? 0,
-        }),
-      ),
-    }));
+      finePaid:
+        payments.find(
+          (payment) =>
+            payment.memberId === member.memberId && payment.meetingId === meeting.meetingId,
+        )?.finePaid ?? 0,
+    })),
+  }));
 
   /**
    * Build attendance fine ledger.
    */
-  const fineLedger =
-    buildAttendanceFineLedger(
-      attendanceMembers,
-    );
+  const fineLedger = buildAttendanceFineLedger(attendanceMembers);
 
   /**
    * Build attendance register.

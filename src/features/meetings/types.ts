@@ -1,36 +1,23 @@
-import type { MeetingStatus } from "./domain/meeting-status";
 import type { AttendanceStatus } from "./domain/attendance-status";
-import type {
-  BankTransactionType,
-} from "./domain/bank-transaction";
-import type {
-  IncomeCategory,
-} from "./domain/income";
-import type {
-  ExpenseCategory,
-} from "./domain/expense";
-
-import type {
-  ValidationSeverity,
-} from "./domain/summary";
-import type {
-  ValidationCode,
-} from "./domain/summary";
-
+import type { BankTransactionType } from "./domain/bank-transaction";
+import type { ExpenseCategory } from "./domain/expense";
+import type { IncomeCategory } from "./domain/income";
+import type { MeetingStatus } from "./domain/meeting-status";
+import type { ValidationCode, ValidationSeverity } from "./domain/summary";
 
 export type MeetingSummary = {
   id: string;
-  meetingDate: string; // ISO 8601
+  meetingDate: string;
   place: string;
   status: MeetingStatus;
-  createdAt: string; // ISO 8601
+  createdAt: string;
 };
 
 export type MeetingDetails = {
   id: string;
   financialYearId: string;
 
-  meetingDate: string; // ISO 8601
+  meetingDate: string;
 
   place: string;
 
@@ -50,9 +37,9 @@ export type MeetingDetails = {
 
   updatedBy: string | null;
 
-  createdAt: string; // ISO 8601
+  createdAt: string;
 
-  updatedAt: string; // ISO 8601
+  updatedAt: string;
 };
 
 export type MeetingListFilter = {
@@ -84,6 +71,7 @@ export type AttendanceRecord = {
 
 export type AttendanceSummary = {
   meetingId: string;
+
   status: MeetingStatus;
 
   records: AttendanceRecord[];
@@ -91,7 +79,6 @@ export type AttendanceSummary = {
 
 export type PaymentRecord = {
   memberId: string;
-  status: MeetingStatus;
 
   memberCode: string;
 
@@ -113,6 +100,8 @@ export type PaymentRecord = {
 export type PaymentSummary = {
   meetingId: string;
 
+  status: MeetingStatus;
+
   records: PaymentRecord[];
 
   totalContribution: number;
@@ -126,34 +115,31 @@ export type PaymentSummary = {
   grandTotal: number;
 };
 
-export type BankTransactionRecord =
-  {
-    transactionDate: string;
+export type BankTransactionRecord = {
+  transactionDate: string;
 
-    type: BankTransactionType;
+  type: BankTransactionType;
 
-    amount: number;
+  amount: number;
 
-    remarks: string;
-  };
+  remarks: string;
+};
 
-export type BankTransactionSummary =
-  {
-    meetingId: string;
+export type BankTransactionSummary = {
+  meetingId: string;
 
-    status: MeetingStatus;
+  status: MeetingStatus;
 
-    records:
-      BankTransactionRecord[];
+  records: BankTransactionRecord[];
 
-    totalDeposits: number;
+  totalDeposits: number;
 
-    totalWithdrawals: number;
+  totalWithdrawals: number;
 
-    netAmount: number;
-  };
+  netAmount: number;
+};
 
-  export type IncomeRecord = {
+export type IncomeRecord = {
   transactionDate: string;
 
   category: IncomeCategory;
@@ -193,7 +179,7 @@ export type ExpenseSummary = {
   totalExpense: number;
 };
 
-export type AttendanceSummary = {
+export type AttendanceStatistics = {
   totalMembers: number;
 
   present: number;
@@ -232,6 +218,8 @@ export type FinancialSummary = {
 };
 
 export type SummaryValidation = {
+  code: ValidationCode;
+
   title: string;
 
   severity: ValidationSeverity;
@@ -239,7 +227,7 @@ export type SummaryValidation = {
   message: string;
 };
 
-export type MeetingSummary = {
+export type MeetingDashboardSummary = {
   meetingId: string;
 
   status: MeetingStatus;
@@ -250,7 +238,7 @@ export type MeetingSummary = {
 
   startedAt: string | null;
 
-  attendance: AttendanceSummary;
+  attendance: AttendanceStatistics;
 
   payments: MemberPaymentSummary;
 
@@ -265,14 +253,4 @@ export type MeetingSummary = {
   validations: SummaryValidation[];
 
   canClose: boolean;
-};
-
-export type SummaryValidation = {
-  code: ValidationCode;
-
-  title: string;
-
-  severity: ValidationSeverity;
-
-  message: string;
 };

@@ -10,9 +10,7 @@ import {
   TableRow,
 } from "@mui/material";
 
-import type {
-  AttendanceRecord,
-} from "../types";
+import type { AttendanceRecord } from "../types";
 
 import AttendanceRow from "./AttendanceRow";
 
@@ -21,20 +19,11 @@ type Props = {
 
   disabled?: boolean;
 
-  onChange(
-    records: AttendanceRecord[],
-  ): void;
+  onChange(records: AttendanceRecord[]): void;
 };
 
-export default function AttendanceTable({
-  records,
-  disabled = false,
-  onChange,
-}: Props) {
-  function updateRecord(
-    index: number,
-    value: AttendanceRecord,
-  ) {
+export default function AttendanceTable({ records, disabled = false, onChange }: Props) {
+  function updateRecord(index: number, value: AttendanceRecord) {
     const next = [...records];
 
     next[index] = value;
@@ -43,57 +32,37 @@ export default function AttendanceTable({
   }
 
   return (
-    <TableContainer
-      component={Paper}
-    >
+    <TableContainer component={Paper}>
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell width={100}>
-              Code
-            </TableCell>
+            <TableCell width={100}>Code</TableCell>
 
-            <TableCell>
-              Member
-            </TableCell>
+            <TableCell>Member</TableCell>
 
-            <TableCell width={180}>
-              Attendance
-            </TableCell>
+            <TableCell width={180}>Attendance</TableCell>
 
-            <TableCell>
-              Remarks
-            </TableCell>
+            <TableCell>Remarks</TableCell>
           </TableRow>
         </TableHead>
 
         <TableBody>
           {records.length === 0 && (
             <TableRow>
-              <TableCell
-                colSpan={4}
-                align="center"
-              >
+              <TableCell colSpan={4} align="center">
                 No members found.
               </TableCell>
             </TableRow>
           )}
 
-          {records.map(
-            (record, index) => (
-              <AttendanceRow
-                key={record.memberId}
-                record={record}
-                disabled={disabled}
-                onChange={(value) =>
-                  updateRecord(
-                    index,
-                    value,
-                  )
-                }
-              />
-            ),
-          )}
+          {records.map((record, index) => (
+            <AttendanceRow
+              key={record.memberId}
+              record={record}
+              disabled={disabled}
+              onChange={(value) => updateRecord(index, value)}
+            />
+          ))}
         </TableBody>
       </Table>
     </TableContainer>

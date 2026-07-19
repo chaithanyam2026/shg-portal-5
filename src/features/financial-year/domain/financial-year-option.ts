@@ -3,10 +3,5 @@ export type FinancialYearOption = {
 
   name: string;
 
-  status:
-    | "DRAFT"
-    | "IN_PROGRESS"
-    | "VALIDATED"
-    | "APPROVED"
-    | "CLOSED";
+  status: "DRAFT" | "IN_PROGRESS" | "VALIDATED" | "APPROVED" | "CLOSED";
 };

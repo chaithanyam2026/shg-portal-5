@@ -1,77 +1,43 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  Grid,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Card, CardContent, Grid, Stack, Typography } from "@mui/material";
 
-import type {
-  MemberDetails,
-} from "../../types";
+import type { MemberDetails } from "../../types";
 
-import {
-  formatDate,
-} from "@/lib/utils/format";
+import { formatDate } from "@/lib/utils/format";
 
 type Props = {
   member: MemberDetails;
 };
 
-function DetailItem({
-  label,
-  value,
-}: {
-  label: string;
-  value: React.ReactNode;
-}) {
+function DetailItem({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <Stack spacing={0.5}>
-      <Typography
-        variant="body2"
-        color="text.secondary"
-      >
+      <Typography variant="body2" color="text.secondary">
         {label}
       </Typography>
 
-      <Typography variant="body1">
-        {value || "-"}
-      </Typography>
+      <Typography variant="body1">{value || "-"}</Typography>
     </Stack>
   );
 }
 
-export default function GeneralTab({
-  member,
-}: Props) {
+export default function GeneralTab({ member }: Props) {
   return (
     <Card>
       <CardContent>
-        <Typography
-          variant="h6"
-          gutterBottom
-        >
+        <Typography variant="h6" gutterBottom>
           Member Details
         </Typography>
 
-        <Grid
-          container
-          spacing={3}
-        >
+        <Grid container spacing={3}>
           <Grid
             size={{
               xs: 12,
               sm: 6,
             }}
           >
-            <DetailItem
-              label="Member Code"
-              value={
-                member.memberCode
-              }
-            />
+            <DetailItem label="Member Code" value={member.memberCode} />
           </Grid>
 
           <Grid
@@ -80,10 +46,7 @@ export default function GeneralTab({
               sm: 6,
             }}
           >
-            <DetailItem
-              label="Name"
-              value={member.name}
-            />
+            <DetailItem label="Name" value={member.name} />
           </Grid>
 
           <Grid
@@ -92,12 +55,7 @@ export default function GeneralTab({
               sm: 6,
             }}
           >
-            <DetailItem
-              label="Phone"
-              value={
-                member.phone
-              }
-            />
+            <DetailItem label="Phone" value={member.phone} />
           </Grid>
 
           <Grid
@@ -106,12 +64,7 @@ export default function GeneralTab({
               sm: 6,
             }}
           >
-            <DetailItem
-              label="Status"
-              value={
-                member.status
-              }
-            />
+            <DetailItem label="Status" value={member.status} />
           </Grid>
 
           <Grid
@@ -122,13 +75,7 @@ export default function GeneralTab({
           >
             <DetailItem
               label="Joined Date"
-              value={
-                member.joinedDate
-                  ? formatDate(
-                      member.joinedDate,
-                    )
-                  : "-"
-              }
+              value={member.joinedDate ? formatDate(member.joinedDate) : "-"}
             />
           </Grid>
 
@@ -138,12 +85,7 @@ export default function GeneralTab({
               sm: 6,
             }}
           >
-            <DetailItem
-              label="Address"
-              value={
-                member.address
-              }
-            />
+            <DetailItem label="Address" value={member.address} />
           </Grid>
 
           <Grid
@@ -151,12 +93,7 @@ export default function GeneralTab({
               xs: 12,
             }}
           >
-            <DetailItem
-              label="Remarks"
-              value={
-                member.remarks
-              }
-            />
+            <DetailItem label="Remarks" value={member.remarks} />
           </Grid>
         </Grid>
       </CardContent>

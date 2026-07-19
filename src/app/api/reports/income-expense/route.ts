@@ -1,17 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
 
-import {
-  IncomeExpenseReportSchema,
-} from "@/features/reports/validation";
+import { IncomeExpenseReportSchema } from "@/features/reports/validation";
 
-import {
-  buildIncomeExpenseReport,
-} from "@/features/reports/services";
+import { buildIncomeExpenseReport } from "@/features/reports/services";
 
-export async function GET(
-  request: NextRequest,
-) {
+export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
 
@@ -21,10 +15,7 @@ export async function GET(
       toDate: searchParams.get("toDate") ?? undefined,
     });
 
-    const report =
-      await buildIncomeExpenseReport(
-        input.financialYearId,
-      );
+    const report = await buildIncomeExpenseReport(input.financialYearId);
 
     return NextResponse.json(report);
   } catch (error) {
@@ -39,11 +30,7 @@ export async function GET(
       );
     }
 
-    if (
-      error instanceof Error &&
-      error.message ===
-        "Financial year not found."
-    ) {
+    if (error instanceof Error && error.message === "Financial year not found.") {
       return NextResponse.json(
         {
           message: error.message,

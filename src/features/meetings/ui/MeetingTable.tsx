@@ -15,8 +15,8 @@ import {
 
 import type { MeetingSummary } from "../types";
 
-import MeetingStatusChip from "./MeetingStatusChip";
 import { formatDate } from "@/lib/utils/date";
+import MeetingStatusChip from "./MeetingStatusChip";
 
 type Props = {
   meetings: MeetingSummary[];
@@ -26,9 +26,7 @@ type Props = {
 //   return new Date(value).toLocaleDateString();
 // }
 
-export default function MeetingTable({
-  meetings,
-}: Props) {
+export default function MeetingTable({ meetings }: Props) {
   return (
     <TableContainer component={Paper}>
       <Table>
@@ -42,65 +40,37 @@ export default function MeetingTable({
 
             <TableCell>Created</TableCell>
 
-            <TableCell align="right">
-              Actions
-            </TableCell>
+            <TableCell align="right">Actions</TableCell>
           </TableRow>
         </TableHead>
 
         <TableBody>
           {meetings.length === 0 && (
             <TableRow>
-              <TableCell
-                colSpan={5}
-                align="center"
-              >
+              <TableCell colSpan={5} align="center">
                 No meetings found.
               </TableCell>
             </TableRow>
           )}
 
           {meetings.map((meeting) => (
-            <TableRow
-              key={meeting.id}
-              hover
-            >
-              <TableCell>
-                {formatDate(
-                  meeting.meetingDate,
-                )}
-              </TableCell>
+            <TableRow key={meeting.id} hover>
+              <TableCell>{formatDate(meeting.meetingDate)}</TableCell>
+
+              <TableCell>{meeting.place}</TableCell>
 
               <TableCell>
-                {meeting.place}
+                <MeetingStatusChip status={meeting.status} />
               </TableCell>
 
-              <TableCell>
-                <MeetingStatusChip
-                  status={meeting.status}
-                />
-              </TableCell>
-
-              <TableCell>
-                {formatDate(
-                  meeting.createdAt,
-                )}
-              </TableCell>
+              <TableCell>{formatDate(meeting.createdAt)}</TableCell>
 
               <TableCell align="right">
-                <Button
-                  component={Link}
-                  href={`/meetings/${meeting.id}`}
-                  size="small"
-                >
+                <Button component={Link} href={`/meetings/${meeting.id}`} size="small">
                   View
                 </Button>
 
-                <Button
-                  component={Link}
-                  href={`/meetings/${meeting.id}/edit`}
-                  size="small"
-                >
+                <Button component={Link} href={`/meetings/${meeting.id}/edit`} size="small">
                   Edit
                 </Button>
               </TableCell>

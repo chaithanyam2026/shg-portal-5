@@ -7,5 +7,4 @@ export const MEETING_STATUS = {
 
 export const MEETING_STATUS_VALUES = Object.values(MEETING_STATUS);
 
-export type MeetingStatus =
-  (typeof MEETING_STATUS_VALUES)[number];
+export type MeetingStatus = (typeof MEETING_STATUS_VALUES)[number];

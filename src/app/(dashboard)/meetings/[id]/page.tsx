@@ -6,18 +6,17 @@ import {
   Button,
   Card,
   CardContent,
-  Chip,
   Container,
   Divider,
   Stack,
   Typography,
 } from "@mui/material";
 
-import { getMeeting } from "@/features/meetings/services/get";
-import MeetingStatusChip from "@/features/meetings/ui/MeetingStatusChip";
-import MeetingActionButton from "@/features/meetings/ui/MeetingActionButton";
-import MeetingTabs from "@/features/meetings/ui/MeetingTabs";
 import PageHeader from "@/components/layout/PageHeader";
+import { getMeeting } from "@/features/meetings/services/get";
+import MeetingActionButton from "@/features/meetings/ui/MeetingActionButton";
+import MeetingStatusChip from "@/features/meetings/ui/MeetingStatusChip";
+import MeetingTabs from "@/features/meetings/ui/MeetingTabs";
 
 type Props = {
   params: Promise<{
@@ -33,9 +32,7 @@ function formatDate(value: string | null) {
   return new Date(value).toLocaleString();
 }
 
-export default async function MeetingDetailsPage({
-  params,
-}: Props) {
+export default async function MeetingDetailsPage({ params }: Props) {
   const { id } = await params;
 
   let meeting;
@@ -47,34 +44,29 @@ export default async function MeetingDetailsPage({
   }
 
   return (
-    <Container
-      maxWidth="md"
-      sx={{ py: 3 }}
-    >
+    <Container maxWidth="md" sx={{ py: 3 }}>
       <Stack spacing={3}>
-          <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-        >
-           <PageHeader
-            title="Meeting"
-            backHref="/meetings"
-          />
-          </Stack>
-          
-         
         <Stack
           direction="row"
-          justifyContent="space-between"
-          alignItems="center"
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
         >
-         
-       
+          <PageHeader title="Meeting" backHref="/meetings" />
+        </Stack>
+
+        <Stack
+          direction="row"
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <Link href={`/meetings/${meeting.id}/edit`}>
-            <Button>
-              Edit
-            </Button>
+            <Button>Edit</Button>
           </Link>
           <MeetingActionButton
             meetingId={meeting.id}
@@ -94,7 +86,6 @@ export default async function MeetingDetailsPage({
             disabled={meeting.status !== "DRAFT"}
           />
 
-
           <MeetingActionButton
             meetingId={meeting.id}
             action="close"
@@ -102,23 +93,20 @@ export default async function MeetingDetailsPage({
             color="warning"
             disabled={meeting.status !== "IN_PROGRESS"}
           />
-
         </Stack>
-         <Stack
+        <Stack
           direction="row"
-          justifyContent="space-between"
-          alignItems="center"
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
         >
-   <MeetingTabs
-            meetingId={meeting.id}
-            status={meeting.status}
-          />
+          <MeetingTabs meetingId={meeting.id} status={meeting.status} />
         </Stack>
 
         {meeting.status === "CLOSED" && (
-          <Alert severity="info">
-            This meeting is closed and cannot be edited.
-          </Alert>
+          <Alert severity="info">This meeting is closed and cannot be edited.</Alert>
         )}
 
         <Card>
@@ -126,59 +114,48 @@ export default async function MeetingDetailsPage({
             <Stack spacing={2}>
               <Stack
                 direction="row"
-                justifyContent="space-between"
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
               >
-                <Typography fontWeight={600}>
+                <Typography
+                  sx={{
+                    fontWeight: 600,
+                  }}
+                >
                   Status
                 </Typography>
 
-                <MeetingStatusChip
-                  status={meeting.status}
-                />
+                <MeetingStatusChip status={meeting.status} />
               </Stack>
 
               <Divider />
 
               <Stack spacing={1}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                >
+                <Typography variant="body2" color="text.secondary">
                   Meeting Date
                 </Typography>
 
-                <Typography>
-                  {formatDate(
-                    meeting.meetingDate,
-                  )}
-                </Typography>
+                <Typography>{formatDate(meeting.meetingDate)}</Typography>
               </Stack>
 
               <Stack spacing={1}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                >
+                <Typography variant="body2" color="text.secondary">
                   Place
                 </Typography>
 
-                <Typography>
-                  {meeting.place}
-                </Typography>
+                <Typography>{meeting.place}</Typography>
               </Stack>
 
               <Stack spacing={1}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                >
+                <Typography variant="body2" color="text.secondary">
                   Agenda
                 </Typography>
 
                 <Typography
                   sx={{
-                    whiteSpace:
-                      "pre-wrap",
+                    whiteSpace: "pre-wrap",
                   }}
                 >
                   {meeting.agenda || "-"}
@@ -186,17 +163,13 @@ export default async function MeetingDetailsPage({
               </Stack>
 
               <Stack spacing={1}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                >
+                <Typography variant="body2" color="text.secondary">
                   Remarks
                 </Typography>
 
                 <Typography
                   sx={{
-                    whiteSpace:
-                      "pre-wrap",
+                    whiteSpace: "pre-wrap",
                   }}
                 >
                   {meeting.remarks || "-"}
@@ -206,80 +179,45 @@ export default async function MeetingDetailsPage({
               <Divider />
 
               <Stack spacing={1}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                >
+                <Typography variant="body2" color="text.secondary">
                   Started At
                 </Typography>
 
-                <Typography>
-                  {formatDate(
-                    meeting.startedAt,
-                  )}
-                </Typography>
+                <Typography>{formatDate(meeting.startedAt)}</Typography>
               </Stack>
 
               <Stack spacing={1}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                >
+                <Typography variant="body2" color="text.secondary">
                   Approved At
                 </Typography>
 
-                <Typography>
-                  {formatDate(
-                    meeting.approvedAt,
-                  )}
-                </Typography>
+                <Typography>{formatDate(meeting.approvedAt)}</Typography>
               </Stack>
 
               <Stack spacing={1}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                >
+                <Typography variant="body2" color="text.secondary">
                   Closed At
                 </Typography>
 
-                <Typography>
-                  {formatDate(
-                    meeting.closedAt,
-                  )}
-                </Typography>
+                <Typography>{formatDate(meeting.closedAt)}</Typography>
               </Stack>
 
               <Divider />
 
               <Stack spacing={1}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                >
+                <Typography variant="body2" color="text.secondary">
                   Created
                 </Typography>
 
-                <Typography>
-                  {formatDate(
-                    meeting.createdAt,
-                  )}
-                </Typography>
+                <Typography>{formatDate(meeting.createdAt)}</Typography>
               </Stack>
 
               <Stack spacing={1}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                >
+                <Typography variant="body2" color="text.secondary">
                   Last Updated
                 </Typography>
 
-                <Typography>
-                  {formatDate(
-                    meeting.updatedAt,
-                  )}
-                </Typography>
+                <Typography>{formatDate(meeting.updatedAt)}</Typography>
               </Stack>
             </Stack>
           </CardContent>

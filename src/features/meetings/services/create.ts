@@ -1,41 +1,31 @@
-import Meeting from "@/models/Meeting";
 import FinancialYear from "@/models/FinancialYear";
+import Meeting from "@/models/Meeting";
 
 import connectMongo from "@/lib/db/mongodb";
 
-import {
-  CreateMeetingInput,
-  CreateMeetingSchema,
-} from "../validation";
+import type { MeetingDetails } from "../types";
+import { CreateMeetingInput, CreateMeetingSchema } from "../validation";
 
 export async function createMeeting(
   input: CreateMeetingInput,
   userId?: string | null,
-) {
+): Promise<MeetingDetails> {
   await connectMongo();
 
   const data = CreateMeetingSchema.parse(input);
 
   data.meetingDate.setHours(0, 0, 0, 0);
 
-  const financialYear =
-    await FinancialYear.findOne({
-      status: "IN_PROGRESS",
-    });
+  const financialYear = await FinancialYear.findOne({
+    status: "IN_PROGRESS",
+  });
 
   if (!financialYear) {
-    throw new Error(
-      "No active financial year found.",
-    );
+    throw new Error("No active financial year found.");
   }
 
-  if (
-    data.meetingDate < financialYear.startDate ||
-    data.meetingDate > financialYear.endDate
-  ) {
-    throw new Error(
-      "Meeting date must be inside the active financial year.",
-    );
+  if (data.meetingDate < financialYear.startDate || data.meetingDate > financialYear.endDate) {
+    throw new Error("Meeting date must be inside the active financial year.");
   }
 
   const start = new Date(data.meetingDate);
@@ -53,9 +43,7 @@ export async function createMeeting(
   });
 
   if (exists) {
-    throw new Error(
-      "A meeting already exists for this date.",
-    );
+    throw new Error("A meeting already exists for this date.");
   }
 
   const meeting = await Meeting.create({
@@ -74,5 +62,33 @@ export async function createMeeting(
     updatedBy: userId,
   });
 
-  return meeting;
+  return {
+    id: meeting._id.toString(),
+
+    financialYearId: meeting.financialYearId.toString(),
+
+    meetingDate: meeting.meetingDate.toISOString(),
+
+    place: meeting.place,
+
+    agenda: meeting.agenda,
+
+    remarks: meeting.remarks,
+
+    status: meeting.status,
+
+    startedAt: meeting.startedAt?.toISOString() ?? null,
+
+    approvedAt: meeting.approvedAt?.toISOString() ?? null,
+
+    closedAt: meeting.closedAt?.toISOString() ?? null,
+
+    createdBy: meeting.createdBy?.toString() ?? null,
+
+    updatedBy: meeting.updatedBy?.toString() ?? null,
+
+    createdAt: meeting.createdAt.toISOString(),
+
+    updatedAt: meeting.updatedAt.toISOString(),
+  };
 }

@@ -2,150 +2,99 @@ import connectMongo from "@/lib/db/mongodb";
 
 import Loan from "@/models/Loan";
 
-import type {
-  LoanDetails,
-  UpdateLoanInput,
-} from "../types";
+import type { LoanDetails, UpdateLoanInput } from "../types";
 
-import {
-  ObjectIdSchema,
-  UpdateLoanSchema,
-} from "../validation";
+import { ObjectIdSchema, UpdateLoanSchema } from "../validation";
 
-export async function updateLoan(
-  loanId: string,
-  input: UpdateLoanInput,
-): Promise<LoanDetails> {
+export async function updateLoan(loanId: string, input: UpdateLoanInput): Promise<LoanDetails> {
   await connectMongo();
 
-  const id =
-    ObjectIdSchema.parse(
-      loanId,
-    );
+  const id = ObjectIdSchema.parse(loanId);
 
-  const data =
-    UpdateLoanSchema.parse(
-      input,
-    );
+  const data = UpdateLoanSchema.parse(input);
 
-  const loan =
-    await Loan.findById(id)
-      .populate({
-        path: "financialYearId",
-        select: "name",
-      })
-      .populate({
-        path: "memberId",
-        select: "memberCode name",
-      });
+  const loan = await Loan.findById(id)
+    .populate({
+      path: "financialYearId",
+      select: "name",
+    })
+    .populate({
+      path: "memberId",
+      select: "memberCode name",
+    });
 
   if (!loan) {
-    throw new Error(
-      "Loan not found.",
-    );
+    throw new Error("Loan not found.");
   }
 
-    if (data.remarks !== undefined) {
+  if (data.remarks !== undefined) {
     loan.remarks = data.remarks;
   }
 
   if (data.status !== undefined) {
     loan.status = data.status;
 
-    loan.closedAt =
-      data.status === "CLOSED"
-        ? new Date()
-        : null;
+    loan.closedAt = data.status === "CLOSED" ? new Date() : null;
   }
 
   await loan.save();
 
-  const financialYear =
-    loan.financialYearId as {
-      _id: { toString(): string };
-      name: string;
-    };
+  const financialYear = loan.financialYearId as {
+    _id: { toString(): string };
+    name: string;
+  };
 
-  const member =
-    loan.memberId as {
-      _id: { toString(): string };
-      memberCode: string;
-      name: string;
-    };
+  const member = loan.memberId as {
+    _id: { toString(): string };
+    memberCode: string;
+    name: string;
+  };
 
   return {
     _id: loan._id.toString(),
 
-    financialYearId:
-      financialYear._id.toString(),
+    financialYearId: financialYear._id.toString(),
 
-    financialYearName:
-      financialYear.name,
+    financialYearName: financialYear.name,
 
-    memberId:
-      member._id.toString(),
+    memberId: member._id.toString(),
 
-    memberCode:
-      member.memberCode,
+    memberCode: member.memberCode,
 
-    memberName:
-      member.name,
+    memberName: member.name,
 
-    loanNumber:
-      loan.loanNumber,
+    loanNumber: loan.loanNumber,
 
-    disbursedDate:
-      loan.disbursedDate.toISOString(),
+    disbursedDate: loan.disbursedDate.toISOString(),
 
-    loanAmount:
-      loan.loanAmount,
+    loanAmount: loan.loanAmount,
 
-    interestRate:
-      loan.interestRate,
+    interestRate: loan.interestRate,
 
-    expectedMonthlyRepayment:
-      loan.expectedMonthlyRepayment,
+    expectedMonthlyRepayment: loan.expectedMonthlyRepayment,
 
-    outstandingPrincipal:
-      loan.outstandingPrincipal,
+    outstandingPrincipal: loan.outstandingPrincipal,
 
-    paidInterest:
-      loan.paidInterest,
+    paidInterest: loan.paidInterest,
 
-    pendingInterest:
-      loan.pendingInterest,
+    pendingInterest: loan.pendingInterest,
 
-    paidLoanFine:
-      loan.paidLoanFine,
+    paidLoanFine: loan.paidLoanFine,
 
-    pendingLoanFine:
-      loan.pendingLoanFine,
+    pendingLoanFine: loan.pendingLoanFine,
 
-    lastInterestCalculatedAt:
-      loan.lastInterestCalculatedAt.toISOString(),
+    lastInterestCalculatedAt: loan.lastInterestCalculatedAt.toISOString(),
 
-    lastFineCalculatedMonth:
-      loan.lastFineCalculatedMonth,
+    lastFineCalculatedMonth: loan.lastFineCalculatedMonth,
 
-    remarks:
-      loan.remarks,
+    remarks: loan.remarks,
 
-    status:
-      loan.status,
+    status: loan.status,
 
-    closedAt:
-      loan.closedAt
-        ? loan.closedAt.toISOString()
-        : null,
+    closedAt: loan.closedAt ? loan.closedAt.toISOString() : null,
 
-    createdBy:
-      loan.createdBy
-        ? loan.createdBy.toString()
-        : null,
+    createdBy: loan.createdBy ? loan.createdBy.toString() : null,
 
-    updatedBy:
-      loan.updatedBy
-        ? loan.updatedBy.toString()
-        : null,
+    updatedBy: loan.updatedBy ? loan.updatedBy.toString() : null,
   };
 }

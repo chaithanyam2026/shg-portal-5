@@ -11,10 +11,7 @@ export type AttendanceRow = {
 
   memberName: string;
 
-  attendance: Record<
-    string,
-    "PRESENT" | "ABSENT"
-  >;
+  attendance: Record<string, "PRESENT" | "ABSENT">;
 
   presentCount: number;
 

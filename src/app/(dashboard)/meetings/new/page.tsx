@@ -4,92 +4,58 @@ import { useState } from "react";
 
 import { useRouter } from "next/navigation";
 
-import {
-  Alert,
-  Container,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Alert, Container, Stack } from "@mui/material";
 
 import MeetingForm from "@/features/meetings/ui/MeetingForm";
 
-import type { CreateMeetingInput } from "@/features/meetings/validation";
 import PageHeader from "@/components/layout/PageHeader";
+import type { CreateMeetingInput } from "@/features/meetings/validation";
 
 export default function CreateMeetingPage() {
   const router = useRouter();
 
-  const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const [error, setError] =
-    useState("");
+  const [error, setError] = useState("");
 
-  async function handleSubmit(
-    values: CreateMeetingInput,
-  ) {
+  async function handleSubmit(values: CreateMeetingInput) {
     try {
       setLoading(true);
       setError("");
 
-      const response = await fetch(
-        "/api/meetings",
-        {
-          method: "POST",
+      const response = await fetch("/api/meetings", {
+        method: "POST",
 
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-
-          body: JSON.stringify(values),
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+
+        body: JSON.stringify(values),
+      });
 
       if (!response.ok) {
-        const body =
-          await response.json();
+        const body = await response.json();
 
-        throw new Error(
-          body.message ??
-          "Unable to create meeting.",
-        );
+        throw new Error(body.message ?? "Unable to create meeting.");
       }
 
       router.push("/meetings");
       router.refresh();
     } catch (error) {
-      setError(
-        error instanceof Error
-          ? error.message
-          : "Unable to create meeting.",
-      );
+      setError(error instanceof Error ? error.message : "Unable to create meeting.");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <Container
-      maxWidth="sm"
-      sx={{ py: 3 }}
-    >
+    <Container maxWidth="sm" sx={{ py: 3 }}>
       <Stack spacing={3}>
-        <PageHeader
-          title="New Meeting"
-          backHref="/meetings"
-        />
+        <PageHeader title="New Meeting" backHref="/meetings" />
 
-        {error && (
-          <Alert severity="error">
-            {error}
-          </Alert>
-        )}
+        {error && <Alert severity="error">{error}</Alert>}
 
-        <MeetingForm
-          loading={loading}
-          onSubmit={handleSubmit}
-        />
+        <MeetingForm loading={loading} onSubmit={handleSubmit} />
       </Stack>
     </Container>
   );

@@ -14,34 +14,18 @@
  * - A member may have one ACTIVE NORMAL loan and one
  *   ACTIVE SPECIAL loan simultaneously.
  */
-export const LOAN_TYPES = [
-  "NORMAL",
-  "SPECIAL",
-] as const;
+export const LOAN_TYPES = ["NORMAL", "SPECIAL"] as const;
 
-export type LoanType =
-  (typeof LOAN_TYPES)[number];
+export type LoanType = (typeof LOAN_TYPES)[number];
 
-export const NORMAL_LOAN_TYPE =
-  "NORMAL";
+export const NORMAL_LOAN_TYPE = "NORMAL";
 
-export const SPECIAL_LOAN_TYPE =
-  "SPECIAL";
+export const SPECIAL_LOAN_TYPE = "SPECIAL";
 
-export function isNormalLoan(
-  loanType: LoanType,
-): boolean {
-  return (
-    loanType ===
-    NORMAL_LOAN_TYPE
-  );
+export function isNormalLoan(loanType: LoanType): boolean {
+  return loanType === NORMAL_LOAN_TYPE;
 }
 
-export function isSpecialLoan(
-  loanType: LoanType,
-): boolean {
-  return (
-    loanType ===
-    SPECIAL_LOAN_TYPE
-  );
+export function isSpecialLoan(loanType: LoanType): boolean {
+  return loanType === SPECIAL_LOAN_TYPE;
 }

@@ -6,36 +6,29 @@ export const INCOME_CATEGORY = {
   MISCELLANEOUS: "MISCELLANEOUS",
 } as const;
 
-export const INCOME_CATEGORY_VALUES =
-  Object.values(INCOME_CATEGORY);
+export const INCOME_CATEGORY_VALUES = Object.values(INCOME_CATEGORY);
 
-export type IncomeCategory =
-  (typeof INCOME_CATEGORY_VALUES)[number];
+export type IncomeCategory = (typeof INCOME_CATEGORY_VALUES)[number];
 
 export const INCOME_CATEGORY_OPTIONS = [
   {
-    value:
-      INCOME_CATEGORY.BANK_INTEREST,
+    value: INCOME_CATEGORY.BANK_INTEREST,
     label: "Bank Interest",
   },
   {
-    value:
-      INCOME_CATEGORY.DONATION,
+    value: INCOME_CATEGORY.DONATION,
     label: "Donation",
   },
   {
-    value:
-      INCOME_CATEGORY.REGISTRATION_FEE,
+    value: INCOME_CATEGORY.REGISTRATION_FEE,
     label: "Registration Fee",
   },
   {
-    value:
-      INCOME_CATEGORY.PENALTY,
+    value: INCOME_CATEGORY.PENALTY,
     label: "Penalty",
   },
   {
-    value:
-      INCOME_CATEGORY.MISCELLANEOUS,
+    value: INCOME_CATEGORY.MISCELLANEOUS,
     label: "Miscellaneous",
   },
 ] as const;

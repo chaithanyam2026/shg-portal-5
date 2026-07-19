@@ -2,12 +2,7 @@
 
 import Link from "next/link";
 
-import {
-  Card,
-  CardActionArea,
-  CardContent,
-  Typography,
-} from "@mui/material";
+import { Card, CardActionArea, CardContent, Typography } from "@mui/material";
 
 type Props = {
   title: string;
@@ -17,28 +12,14 @@ type Props = {
   href: string;
 };
 
-export default function ReportCard({
-  title,
-  description,
-  href,
-}: Props) {
+export default function ReportCard({ title, description, href }: Props) {
   return (
     <Card>
-      <CardActionArea
-        component={Link}
-        href={href}
-      >
+      <CardActionArea component={Link} href={href}>
         <CardContent>
-          <Typography
-            variant="h6"
-          >
-            {title}
-          </Typography>
+          <Typography variant="h6">{title}</Typography>
 
-          <Typography
-            variant="body2"
-            color="text.secondary"
-          >
+          <Typography variant="body2" color="text.secondary">
             {description}
           </Typography>
         </CardContent>

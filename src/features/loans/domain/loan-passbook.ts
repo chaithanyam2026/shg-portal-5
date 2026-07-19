@@ -1,6 +1,4 @@
-import type {
-  PassbookEntryType,
-} from "./passbook-entry-type";
+import type { PassbookEntryType } from "./passbook-entry-type";
 
 /**
  * A single transaction in the

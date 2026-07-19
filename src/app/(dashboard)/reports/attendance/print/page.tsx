@@ -1,8 +1,6 @@
 import PageHeader from "@/components/layout/PageHeader";
 
-import {
-  buildAttendanceRegister,
-} from "@/features/reports/services/build-attendance-register";
+import { buildAttendanceRegister } from "@/features/reports/services/build-attendance-register";
 
 import AttendanceRegisterPrint from "@/features/reports/ui/AttendanceRegisterPrint";
 
@@ -15,17 +13,10 @@ type Props = {
 /**
  * Print-friendly Attendance Register.
  */
-export default async function AttendanceRegisterPrintPage({
-  params,
-}: Props) {
-  const {
-    financialYearId,
-  } = await params;
+export default async function AttendanceRegisterPrintPage({ params }: Props) {
+  const { financialYearId } = await params;
 
-  const register =
-    await buildAttendanceRegister(
-      financialYearId,
-    );
+  const register = await buildAttendanceRegister(financialYearId);
 
   return (
     <>
@@ -35,14 +26,7 @@ export default async function AttendanceRegisterPrintPage({
         backHref={`/reports/attendance/${financialYearId}`}
       />
 
-      <AttendanceRegisterPrint
-        financialYearId={
-          financialYearId
-        }
-        register={
-          register
-        }
-      />
+      <AttendanceRegisterPrint financialYearId={financialYearId} register={register} />
     </>
   );
 }

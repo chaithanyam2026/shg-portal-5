@@ -1,33 +1,17 @@
-import {
-  Alert,
-  Box,
-  Button,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Alert, Box, Button, Stack } from "@mui/material";
 
 import Link from "next/link";
 
-import {
-  listFinancialYears,
-} from "@/features/financial-year/services";
+import { listFinancialYears } from "@/features/financial-year/services";
 
-import {
-  listLoans,
-} from "@/features/loans/services";
+import { listLoans } from "@/features/loans/services";
 
-import LoanList from "@/features/loans/ui/LoanList";
 import PageHeader from "@/components/layout/PageHeader";
+import LoanList from "@/features/loans/ui/LoanList";
 
 export default async function Page() {
   try {
-    const [
-      loans,
-      financialYears,
-    ] = await Promise.all([
-      listLoans(),
-      listFinancialYears(),
-    ]);
+    const [loans, financialYears] = await Promise.all([listLoans(), listFinancialYears()]);
 
     if (loans.length === 0) {
       return (
@@ -40,41 +24,26 @@ export default async function Page() {
         >
           <Stack
             spacing={3}
-            alignItems="center"
-            textAlign="center"
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              textAlign: "center",
+            }}
           >
-            <PageHeader
-              title="Loans"
-              showBack={false}
-            />
+            <PageHeader title="Loans" showBack={false} />
 
-            <Alert severity="info">
-              No loans have been
-              created yet.
-            </Alert>
+            <Alert severity="info">No loans have been created yet.</Alert>
 
             <Link href="/loans/new">
-              <Button
-
-
-                variant="contained"
-              >
-                Create Loan
-              </Button>
+              <Button variant="contained">Create Loan</Button>
             </Link>
           </Stack>
         </Box>
       );
     }
 
-    return (
-      <LoanList
-        loans={loans}
-        financialYears={
-          financialYears
-        }
-      />
-    );
+    return <LoanList loans={loans} financialYears={financialYears} />;
   } catch (error) {
     console.error(error);
 
@@ -86,10 +55,7 @@ export default async function Page() {
           mt: 8,
         }}
       >
-        <Alert severity="error">
-          Unable to load loans.
-          Please try again later.
-        </Alert>
+        <Alert severity="error">Unable to load loans. Please try again later.</Alert>
       </Box>
     );
   }

@@ -1,21 +1,14 @@
 import connectMongo from "@/lib/db/mongodb";
 
-import Loan from "@/models/Loan";
 import FinancialYear from "@/models/FinancialYear";
+import Loan from "@/models/Loan";
 import Member from "@/models/Member";
 
-import type {
-  LoanDetails,
-} from "../types";
+import type { LoanDetails } from "../types";
 
-import {
-  LoanIdInput,
-  LoanIdSchema,
-} from "../validation";
+import { LoanIdInput, LoanIdSchema } from "../validation";
 
-import {
-  getLoanSummary,
-} from "./summary";
+import { getLoanSummary } from "./summary";
 
 /**
  * Returns complete loan details.
@@ -25,40 +18,21 @@ import {
  * information is derived from the
  * Loan Summary.
  */
-export async function getLoan(
-  loanId: LoanIdInput,
-): Promise<LoanDetails> {
+export async function getLoan(loanId: LoanIdInput): Promise<LoanDetails> {
   await connectMongo();
 
-  const id =
-    LoanIdSchema.parse(
-      loanId,
-    );
+  const id = LoanIdSchema.parse(loanId);
 
-  const loan =
-    await Loan.findById(id)
-      .lean();
+  const loan = await Loan.findById(id).lean();
 
   if (!loan) {
-    throw new Error(
-      "Loan not found.",
-    );
+    throw new Error("Loan not found.");
   }
 
-  const [
-    financialYear,
-    member,
-    summary,
-  ] = await Promise.all([
-    FinancialYear.findById(
-      loan.financialYearId,
-    )
-      .select("name")
-      .lean(),
+  const [financialYear, member, summary] = await Promise.all([
+    FinancialYear.findById(loan.financialYearId).select("name").lean(),
 
-    Member.findById(
-      loan.memberId,
-    )
+    Member.findById(loan.memberId)
       .select({
         memberCode: 1,
         name: 1,
@@ -68,86 +42,57 @@ export async function getLoan(
     getLoanSummary(id),
   ]);
 
-  if (
-    !financialYear ||
-    !member
-  ) {
-    throw new Error(
-      "Loan references are invalid.",
-    );
+  if (!financialYear || !member) {
+    throw new Error("Loan references are invalid.");
   }
 
   return {
-    _id:
-      loan._id.toString(),
+    _id: loan._id.toString(),
 
-    loanNumber:
-      loan.loanNumber,
+    loanNumber: loan.loanNumber,
 
-    loanType:
-      loan.loanType,
+    loanType: loan.loanType,
 
-    status:
-      loan.status,
+    status: loan.status,
 
-    financialYearId:
-      loan.financialYearId.toString(),
+    financialYearId: loan.financialYearId.toString(),
 
-    financialYearName:
-      financialYear.name,
+    financialYearName: financialYear.name,
 
-    memberId:
-      loan.memberId.toString(),
+    memberId: loan.memberId.toString(),
 
-    memberCode:
-      member.memberCode,
+    memberCode: member.memberCode,
 
-    memberName:
-      member.name,
+    memberName: member.name,
 
-    sanctionedAmount:
-      loan.sanctionedAmount,
+    sanctionedAmount: loan.sanctionedAmount,
 
-    disbursedAmount:
-      loan.disbursedAmount,
+    disbursedAmount: loan.disbursedAmount,
 
-    interestRate:
-      loan.interestRate,
+    interestRate: loan.interestRate,
 
-    expectedMonthlyRepayment:
-      loan.expectedMonthlyRepayment,
+    expectedMonthlyRepayment: loan.expectedMonthlyRepayment,
 
-    disbursedDate:
-      loan.disbursedDate.toISOString(),
+    disbursedDate: loan.disbursedDate.toISOString(),
 
-    remarks:
-      loan.remarks ?? "",
+    remarks: loan.remarks ?? "",
 
-    outstandingPrincipal:
-      summary.outstandingPrincipal,
+    outstandingPrincipal: summary.outstandingPrincipal,
 
-    paidPrincipal:
-      summary.paidPrincipal,
+    paidPrincipal: summary.paidPrincipal,
 
-    paidInterest:
-      summary.paidInterest,
+    paidInterest: summary.paidInterest,
 
-    pendingInterest:
-      summary.pendingInterest,
+    pendingInterest: summary.pendingInterest,
 
-    paidLoanFine:
-      summary.paidLoanFine,
+    paidLoanFine: summary.paidLoanFine,
 
-    pendingLoanFine:
-      summary.pendingLoanFine,
+    pendingLoanFine: summary.pendingLoanFine,
 
-    totalPayable:
-      summary.totalPayable,
+    totalPayable: summary.totalPayable,
 
-    effectiveInterestPercentage:
-      summary.effectiveInterestPercentage,
+    effectiveInterestPercentage: summary.effectiveInterestPercentage,
 
-    isClosable:
-      summary.isClosable,
+    isClosable: summary.isClosable,
   };
 }

@@ -4,9 +4,7 @@ import Meeting from "@/models/Meeting";
 
 import { MEETING_STATUS } from "../domain/meeting-status";
 
-export async function deleteMeeting(
-  id: string,
-): Promise<void> {
+export async function deleteMeeting(id: string): Promise<void> {
   await connectMongo();
 
   const meeting = await Meeting.findById(id);
@@ -16,9 +14,7 @@ export async function deleteMeeting(
   }
 
   if (meeting.status !== MEETING_STATUS.DRAFT) {
-    throw new Error(
-      "Only draft meetings can be deleted.",
-    );
+    throw new Error("Only draft meetings can be deleted.");
   }
 
   await meeting.deleteOne();

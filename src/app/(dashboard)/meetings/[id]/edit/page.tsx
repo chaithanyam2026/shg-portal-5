@@ -4,24 +4,13 @@ import { useEffect, useState } from "react";
 
 import { useRouter } from "next/navigation";
 
-import {
-  Alert,
-  Button,
-  CircularProgress,
-  Container,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Alert, Button, CircularProgress, Container, Stack, Typography } from "@mui/material";
 
 import MeetingForm from "@/features/meetings/ui/MeetingForm";
 
-import type {
-  CreateMeetingInput,
-} from "@/features/meetings/validation";
+import type { CreateMeetingInput } from "@/features/meetings/validation";
 
-import type {
-  MeetingDetails,
-} from "@/features/meetings/types";
+import type { MeetingDetails } from "@/features/meetings/types";
 
 type Props = {
   params: Promise<{
@@ -29,25 +18,18 @@ type Props = {
   }>;
 };
 
-export default function EditMeetingPage({
-  params,
-}: Props) {
+export default function EditMeetingPage({ params }: Props) {
   const router = useRouter();
 
-  const [meetingId, setMeetingId] =
-    useState("");
+  const [meetingId, setMeetingId] = useState("");
 
-  const [meeting, setMeeting] =
-    useState<MeetingDetails | null>(null);
+  const [meeting, setMeeting] = useState<MeetingDetails | null>(null);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
-  const [saving, setSaving] =
-    useState(false);
+  const [saving, setSaving] = useState(false);
 
-  const [error, setError] =
-    useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     async function initialize() {
@@ -66,73 +48,48 @@ export default function EditMeetingPage({
       setLoading(true);
       setError("");
 
-      const response = await fetch(
-        `/api/meetings/${id}`,
-      );
+      const response = await fetch(`/api/meetings/${id}`);
 
       if (!response.ok) {
-        throw new Error(
-          "Unable to load meeting.",
-        );
+        throw new Error("Unable to load meeting.");
       }
 
-      const data: MeetingDetails =
-        await response.json();
+      const data: MeetingDetails = await response.json();
 
       setMeeting(data);
     } catch (error) {
-      setError(
-        error instanceof Error
-          ? error.message
-          : "Unable to load meeting.",
-      );
+      setError(error instanceof Error ? error.message : "Unable to load meeting.");
     } finally {
       setLoading(false);
     }
   }
 
-  async function handleSubmit(
-    values: CreateMeetingInput,
-  ) {
+  async function handleSubmit(values: CreateMeetingInput) {
     try {
       setSaving(true);
       setError("");
 
-      const response = await fetch(
-        `/api/meetings/${meetingId}`,
-        {
-          method: "PATCH",
+      const response = await fetch(`/api/meetings/${meetingId}`, {
+        method: "PATCH",
 
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-
-          body: JSON.stringify(values),
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+
+        body: JSON.stringify(values),
+      });
 
       if (!response.ok) {
-        const body =
-          await response.json();
+        const body = await response.json();
 
-        throw new Error(
-          body.message ??
-            "Unable to update meeting.",
-        );
+        throw new Error(body.message ?? "Unable to update meeting.");
       }
 
-      router.push(
-        `/meetings/${meetingId}`,
-      );
+      router.push(`/meetings/${meetingId}`);
 
       router.refresh();
     } catch (error) {
-      setError(
-        error instanceof Error
-          ? error.message
-          : "Unable to update meeting.",
-      );
+      setError(error instanceof Error ? error.message : "Unable to update meeting.");
     } finally {
       setSaving(false);
     }
@@ -140,19 +97,17 @@ export default function EditMeetingPage({
 
   if (loading) {
     return (
-      <Container
-        maxWidth="sm"
-        sx={{ py: 4 }}
-      >
+      <Container maxWidth="sm" sx={{ py: 4 }}>
         <Stack
-          alignItems="center"
+          sx={{
+            display: "flex",
+            alignItems: "center",
+          }}
           spacing={2}
         >
           <CircularProgress />
 
-          <Typography>
-            Loading meeting...
-          </Typography>
+          <Typography>Loading meeting...</Typography>
         </Stack>
       </Container>
     );
@@ -160,41 +115,23 @@ export default function EditMeetingPage({
 
   if (!meeting) {
     return (
-      <Container
-        maxWidth="sm"
-        sx={{ py: 4 }}
-      >
-        <Alert severity="error">
-          Meeting not found.
-        </Alert>
+      <Container maxWidth="sm" sx={{ py: 4 }}>
+        <Alert severity="error">Meeting not found.</Alert>
       </Container>
     );
   }
 
   return (
-    <Container
-      maxWidth="sm"
-      sx={{ py: 4 }}
-    >
+    <Container maxWidth="sm" sx={{ py: 4 }}>
       <Stack spacing={3}>
-        <Typography variant="h4">
-          Edit Meeting
-        </Typography>
+        <Typography variant="h4">Edit Meeting</Typography>
 
-        {error && (
-          <Alert severity="error">
-            {error}
-          </Alert>
-        )}
+        {error && <Alert severity="error">{error}</Alert>}
 
         <MeetingForm
           loading={saving}
           initialValues={{
-            meetingDate:
-              meeting.meetingDate.slice(
-                0,
-                10,
-              ),
+            meetingDate: meeting.meetingDate.slice(0, 10),
 
             place: meeting.place,
 
@@ -205,14 +142,7 @@ export default function EditMeetingPage({
           onSubmit={handleSubmit}
         />
 
-        <Button
-          variant="outlined"
-          onClick={() =>
-            router.push(
-              `/meetings/${meetingId}`,
-            )
-          }
-        >
+        <Button variant="outlined" onClick={() => router.push(`/meetings/${meetingId}`)}>
           Cancel
         </Button>
       </Stack>

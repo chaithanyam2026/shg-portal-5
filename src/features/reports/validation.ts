@@ -1,8 +1,6 @@
 import { z } from "zod";
 
-export const ObjectIdSchema = z
-  .string()
-  .regex(/^[0-9a-fA-F]{24}$/, "Invalid id.");
+export const ObjectIdSchema = z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid id.");
 
 export const ReportDateSchema = z.coerce.date();
 
@@ -15,11 +13,7 @@ export const IncomeExpenseReportSchema = z
     toDate: ReportDateSchema.optional(),
   })
   .superRefine((value, ctx) => {
-    if (
-      value.fromDate &&
-      value.toDate &&
-      value.fromDate > value.toDate
-    ) {
+    if (value.fromDate && value.toDate && value.fromDate > value.toDate) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["toDate"],
@@ -28,6 +22,4 @@ export const IncomeExpenseReportSchema = z
     }
   });
 
-export type IncomeExpenseReportInput = z.infer<
-  typeof IncomeExpenseReportSchema
->;
+export type IncomeExpenseReportInput = z.infer<typeof IncomeExpenseReportSchema>;

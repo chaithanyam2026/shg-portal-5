@@ -17,4 +17,3 @@ export * from "./meeting-attendance";
 export * from "./meeting-expense";
 
 export * from "./meeting-other-income";
-

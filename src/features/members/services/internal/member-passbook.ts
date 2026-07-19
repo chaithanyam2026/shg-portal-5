@@ -2,10 +2,8 @@ import {
   MemberPassbook,
   MemberPassbookEntry,
   OPENING_CONTRIBUTION_ENTRY,
-  WEEKLY_CONTRIBUTION_ENTRY,
-} from "../../domain";
-import {
   validateMemberPassbook,
+  WEEKLY_CONTRIBUTION_ENTRY,
 } from "../../domain";
 
 type MeetingContribution = {
@@ -57,17 +55,15 @@ export function buildMemberPassbook({
   openingContribution,
   meetings,
 }: BuildMemberPassbookInput): MemberPassbook {
-  const entries: MemberPassbookEntry[] =
-    [];
+  const entries: MemberPassbookEntry[] = [];
 
   let balance = 0;
 
   let meetingContribution = 0;
 
-let contributionCount = 0;
+  let contributionCount = 0;
 
-let lastContributionDate:
-  Date | undefined;
+  let lastContributionDate: Date | undefined;
 
   /**
    * Opening contribution.
@@ -76,108 +72,80 @@ let lastContributionDate:
     balance += openingContribution;
 
     entries.push({
-      transactionDate:
-        startDate,
+      transactionDate: startDate,
 
-      type:
-        OPENING_CONTRIBUTION_ENTRY,
+      type: OPENING_CONTRIBUTION_ENTRY,
 
-      description:
-        "Opening Contribution",
+      description: "Opening Contribution",
 
-      contribution:
-        openingContribution,
+      contribution: openingContribution,
 
-      runningBalance:
-        balance,
+      runningBalance: balance,
     });
   }
 
   /**
    * Weekly meeting contributions.
    */
-  const sortedMeetings =
-    [...meetings].sort(
-      (a, b) =>
-        a.meetingDate.getTime() -
-        b.meetingDate.getTime(),
-    );
+  const sortedMeetings = [...meetings].sort(
+    (a, b) => a.meetingDate.getTime() - b.meetingDate.getTime(),
+  );
 
   for (const meeting of sortedMeetings) {
-    const payment =
-      meeting.payments.find(
-        (payment) =>
-          payment.memberId.toString() ===
-          memberId,
-      );
+    const payment = meeting.payments.find((payment) => payment.memberId.toString() === memberId);
 
-    if (
-      !payment ||
-      payment.contribution <= 0
-    ) {
+    if (!payment || payment.contribution <= 0) {
       continue;
     }
 
-    balance +=
-      payment.contribution;
+    balance += payment.contribution;
 
-      meetingContribution +=
-  payment.contribution;
+    meetingContribution += payment.contribution;
 
-contributionCount++;
+    contributionCount++;
 
-lastContributionDate =
-  meeting.meetingDate;
+    lastContributionDate = meeting.meetingDate;
 
     entries.push({
-      transactionDate:
-        meeting.meetingDate,
+      transactionDate: meeting.meetingDate,
 
-      type:
-        WEEKLY_CONTRIBUTION_ENTRY,
+      type: WEEKLY_CONTRIBUTION_ENTRY,
 
-      meetingId:
-        meeting._id.toString(),
+      meetingId: meeting._id.toString(),
 
-      description:
-        "Weekly Contribution",
+      description: "Weekly Contribution",
 
-      contribution:
-        payment.contribution,
+      contribution: payment.contribution,
 
-      runningBalance:
-        balance,
+      runningBalance: balance,
     });
   }
 
   const passbook = {
-  memberId,
+    memberId,
 
-  memberCode,
+    memberCode,
 
-  memberName,
+    memberName,
 
-  financialYearId,
+    financialYearId,
 
-  financialYearName,
+    financialYearName,
 
-  openingContribution,
+    openingContribution,
 
-  meetingContribution,
+    meetingContribution,
 
-  currentBalance:
-    balance,
+    currentBalance: balance,
 
-  contributionCount,
+    contributionCount,
 
-  lastContributionDate,
+    lastContributionDate,
 
-  entries,
-};
+    entries,
+  };
 
-validateMemberPassbook(
-  passbook,
-);
+  validateMemberPassbook(passbook);
 
-return passbook;
+  return passbook;
 }

@@ -1,269 +1,140 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Alert, Box, Card, CardContent, Grid, Stack, Typography } from "@mui/material";
 
-import {
-  Alert,
-  Box,
-  Card,
-  CardContent,
-  CircularProgress,
-  Grid,
-  Stack,
-  Typography,
-} from "@mui/material";
+import type { LoanDetails } from "../../types";
 
-import type {
-    LoanDetails,
-    LoanSummary,
-} from "../../types";
+import type { LoanSummaryResult } from "../../domain/loan-summary";
 
 type Props = {
-    loan: LoanDetails;
+  loan: LoanDetails;
+  summary: LoanSummaryResult;
 };
 
-export default function SummaryTab({
-    loan,
-}: Props) {
-    const [
-        summary,
-        setSummary,
-    ] = useState<LoanSummary | null>(
-        null,
-    );
+export default function SummaryTab({ loan, summary }: Props) {
+  return (
+    <Box>
+      <Stack spacing={3}>
+        <Grid container spacing={2}>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Card>
+              <CardContent>
+                <Typography variant="caption" color="text.secondary">
+                  Outstanding Principal
+                </Typography>
 
-    const [
-        loading,
-        setLoading,
-    ] = useState(true);
+                <Typography variant="h5">
+                  ₹{summary.outstandingPrincipal.toLocaleString()}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
 
-    const [
-        error,
-        setError,
-    ] = useState("");
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Card>
+              <CardContent>
+                <Typography variant="caption" color="text.secondary">
+                  Total Payable
+                </Typography>
 
-    useEffect(() => {
-        let cancelled =
-            false;
+                <Typography variant="h5">₹{summary.totalPayable.toLocaleString()}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
 
-        async function load() {
-            try {
-                setLoading(true);
-                setError("");
+          <Grid size={{ xs: 12, sm: 4 }}>
+            <Card>
+              <CardContent>
+                <Typography variant="caption" color="text.secondary">
+                  Paid Principal
+                </Typography>
 
-                const response =
-                    await fetch(
-                        `/api/loans/${loan._id}/summary`,
-                    );
+                <Typography variant="h6">₹{summary.paidPrincipal.toLocaleString()}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
 
-                if (!response.ok) {
-                    throw new Error(
-                        "Unable to load loan summary.",
-                    );
-                }
+          <Grid size={{ xs: 12, sm: 4 }}>
+            <Card>
+              <CardContent>
+                <Typography variant="caption" color="text.secondary">
+                  Paid Interest
+                </Typography>
 
-                const data: LoanSummary =
-                    await response.json();
+                <Typography variant="h6">₹{summary.paidInterest.toLocaleString()}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
 
-                if (!cancelled) {
-                    setSummary(data);
-                }
-            } catch (error) {
-                if (!cancelled) {
-                    setError(
-                        error instanceof Error
-                            ? error.message
-                            : "Unable to load loan summary.",
-                    );
-                }
-            } finally {
-                if (!cancelled) {
-                    setLoading(false);
-                }
-            }
-        }
+          <Grid size={{ xs: 12, sm: 4 }}>
+            <Card>
+              <CardContent>
+                <Typography variant="caption" color="text.secondary">
+                  Pending Interest
+                </Typography>
 
-        load();
+                <Typography variant="h6">₹{summary.pendingInterest.toLocaleString()}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
 
-        return () => {
-            cancelled = true;
-        };
-    }, [loan._id]);
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Card>
+              <CardContent>
+                <Typography variant="caption" color="text.secondary">
+                  Paid Loan Fine
+                </Typography>
 
-    if (loading) {
-        return (
-            <Box
-                display="flex"
-                justifyContent="center"
-                py={6}
-            >
-                <CircularProgress />
-            </Box>
-        );
-    }
+                <Typography variant="h6">₹{summary.paidLoanFine.toLocaleString()}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
 
-    if (error) {
-        return (
-            <Alert severity="error">
-                {error}
-            </Alert>
-        );
-    }
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Card>
+              <CardContent>
+                <Typography variant="caption" color="text.secondary">
+                  Pending Loan Fine
+                </Typography>
 
-    if (!summary) {
-        return (
-            <Alert severity="info">
-                Loan summary not available.
-            </Alert>
-        );
-    }
+                <Typography variant="h6">₹{summary.pendingLoanFine.toLocaleString()}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
 
-    return (
-        <Box>
-            <Stack spacing={3}>
-                <Grid
-                    container
-                    spacing={2}
-                >
-                    <Grid size={{ xs: 12, sm: 6 }}>
-                        <Card>
-                            <CardContent>
-                                <Typography
-                                    variant="caption"
-                                    color="text.secondary"
-                                >
-                                    Outstanding Principal
-                                </Typography>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Card>
+              <CardContent>
+                <Typography variant="caption" color="text.secondary">
+                  Effective Interest
+                </Typography>
 
-                                <Typography variant="h5">
-                                    ₹
-                                    {summary.outstandingPrincipal.toLocaleString()}
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    </Grid>
+                <Typography variant="h6">
+                  {summary.effectiveInterestPercentage.toFixed(2)}%
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
 
-                    <Grid size={{ xs: 12, sm: 6 }}>
-                        <Card>
-                            <CardContent>
-                                <Typography
-                                    variant="caption"
-                                    color="text.secondary"
-                                >
-                                    Total Payable
-                                </Typography>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Card>
+              <CardContent>
+                <Typography variant="caption" color="text.secondary">
+                  Loan Status
+                </Typography>
 
-                                <Typography variant="h5">
-                                    ₹
-                                    {summary.totalPayable.toLocaleString()}
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    </Grid>
+                <Typography variant="h6">{loan.status}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
 
-                    <Grid size={{ xs: 12, sm: 4 }}>
-                        <Card>
-                            <CardContent>
-                                <Typography
-                                    variant="caption"
-                                    color="text.secondary"
-                                >
-                                    Paid Interest
-                                </Typography>
-
-                                <Typography variant="h6">
-                                    ₹
-                                    {summary.paidInterest.toLocaleString()}
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-
-                    <Grid size={{ xs: 12, sm: 4 }}>
-                        <Card>
-                            <CardContent>
-                                <Typography
-                                    variant="caption"
-                                    color="text.secondary"
-                                >
-                                    Pending Interest
-                                </Typography>
-
-                                <Typography variant="h6">
-                                    ₹
-                                    {summary.pendingInterest.toLocaleString()}
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-
-                    <Grid size={{ xs: 12, sm: 4 }}>
-                        <Card>
-                            <CardContent>
-                                <Typography
-                                    variant="caption"
-                                    color="text.secondary"
-                                >
-                                    Pending Loan Fine
-                                </Typography>
-
-                                <Typography variant="h6">
-                                    ₹
-                                    {summary.pendingLoanFine.toLocaleString()}
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-
-                    <Grid size={{ xs: 12, sm: 6 }}>
-                        <Card>
-                            <CardContent>
-                                <Typography
-                                    variant="caption"
-                                    color="text.secondary"
-                                >
-                                    Paid Loan Fine
-                                </Typography>
-
-                                <Typography variant="h6">
-                                    ₹
-                                    {summary.paidLoanFine.toLocaleString()}
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-
-                    <Grid size={{ xs: 12, sm: 6 }}>
-                        <Card>
-                            <CardContent>
-                                <Typography
-                                    variant="caption"
-                                    color="text.secondary"
-                                >
-                                    Effective Interest
-                                </Typography>
-
-                                <Typography variant="h6">
-                                    {summary.effectiveInterestPercentage}
-                                    %
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                </Grid>
-
-                <Alert
-                    severity={
-                        summary.isClosable
-                            ? "success"
-                            : "info"
-                    }
-                >
-                    {summary.isClosable
-                        ? "This loan is eligible to be closed."
-                        : "This loan still has outstanding amounts."}
-                </Alert>
-            </Stack>
-        </Box>
-    );
+        <Alert severity={summary.isClosable ? "success" : "info"}>
+          {summary.isClosable
+            ? "This loan is eligible to be closed."
+            : "This loan still has outstanding balances."}
+        </Alert>
+      </Stack>
+    </Box>
+  );
 }

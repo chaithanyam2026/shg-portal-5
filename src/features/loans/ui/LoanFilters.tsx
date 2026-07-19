@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  TextField,
-} from "@mui/material";
+import { FormControl, InputLabel, MenuItem, Select, Stack, TextField } from "@mui/material";
 
 type FinancialYearLookup = {
   _id: string;
@@ -24,17 +17,11 @@ type Props = {
 
   financialYears: FinancialYearLookup[];
 
-  onSearchChange: (
-    value: string,
-  ) => void;
+  onSearchChange: (value: string) => void;
 
-  onFinancialYearChange: (
-    value: string,
-  ) => void;
+  onFinancialYearChange: (value: string) => void;
 
-  onStatusChange: (
-    value: string,
-  ) => void;
+  onStatusChange: (value: string) => void;
 };
 
 export default function LoanFilters({
@@ -47,84 +34,48 @@ export default function LoanFilters({
   onStatusChange,
 }: Props) {
   return (
-    <Stack
-      spacing={2}
-      mb={3}
-    >
+    <Stack spacing={2} mb={3}>
       <TextField
         fullWidth
         label="Search Loans"
         placeholder="Loan No., Member Code or Member Name"
         value={search}
-        onChange={(event) =>
-          onSearchChange(
-            event.target.value,
-          )
-        }
+        onChange={(event) => onSearchChange(event.target.value)}
       />
 
-<FormControl fullWidth>
-  <InputLabel>
-    Financial Year
-  </InputLabel>
+      <FormControl fullWidth>
+        <InputLabel>Financial Year</InputLabel>
 
-  <Select
-    label="Financial Year"
-    value={financialYearId}
-    onChange={(event) =>
-      onFinancialYearChange(
-        event.target.value,
-      )
-    }
-  >
-    <MenuItem value="">
-      All Financial Years
-    </MenuItem>
-
-    {financialYears.map(
-      (financialYear) => (
-        <MenuItem
-          key={
-            financialYear._id
-          }
-          value={
-            financialYear._id
-          }
+        <Select
+          label="Financial Year"
+          value={financialYearId}
+          onChange={(event) => onFinancialYearChange(event.target.value)}
         >
-          {financialYear.name}
-        </MenuItem>
-      ),
-    )}
-  </Select>
-</FormControl>
+          <MenuItem value="">All Financial Years</MenuItem>
 
-<FormControl fullWidth>
-  <InputLabel>
-    Status
-  </InputLabel>
+          {financialYears.map((financialYear) => (
+            <MenuItem key={financialYear._id} value={financialYear._id}>
+              {financialYear.name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
 
-  <Select
-    label="Status"
-    value={status}
-    onChange={(event) =>
-      onStatusChange(
-        event.target.value,
-      )
-    }
-  >
-    <MenuItem value="">
-      All Statuses
-    </MenuItem>
+      <FormControl fullWidth>
+        <InputLabel>Status</InputLabel>
 
-    <MenuItem value="ACTIVE">
-      Active
-    </MenuItem>
+        <Select
+          label="Status"
+          value={status}
+          onChange={(event) => onStatusChange(event.target.value)}
+        >
+          <MenuItem value="">All Statuses</MenuItem>
 
-    <MenuItem value="CLOSED">
-      Closed
-    </MenuItem>
-  </Select>
-</FormControl>
+          <MenuItem value="ACTIVE">Active</MenuItem>
+
+          <MenuItem value="CLOSED">Closed</MenuItem>
+        </Select>
+      </FormControl>
     </Stack>
   );
 }

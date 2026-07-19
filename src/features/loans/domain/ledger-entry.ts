@@ -1,10 +1,6 @@
-import {
-  LOAN_REPAYMENT_ENTRY,
-} from "./passbook-entry-type";
+import { LOAN_REPAYMENT_ENTRY } from "./passbook-entry-type";
 
-import type {
-  LoanPassbookEntry,
-} from "./loan-passbook";
+import type { LoanPassbookEntry } from "./loan-passbook";
 
 /**
  * Input for creating a repayment
@@ -63,8 +59,7 @@ export function createLedgerEntry({
   return {
     transactionDate,
 
-    type:
-      LOAN_REPAYMENT_ENTRY,
+    type: LOAN_REPAYMENT_ENTRY,
 
     meetingId,
 

@@ -1,36 +1,19 @@
 "use client";
 
-import {
-  useState,
-} from "react";
+import { useState } from "react";
 
-import MenuIcon
-  from "@mui/icons-material/Menu";
+import MenuIcon from "@mui/icons-material/Menu";
 
-import {
-  Box,
-  IconButton,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Box, IconButton, useMediaQuery, useTheme } from "@mui/material";
 
 import Sidebar from "./Sidebar";
 
 export default function MobileNavigation() {
-  const theme =
-    useTheme();
+  const theme = useTheme();
 
-  const mobile =
-    useMediaQuery(
-      theme.breakpoints.down(
-        "md",
-      ),
-    );
+  const mobile = useMediaQuery(theme.breakpoints.down("md"));
 
-  const [
-    open,
-    setOpen,
-  ] = useState(false);
+  const [open, setOpen] = useState(false);
 
   if (!mobile) {
     return null;
@@ -38,22 +21,11 @@ export default function MobileNavigation() {
 
   return (
     <Box>
-      <IconButton
-        color="inherit"
-        onClick={() =>
-          setOpen(true)
-        }
-      >
+      <IconButton color="inherit" onClick={() => setOpen(true)}>
         <MenuIcon />
       </IconButton>
 
-      <Sidebar
-        mobile
-        mobileOpen={open}
-        onClose={() =>
-          setOpen(false)
-        }
-      />
+      <Sidebar mobile mobileOpen={open} onClose={() => setOpen(false)} />
     </Box>
   );
 }

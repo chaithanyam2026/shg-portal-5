@@ -1,10 +1,6 @@
-import type {
-  AttendanceStatus,
-} from "./attendance-fine";
+import type { AttendanceStatus } from "./attendance-fine";
 
-import {
-  getAttendanceFine,
-} from "./attendance-fine-rules";
+import { getAttendanceFine } from "./attendance-fine-rules";
 
 /**
  * Calculates the attendance fine
@@ -30,7 +26,5 @@ export function calculateAttendanceFine(
     return 0;
   }
 
-  return getAttendanceFine(
-    consecutiveAbsence,
-  );
+  return getAttendanceFine(consecutiveAbsence);
 }

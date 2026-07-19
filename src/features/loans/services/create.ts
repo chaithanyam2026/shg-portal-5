@@ -4,156 +4,97 @@ import FinancialYear from "@/models/FinancialYear";
 import Loan from "@/models/Loan";
 import Member from "@/models/Member";
 
-import type {
-  LoanDetails,
-} from "../types";
+import type { LoanDetails } from "../types";
 
-import {
-  CreateLoanInput,
-  CreateLoanSchema,
-} from "../validation";
+import { CreateLoanInput, CreateLoanSchema } from "../validation";
 
-import {
-  validateLoanEligibility,
-} from "./validate-eligibility";
+import { validateLoanEligibility } from "./validate-eligibility";
 
-import {
-  generateNextLoanNumber,
-} from "./generate-loan-number";
+import { generateNextLoanNumber } from "./generate-loan-number";
 
-import {
-  ACTIVE_LOAN_STATUS,
-} from "../domain/loan-status";
-
-export async function createLoan(
-  input: CreateLoanInput,
-): Promise<LoanDetails> {
+export async function createLoan(input: CreateLoanInput): Promise<LoanDetails> {
   await connectMongo();
 
-  const data =
-    CreateLoanSchema.parse(
-      input,
-    );
+  const data = CreateLoanSchema.parse(input);
 
-  const [
-    financialYear,
-    member,
-  ] = await Promise.all([
-    FinancialYear.findById(
-      data.financialYearId,
-    ),
+  const [financialYear, member] = await Promise.all([
+    FinancialYear.findById(data.financialYearId),
 
-    Member.findById(
-      data.memberId,
-    ),
+    Member.findById(data.memberId),
   ]);
 
   if (!financialYear) {
-    throw new Error(
-      "Financial year not found.",
-    );
+    throw new Error("Financial year not found.");
   }
 
   if (!member) {
-    throw new Error(
-      "Member not found.",
-    );
+    throw new Error("Member not found.");
   }
 
-await validateLoanEligibility({
-  memberId: data.memberId,
-  loanType: data.loanType,
-});
+  await validateLoanEligibility({
+    memberId: data.memberId,
+    loanType: data.loanType,
+  });
 
-const {
-  loanNumber,
-  sequenceNumber,
-} =
-  await generateNextLoanNumber(
-    data.financialYearId,
-  );
+  const { loanNumber, sequenceNumber } = await generateNextLoanNumber(data.financialYearId);
 
-const loan =
-  await Loan.create({
+  const loan = await Loan.create({
     loanNumber,
 
     sequenceNumber,
 
-    financialYearId:
-      financialYear._id,
+    financialYearId: financialYear._id,
 
-    memberId:
-      member._id,
+    memberId: member._id,
 
-    loanType:
-      data.loanType,
+    loanType: data.loanType,
 
     status: "ACTIVE",
 
-    sanctionedAmount:
-      data.sanctionedAmount,
+    sanctionedAmount: data.sanctionedAmount,
 
-    disbursedAmount:
-      data.disbursedAmount,
+    disbursedAmount: data.disbursedAmount,
 
-    interestRate:
-      data.interestRate,
+    interestRate: data.interestRate,
 
-    expectedMonthlyRepayment:
-      data.expectedMonthlyRepayment,
+    expectedMonthlyRepayment: data.expectedMonthlyRepayment,
 
-    disbursedDate:
-      data.disbursedDate,
+    disbursedDate: data.disbursedDate,
 
-    remarks:
-      data.remarks,
+    remarks: data.remarks,
   });
 
- return {
-  _id: loan._id.toString(),
+  return {
+    _id: loan._id.toString(),
 
-  loanNumber:
-    loan.loanNumber,
+    loanNumber: loan.loanNumber,
 
-  loanType:
-    loan.loanType,
+    loanType: loan.loanType,
 
-  status:
-    loan.status,
+    status: loan.status,
 
-  financialYearId:
-    financialYear._id.toString(),
+    financialYearId: financialYear._id.toString(),
 
-  financialYearName:
-    financialYear.name,
+    financialYearName: financialYear.name,
 
-  memberId:
-    member._id.toString(),
+    memberId: member._id.toString(),
 
-  memberCode:
-    member.memberCode,
+    memberCode: member.memberCode,
 
-  memberName:
-    member.name,
+    memberName: member.name,
 
-  sanctionedAmount:
-    loan.sanctionedAmount,
+    sanctionedAmount: loan.sanctionedAmount,
 
-  disbursedAmount:
-    loan.disbursedAmount,
+    disbursedAmount: loan.disbursedAmount,
 
-  interestRate:
-    loan.interestRate,
+    interestRate: loan.interestRate,
 
-  expectedMonthlyRepayment:
-    loan.expectedMonthlyRepayment,
+    expectedMonthlyRepayment: loan.expectedMonthlyRepayment,
 
-  disbursedDate:
-    loan.disbursedDate.toISOString(),
+    disbursedDate: loan.disbursedDate.toISOString(),
 
-  remarks:
-    loan.remarks,
+    remarks: loan.remarks,
 
-  isClosable: false,
-};
+    isClosable: false,
+  };
 }

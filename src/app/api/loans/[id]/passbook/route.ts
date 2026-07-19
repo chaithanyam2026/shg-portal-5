@@ -1,11 +1,6 @@
-import {
-  NextRequest,
-  NextResponse,
-} from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-import {
-  getLoanPassbook,
-} from "@/features/loans/services";
+import { getLoanPassbook } from "@/features/loans/services";
 
 type RouteContext = {
   params: Promise<{
@@ -13,32 +8,20 @@ type RouteContext = {
   }>;
 };
 
-export async function GET(
-  _request: NextRequest,
-  { params }: RouteContext,
-) {
+export async function GET(_request: NextRequest, { params }: RouteContext) {
   try {
-    const { id } =
-      await params;
+    const { id } = await params;
 
-    const passbook =
-      await getLoanPassbook(
-        id,
-      );
+    const passbook = await getLoanPassbook(id);
 
-    return NextResponse.json(
-      passbook,
-    );
+    return NextResponse.json(passbook);
   } catch (error) {
     console.error(error);
 
-    if (
-      error instanceof Error
-    ) {
+    if (error instanceof Error) {
       return NextResponse.json(
         {
-          error:
-            error.message,
+          error: error.message,
         },
         {
           status: 400,
@@ -48,8 +31,7 @@ export async function GET(
 
     return NextResponse.json(
       {
-        error:
-          "Internal server error.",
+        error: "Internal server error.",
       },
       {
         status: 500,

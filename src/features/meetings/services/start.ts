@@ -6,10 +6,7 @@ import { MEETING_STATUS } from "../domain/meeting-status";
 
 import type { MeetingDetails } from "../types";
 
-export async function startMeeting(
-  id: string,
-  userId?: string | null,
-): Promise<MeetingDetails> {
+export async function startMeeting(id: string, userId?: string | null): Promise<MeetingDetails> {
   await connectMongo();
 
   const meeting = await Meeting.findById(id);
@@ -19,9 +16,7 @@ export async function startMeeting(
   }
 
   if (meeting.status !== MEETING_STATUS.DRAFT) {
-    throw new Error(
-      "Only draft meetings can be started.",
-    );
+    throw new Error("Only draft meetings can be started.");
   }
 
   meeting.status = MEETING_STATUS.IN_PROGRESS;
@@ -36,11 +31,9 @@ export async function startMeeting(
   return {
     id: meeting._id.toString(),
 
-    financialYearId:
-      meeting.financialYearId.toString(),
+    financialYearId: meeting.financialYearId.toString(),
 
-    meetingDate:
-      meeting.meetingDate.toISOString(),
+    meetingDate: meeting.meetingDate.toISOString(),
 
     place: meeting.place,
 
@@ -50,30 +43,18 @@ export async function startMeeting(
 
     status: meeting.status,
 
-    startedAt:
-      meeting.startedAt?.toISOString() ??
-      null,
+    startedAt: meeting.startedAt?.toISOString() ?? null,
 
-    approvedAt:
-      meeting.approvedAt?.toISOString() ??
-      null,
+    approvedAt: meeting.approvedAt?.toISOString() ?? null,
 
-    closedAt:
-      meeting.closedAt?.toISOString() ??
-      null,
+    closedAt: meeting.closedAt?.toISOString() ?? null,
 
-    createdBy:
-      meeting.createdBy?.toString() ??
-      null,
+    createdBy: meeting.createdBy?.toString() ?? null,
 
-    updatedBy:
-      meeting.updatedBy?.toString() ??
-      null,
+    updatedBy: meeting.updatedBy?.toString() ?? null,
 
-    createdAt:
-      meeting.createdAt.toISOString(),
+    createdAt: meeting.createdAt.toISOString(),
 
-    updatedAt:
-      meeting.updatedAt.toISOString(),
+    updatedAt: meeting.updatedAt.toISOString(),
   };
 }

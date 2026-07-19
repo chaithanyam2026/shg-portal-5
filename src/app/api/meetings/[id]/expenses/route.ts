@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { getExpenses } from "@/features/meetings/services/get-expenses";
 import { updateExpenses } from "@/features/meetings/services/expenses";
+import { getExpenses } from "@/features/meetings/services/get-expenses";
 
 type RouteContext = {
   params: Promise<{
@@ -9,64 +9,38 @@ type RouteContext = {
   }>;
 };
 
-export async function GET(
-  _request: NextRequest,
-  { params }: RouteContext,
-) {
+export async function GET(_request: NextRequest, { params }: RouteContext) {
   try {
     const { id } = await params;
 
-    const summary =
-      await getExpenses(id);
+    const summary = await getExpenses(id);
 
-    return NextResponse.json(
-      summary,
-    );
+    return NextResponse.json(summary);
   } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : "Failed to load expenses.";
+    const message = error instanceof Error ? error.message : "Failed to load expenses.";
 
     return NextResponse.json(
       {
         message,
       },
       {
-        status:
-          message ===
-          "Meeting not found."
-            ? 404
-            : 500,
+        status: message === "Meeting not found." ? 404 : 500,
       },
     );
   }
 }
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: RouteContext,
-) {
+export async function PATCH(request: NextRequest, { params }: RouteContext) {
   try {
     const { id } = await params;
 
-    const body =
-      await request.json();
+    const body = await request.json();
 
-    const result =
-      await updateExpenses(
-        id,
-        body,
-      );
+    const result = await updateExpenses(id, body);
 
-    return NextResponse.json(
-      result,
-    );
+    return NextResponse.json(result);
   } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : "Failed to update expenses.";
+    const message = error instanceof Error ? error.message : "Failed to update expenses.";
 
     let status = 400;
 

@@ -1,7 +1,5 @@
 import type { LedgerEntry } from "@/features/reports/domain/ledger-entry";
-import {
-  LEDGER_TRANSACTION_TYPE,
-} from "@/features/reports/domain/transaction-type";
+import { LEDGER_TRANSACTION_TYPE } from "@/features/reports/domain/transaction-type";
 import type { RunningBalance } from "@/features/reports/types";
 
 export function calculateRunningBalances(
@@ -16,9 +14,7 @@ export function calculateRunningBalances(
     if (entry.transactionType === LEDGER_TRANSACTION_TYPE.BANK_DEPOSIT) {
       cashInHand -= entry.expense;
       bankBalance += entry.expense;
-    } else if (
-      entry.transactionType === LEDGER_TRANSACTION_TYPE.BANK_WITHDRAWAL
-    ) {
+    } else if (entry.transactionType === LEDGER_TRANSACTION_TYPE.BANK_WITHDRAWAL) {
       bankBalance -= entry.income;
       cashInHand += entry.income;
     } else {

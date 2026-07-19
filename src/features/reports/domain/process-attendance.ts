@@ -1,14 +1,8 @@
-import type {
-  AttendanceStatus,
-} from "./attendance-fine";
+import type { AttendanceStatus } from "./attendance-fine";
 
-import {
-  calculateAttendanceFine,
-} from "./calculate-attendance-fine";
+import { calculateAttendanceFine } from "./calculate-attendance-fine";
 
-import {
-  calculateConsecutiveAbsence,
-} from "./calculate-consecutive-absence";
+import { calculateConsecutiveAbsence } from "./calculate-consecutive-absence";
 
 export type AttendanceProcessResult = {
   consecutiveAbsence: number;
@@ -26,17 +20,9 @@ export function processAttendance(
   currentStreak: number,
   status: AttendanceStatus,
 ): AttendanceProcessResult {
-  const consecutiveAbsence =
-    calculateConsecutiveAbsence(
-      currentStreak,
-      status,
-    );
+  const consecutiveAbsence = calculateConsecutiveAbsence(currentStreak, status);
 
-  const fineCharged =
-    calculateAttendanceFine(
-      status,
-      consecutiveAbsence,
-    );
+  const fineCharged = calculateAttendanceFine(status, consecutiveAbsence);
 
   return {
     consecutiveAbsence,

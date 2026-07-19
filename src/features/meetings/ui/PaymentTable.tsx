@@ -20,15 +20,8 @@ type Props = {
   onChange(records: PaymentRecord[]): void;
 };
 
-export default function PaymentTable({
-  records,
-  disabled = false,
-  onChange,
-}: Props) {
-  function updateRecord(
-    index: number,
-    record: PaymentRecord,
-  ) {
+export default function PaymentTable({ records, disabled = false, onChange }: Props) {
+  function updateRecord(index: number, record: PaymentRecord) {
     const next = [...records];
     next[index] = record;
     onChange(next);
@@ -53,30 +46,20 @@ export default function PaymentTable({
         <TableBody>
           {records.length === 0 && (
             <TableRow>
-              <TableCell
-                colSpan={8}
-                align="center"
-              >
+              <TableCell colSpan={8} align="center">
                 No members found.
               </TableCell>
             </TableRow>
           )}
 
-          {records.map(
-            (record, index) => (
-              <PaymentRow
-                key={record.memberId}
-                record={record}
-                disabled={disabled}
-                onChange={(value) =>
-                  updateRecord(
-                    index,
-                    value,
-                  )
-                }
-              />
-            ),
-          )}
+          {records.map((record, index) => (
+            <PaymentRow
+              key={record.memberId}
+              record={record}
+              disabled={disabled}
+              onChange={(value) => updateRecord(index, value)}
+            />
+          ))}
         </TableBody>
       </Table>
     </TableContainer>

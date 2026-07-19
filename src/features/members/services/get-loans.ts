@@ -82,60 +82,40 @@ import connectMongo from "@/lib/db/mongodb";
 
 import Loan from "@/models/Loan";
 
-import {
-  getLoanPassbook,
-} from "@/features/loans/services";
+import { getLoanPassbook } from "@/features/loans/services";
 
-export async function getMemberLoans(
-  memberId: string,
-) {
+export async function getMemberLoans(memberId: string) {
   await connectMongo();
 
-  const loans =
-    await Loan.find({
-      memberId,
+  const loans = await Loan.find({
+    memberId,
+  })
+    .sort({
+      disbursedDate: -1,
     })
-      .sort({
-        disbursedDate: -1,
-      })
-      .lean();
+    .lean();
 
   return Promise.all(
-    loans.map(
-      async (loan) => {
-        const passbook =
-          await getLoanPassbook(
-            loan._id.toString(),
-          );
+    loans.map(async (loan) => {
+      const passbook = await getLoanPassbook(loan._id.toString());
 
-        const lastEntry =
-          passbook.entries.at(-1);
+      const lastEntry = passbook.entries.at(-1);
 
-        return {
-          _id:
-            loan._id.toString(),
+      return {
+        _id: loan._id.toString(),
 
-          loanNumber:
-            loan.loanNumber,
+        loanNumber: loan.loanNumber,
 
-          loanType:
-            loan.loanType,
+        loanType: loan.loanType,
 
-          status:
-            loan.status,
+        status: loan.status,
 
-          disbursedAmount:
-            loan.disbursedAmount,
+        disbursedAmount: loan.disbursedAmount,
 
-          disbursedDate:
-            loan.disbursedDate,
+        disbursedDate: loan.disbursedDate,
 
-          outstandingPrincipal:
-            lastEntry
-              ?.outstandingPrincipal ??
-            loan.disbursedAmount,
-        };
-      },
-    ),
+        outstandingPrincipal: lastEntry?.outstandingPrincipal ?? loan.disbursedAmount,
+      };
+    }),
   );
 }

@@ -4,10 +4,7 @@ import { useState } from "react";
 
 import { useRouter } from "next/navigation";
 
-import {
-  Button,
-  ButtonProps,
-} from "@mui/material";
+import { Button, ButtonProps } from "@mui/material";
 
 type Props = {
   meetingId: string;
@@ -30,14 +27,11 @@ export default function MeetingActionButton({
 }: Props) {
   const router = useRouter();
 
-  const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
 
   async function handleClick() {
     if (confirm) {
-      const ok = window.confirm(
-        `Are you sure you want to ${label.toLowerCase()}?`,
-      );
+      const ok = window.confirm(`Are you sure you want to ${label.toLowerCase()}?`);
 
       if (!ok) {
         return;
@@ -47,10 +41,7 @@ export default function MeetingActionButton({
     try {
       setLoading(true);
 
-      const method =
-        action === "delete"
-          ? "DELETE"
-          : "POST";
+      const method = action === "delete" ? "DELETE" : "POST";
 
       const url =
         action === "delete"
@@ -64,10 +55,7 @@ export default function MeetingActionButton({
       if (!response.ok) {
         const body = await response.json();
 
-        throw new Error(
-          body.message ??
-            `Unable to ${action} meeting.`,
-        );
+        throw new Error(body.message ?? `Unable to ${action} meeting.`);
       }
 
       if (action === "delete") {
@@ -76,23 +64,14 @@ export default function MeetingActionButton({
         router.refresh();
       }
     } catch (error) {
-      alert(
-        error instanceof Error
-          ? error.message
-          : "Unexpected error.",
-      );
+      alert(error instanceof Error ? error.message : "Unexpected error.");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <Button
-      color={color}
-      variant={variant}
-      disabled={disabled || loading}
-      onClick={handleClick}
-    >
+    <Button color={color} variant={variant} disabled={disabled || loading} onClick={handleClick}>
       {loading ? "Please wait..." : label}
     </Button>
   );

@@ -11,47 +11,47 @@ The application must remain **simple**, **maintainable**, and
 Never redesign the architecture. Continue from the current
 implementation.
 
-------------------------------------------------------------------------
+---
 
 # Technology Stack (LOCKED)
 
--   Next.js 16 (App Router)
--   React 19
--   TypeScript (Strict)
--   MongoDB
--   Mongoose 8
--   Auth.js v5
--   Material UI v7
--   Zod
+- Next.js 16 (App Router)
+- React 19
+- TypeScript (Strict)
+- MongoDB
+- Mongoose 8
+- Auth.js v5
+- Material UI v7
+- Zod
 
 Never replace any technology.
 
-------------------------------------------------------------------------
+---
 
 # Architecture (LOCKED)
 
 Use:
 
--   Domain Driven Design (DDD)
--   Feature First Architecture
--   Vertical Slice Development
+- Domain Driven Design (DDD)
+- Feature First Architecture
+- Vertical Slice Development
 
 Avoid:
 
--   Repository Pattern
--   DTO Layer
--   Mapper Layer
--   Generic Base Classes
--   Framework-style abstractions
--   Unnecessary helper libraries
+- Repository Pattern
+- DTO Layer
+- Mapper Layer
+- Generic Base Classes
+- Framework-style abstractions
+- Unnecessary helper libraries
 
 This is a **simple application**, not a framework.
 
-------------------------------------------------------------------------
+---
 
 # Folder Structure
 
-``` text
+```text
 src/
 ├── app/
 ├── features/
@@ -62,7 +62,7 @@ src/
 
 Meeting feature:
 
-``` text
+```text
 features/
 └── meetings/
     ├── domain/
@@ -72,7 +72,7 @@ features/
     └── types.ts
 ```
 
-------------------------------------------------------------------------
+---
 
 # Development Order
 
@@ -91,29 +91,29 @@ Always implement features in this order:
 
 Every batch must leave the application compilable.
 
-------------------------------------------------------------------------
+---
 
 # UI Rules
 
--   Mobile First
--   Responsive
--   Material UI
--   Server Components wherever possible
--   Client Components only for interactivity
--   No business logic inside UI
+- Mobile First
+- Responsive
+- Material UI
+- Server Components wherever possible
+- Client Components only for interactivity
+- No business logic inside UI
 
 Business rules belong only inside services.
 
-------------------------------------------------------------------------
+---
 
 # Validation Rules
 
--   Always use Zod.
--   Never validate inside UI.
--   Never validate inside API.
--   APIs simply call services.
+- Always use Zod.
+- Never validate inside UI.
+- Never validate inside API.
+- APIs simply call services.
 
-------------------------------------------------------------------------
+---
 
 # Service Rules
 
@@ -127,20 +127,20 @@ Every service follows:
 
 Never return Mongoose documents.
 
-------------------------------------------------------------------------
+---
 
 # Coding Rules
 
 Always generate:
 
--   Complete file
--   Full path
--   All imports
--   Strict typing
+- Complete file
+- Full path
+- All imports
+- Strict typing
 
 No placeholders.
 
-------------------------------------------------------------------------
+---
 
 # Response Style
 
@@ -151,25 +151,25 @@ When generating code:
 
 Avoid partial snippets unless explicitly requested.
 
-------------------------------------------------------------------------
+---
 
 # Current Goals
 
+1.  Begin subsequent SHG modules
 
-1.  Begin subsequent SHG modules 
-
-------------------------------------------------------------------------
+---
 
 # General Principles
 
--   Keep the architecture simple.
--   Maintain feature-first organization.
--   Keep business logic in services.
--   Reuse existing patterns.
--   Prefer consistency over clever abstractions.
--   Every batch must leave the project compiling and runnable.
+- Keep the architecture simple.
+- Maintain feature-first organization.
+- Keep business logic in services.
+- Reuse existing patterns.
+- Prefer consistency over clever abstractions.
+- Every batch must leave the project compiling and runnable.
 
 # Exisitng Schema:
+
 import{InferSchemaType,Model,Schema,Types,model,models,}from "mongoose";import{createSchema}from "@/lib/db/schema";const financialYearSchema=createSchema({name:{type:String,required:true,unique:true,trim:true,maxlength:100,},startDate:{type:Date,required:true,},endDate:{type:Date,required:true,},remarks:{type:String,default:"",trim:true,maxlength:1000,},status:{type:String,enum:["DRAFT","IN_PROGRESS","VALIDATED","APPROVED","CLOSED",],default:"DRAFT",index:true,},members:[{memberId:{type:Schema.Types.ObjectId,ref:"Member",required:true,},opening:{contribution:{type:Number,default:0,min:0,},loan:{type:Number,default:0,min:0,},specialLoan:{type:Number,default:0,min:0,},specialLoanExpiry:{type:Date,default:null,},},},],executiveCommittee:{president:{type:Schema.Types.ObjectId,ref:"Member",default:null,},vicePresident:{type:Schema.Types.ObjectId,ref:"Member",default:null,},secretary:{type:Schema.Types.ObjectId,ref:"Member",default:null,},jointSecretary:{type:Schema.Types.ObjectId,ref:"Member",default:null,},treasurer:{type:Schema.Types.ObjectId,ref:"Member",default:null,},},openingBalances:{bankBalance:{type:Number,default:0,min:0,},cashInHand:{type:Number,default:0,min:0,},excessCorpus:{type:Number,default:0,min:0,},investments:{type:Number,default:0,min:0,},otherLoans:{type:Number,default:0,min:0,},},});financialYearSchema.index({name:1},{unique:true},);financialYearSchema.index({startDate:1,endDate:1,});financialYearSchema.index({status:1,});financialYearSchema.index({status:1},{unique:true,partialFilterExpression:{status:"IN_PROGRESS",},},);export type FinancialYearDocument=InferSchemaType<typeof financialYearSchema>&{_id:Types.ObjectId;};export type FinancialYearStatus=|"DRAFT"|"IN_PROGRESS"|"VALIDATED"|"APPROVED"|"CLOSED";const FinancialYear:Model<FinancialYearDocument>=(models.FinancialYear as Model<FinancialYearDocument>)??model<FinancialYearDocument>("FinancialYear",financialYearSchema,);export default FinancialYear;export{FinancialYear};
 
 import{InferSchemaType,Model,Schema,Types,model,models,}from 'mongoose';import{createSchema}from '@/lib/db/schema';import{USER_ROLES,USER_ROLE_VALUES,}from '@/lib/constants/roles';import{USER_STATUS,USER_STATUS_VALUES,}from '@/lib/constants/user-status';const userSchema=createSchema({username:{type:String,required:true,unique:true,trim:true,lowercase:true,minlength:3,maxlength:50,},passwordHash:{type:String,required:true,minlength:60,maxlength:255,},role:{type:String,enum:USER_ROLE_VALUES,default:USER_ROLES.MEMBER,required:true,},status:{type:String,enum:USER_STATUS_VALUES,default:USER_STATUS.ACTIVE,required:true,},memberId:{type:Schema.Types.ObjectId,ref:'Member',default:null,},lastLoginAt:{type:Date,default:null,},});userSchema.index({username:1,},{unique:true,},);userSchema.index({memberId:1,});userSchema.index({role:1,});userSchema.index({status:1,});export type UserDocument=InferSchemaType<typeof userSchema>&{_id:Types.ObjectId;};const User:Model<UserDocument>=(models.User as Model<UserDocument>)??model<UserDocument>('User',userSchema);export default User;export{User};
@@ -178,15 +178,16 @@ import{InferSchemaType,Model,Types,model,models,}from 'mongoose';import{createSc
 
 import{InferSchemaType,Model,Schema,Types,model,models,}from "mongoose";import{createSchema}from "@/lib/db/schema";import{MEETING_STATUS,MEETING_STATUS_VALUES,}from "@/features/meetings/domain/meeting-status";import{ATTENDANCE_STATUS,ATTENDANCE_STATUS_VALUES,}from "@/features/meetings/domain/attendance-status";import{WEEKLY_CONTRIBUTION,}from "@/features/meetings/domain/payment";import{BANK_TRANSACTION_TYPE,BANK_TRANSACTION_TYPE_VALUES,}from "@/features/meetings/domain/bank-transaction";import{INCOME_CATEGORY,INCOME_CATEGORY_VALUES,}from "@/features/meetings/domain/income";import{EXPENSE_CATEGORY,EXPENSE_CATEGORY_VALUES,}from "@/features/meetings/domain/expense";const incomeSchema=createSchema({transactionDate:{type:Date,required:true,},category:{type:String,enum:INCOME_CATEGORY_VALUES,required:true,default:INCOME_CATEGORY.MISCELLANEOUS,},amount:{type:Number,required:true,min:0,},remarks:{type:String,default:"",trim:true,maxlength:500,},},{_id:false,},);const expenseSchema=createSchema({transactionDate:{type:Date,required:true,},category:{type:String,enum:EXPENSE_CATEGORY_VALUES,required:true,default:EXPENSE_CATEGORY.MISCELLANEOUS,},amount:{type:Number,required:true,min:0,},remarks:{type:String,default:"",trim:true,maxlength:500,},},{_id:false,},);const meetingSchema=createSchema({financialYearId:{type:Schema.Types.ObjectId,ref:"FinancialYear",required:true,index:true,},meetingDate:{type:Date,required:true,index:true,},place:{type:String,required:true,trim:true,maxlength:150,},agenda:{type:String,default:"",trim:true,maxlength:1000,},remarks:{type:String,default:"",trim:true,maxlength:2000,},attendance:[{memberId:{type:Schema.Types.ObjectId,ref:"Member",required:true,},status:{type:String,enum:ATTENDANCE_STATUS_VALUES,default:ATTENDANCE_STATUS.PRESENT,required:true,},remarks:{type:String,default:"",trim:true,maxlength:500,},},],payments:{type:[{memberId:{type:Schema.Types.ObjectId,ref:"Member",required:true,},contribution:{type:Number,default:0,min:0,required:true,},loanRepayment:{type:Number,default:0,min:0,required:true,},absentFine:{type:Number,default:0,min:0,required:true,},specialLoanFine:{type:Number,default:0,min:0,required:true,},remarks:{type:String,default:"",trim:true,maxlength:500,},},],default:[],},bankTransactions:{type:[{transactionDate:{type:Date,required:true,},type:{type:String,enum:BANK_TRANSACTION_TYPE_VALUES,required:true,default:BANK_TRANSACTION_TYPE.DEPOSIT,},amount:{type:Number,required:true,min:0,},remarks:{type:String,default:"",trim:true,maxlength:500,},},],default:[],},otherIncomes:{type:[incomeSchema],default:[],},expenses:{type:[expenseSchema],default:[],},status:{type:String,enum:MEETING_STATUS_VALUES,default:MEETING_STATUS.DRAFT,required:true,index:true,},startedAt:{type:Date,default:null,},approvedAt:{type:Date,default:null,},closedAt:{type:Date,default:null,},createdBy:{type:Types.ObjectId,ref:"User",default:null,},updatedBy:{type:Types.ObjectId,ref:"User",default:null,},});meetingSchema.index({financialYearId:1,meetingDate:1,},{unique:true,});meetingSchema.index({status:1,meetingDate:-1,});meetingSchema.index({"attendance.memberId":1,});meetingSchema.index({"payments.memberId":1,});meetingSchema.index({"bankTransactions.transactionDate":1,});meetingSchema.index({"otherIncomes.transactionDate":1,});meetingSchema.index({"expenses.transactionDate":1,});export type MeetingDocument=InferSchemaType<typeof meetingSchema>&{_id:Types.ObjectId;};const Meeting:Model<MeetingDocument>=(models.Meeting as Model<MeetingDocument>)??model<MeetingDocument>("Meeting",meetingSchema);export default Meeting;export{Meeting};
 
-------------------------------------------------------------------------
+---
 
 # Next Action:
 
 Prepare a loan book memberwise, so each members can see their loan staus, repayments, fine, outstanding amount etc
 
-Summary will have these values -  Loan Disbursed amount, Start Date, EMI, Outstanding Principal, Paid Interest, Pending Interest, Pain Loan Fine, Pending Loan Fine, Total to be paid (including all amount)
+Summary will have these values - Loan Disbursed amount, Start Date, EMI, Outstanding Principal, Paid Interest, Pending Interest, Pain Loan Fine, Pending Loan Fine, Total to be paid (including all amount)
 
 Loan book should have below fields
+
 1. Date
 2. Amount Paid
 3. Loan Fine

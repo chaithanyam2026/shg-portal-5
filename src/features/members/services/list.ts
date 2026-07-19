@@ -2,52 +2,36 @@ import connectMongo from "@/lib/db/mongodb";
 
 import Member from "@/models/Member";
 
-import type {
-  MemberSummary,
-} from "../types";
+import type { MemberSummary } from "../types";
 
 /**
  * Returns all members ordered by
  * member code.
  */
-export async function listMembers(): Promise<
-  MemberSummary[]
-> {
+export async function listMembers(): Promise<MemberSummary[]> {
   await connectMongo();
 
-  const members =
-    await Member.find()
-      .sort({
-        memberCode: 1,
-      })
-      .lean();
+  const members = await Member.find()
+    .sort({
+      memberCode: 1,
+    })
+    .lean();
 
-  return members.map(
-    (member) => ({
-      _id:
-        member._id.toString(),
+  return members.map((member) => ({
+    _id: member._id.toString(),
 
-      memberCode:
-        member.memberCode,
+    memberCode: member.memberCode,
 
-      name:
-        member.name,
+    name: member.name,
 
-      phone:
-        member.phone,
+    phone: member.phone,
 
-      address:
-        member.address,
+    address: member.address,
 
-      status:
-        member.status,
+    status: member.status,
 
-      joinedDate:
-        member.joinedDate
-          ?.toISOString(),
+    joinedDate: member.joinedDate?.toISOString(),
 
-      remarks:
-        member.remarks ?? "",
-    }),
-  );
+    remarks: member.remarks ?? "",
+  }));
 }

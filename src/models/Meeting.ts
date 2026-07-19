@@ -1,38 +1,19 @@
-import {
-  InferSchemaType,
-  Model,
-  Schema,
-  Types,
-  model,
-  models,
-} from "mongoose";
+import { InferSchemaType, Model, Schema, Types, model, models } from "mongoose";
 
 import { createSchema } from "@/lib/db/schema";
 
 import {
-  MEETING_STATUS,
-  MEETING_STATUS_VALUES,
-} from "@/features/meetings/domain/meeting-status";
-import {
   ATTENDANCE_STATUS,
   ATTENDANCE_STATUS_VALUES,
 } from "@/features/meetings/domain/attendance-status";
-import {
-  WEEKLY_CONTRIBUTION,
-} from "@/features/meetings/domain/payment";
+import { MEETING_STATUS, MEETING_STATUS_VALUES } from "@/features/meetings/domain/meeting-status";
 
 import {
   BANK_TRANSACTION_TYPE,
   BANK_TRANSACTION_TYPE_VALUES,
 } from "@/features/meetings/domain/bank-transaction";
-import {
-  INCOME_CATEGORY,
-  INCOME_CATEGORY_VALUES,
-} from "@/features/meetings/domain/income";
-import {
-  EXPENSE_CATEGORY,
-  EXPENSE_CATEGORY_VALUES,
-} from "@/features/meetings/domain/expense";
+import { EXPENSE_CATEGORY, EXPENSE_CATEGORY_VALUES } from "@/features/meetings/domain/expense";
+import { INCOME_CATEGORY, INCOME_CATEGORY_VALUES } from "@/features/meetings/domain/income";
 
 const incomeSchema = createSchema(
   {
@@ -45,8 +26,7 @@ const incomeSchema = createSchema(
       type: String,
       enum: INCOME_CATEGORY_VALUES,
       required: true,
-      default:
-        INCOME_CATEGORY.MISCELLANEOUS,
+      default: INCOME_CATEGORY.MISCELLANEOUS,
     },
 
     amount: {
@@ -78,8 +58,7 @@ const expenseSchema = createSchema(
       type: String,
       enum: EXPENSE_CATEGORY_VALUES,
       required: true,
-      default:
-        EXPENSE_CATEGORY.MISCELLANEOUS,
+      default: EXPENSE_CATEGORY.MISCELLANEOUS,
     },
 
     amount: {
@@ -216,11 +195,9 @@ const meetingSchema = createSchema({
 
         type: {
           type: String,
-          enum:
-            BANK_TRANSACTION_TYPE_VALUES,
+          enum: BANK_TRANSACTION_TYPE_VALUES,
           required: true,
-          default:
-            BANK_TRANSACTION_TYPE.DEPOSIT,
+          default: BANK_TRANSACTION_TYPE.DEPOSIT,
         },
 
         amount: {
@@ -286,8 +263,6 @@ const meetingSchema = createSchema({
   },
 });
 
-
-
 meetingSchema.index(
   {
     financialYearId: 1,
@@ -295,7 +270,7 @@ meetingSchema.index(
   },
   {
     unique: true,
-  }
+  },
 );
 
 meetingSchema.index({
@@ -311,8 +286,7 @@ meetingSchema.index({
 });
 
 meetingSchema.index({
-  "bankTransactions.transactionDate":
-    1,
+  "bankTransactions.transactionDate": 1,
 });
 
 meetingSchema.index({
@@ -323,14 +297,12 @@ meetingSchema.index({
   "expenses.transactionDate": 1,
 });
 
-export type MeetingDocument =
-  InferSchemaType<typeof meetingSchema> & {
-    _id: Types.ObjectId;
-  };
+export type MeetingDocument = InferSchemaType<typeof meetingSchema> & {
+  _id: Types.ObjectId;
+};
 
 const Meeting: Model<MeetingDocument> =
-  (models.Meeting as Model<MeetingDocument>) ??
-  model<MeetingDocument>("Meeting", meetingSchema);
+  (models.Meeting as Model<MeetingDocument>) ?? model<MeetingDocument>("Meeting", meetingSchema);
 
 export default Meeting;
 

@@ -2,16 +2,9 @@
 
 import { useEffect } from "react";
 
-import {
-  Box,
-  Divider,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, Divider, Stack, Typography } from "@mui/material";
 
-import type {
-  AttendanceRegister,
-} from "../domain";
+import type { AttendanceRegister } from "../domain";
 
 import AttendanceRegisterPrintCell from "./AttendanceRegisterPrintCell";
 import AttendanceRegisterPrintSummary from "./AttendanceRegisterPrintSummary";
@@ -39,13 +32,11 @@ export default function AttendanceRegisterPrint({
   financialYearName,
 }: Props) {
   useEffect(() => {
-    const timer =
-      window.setTimeout(() => {
-        window.print();
-      }, 500);
+    const timer = window.setTimeout(() => {
+      window.print();
+    }, 500);
 
-    return () =>
-      window.clearTimeout(timer);
+    return () => window.clearTimeout(timer);
   }, []);
 
   return (
@@ -54,51 +45,30 @@ export default function AttendanceRegisterPrint({
       className="print-page"
       sx={{
         p: 3,
-        bgcolor:
-          "background.paper",
+        bgcolor: "background.paper",
 
         "@media print": {
           p: 0,
         },
       }}
     >
-      <AttendanceRegisterPrintToolbar
-        backHref={`/reports/attendance/${financialYearId}`}
-      />
+      <AttendanceRegisterPrintToolbar backHref={`/reports/attendance/${financialYearId}`} />
 
       <Stack spacing={0.5}>
-        <Typography
-          variant="h5"
-          fontWeight={700}
-          align="center"
-        >
+        <Typography variant="h5" fontWeight={700} align="center">
           {shgName}
         </Typography>
 
-        <Typography
-          variant="h6"
-          align="center"
-        >
+        <Typography variant="h6" align="center">
           Attendance Register
         </Typography>
 
         {financialYearName && (
-          <Typography
-            align="center"
-          >
-            Financial Year :{" "}
-            {financialYearName}
-          </Typography>
+          <Typography align="center">Financial Year : {financialYearName}</Typography>
         )}
 
-        <Typography
-          align="center"
-          variant="body2"
-        >
-          Printed On :{" "}
-          {new Date().toLocaleDateString(
-            "en-IN",
-          )}
+        <Typography align="center" variant="body2">
+          Printed On : {new Date().toLocaleDateString("en-IN")}
         </Typography>
       </Stack>
 
@@ -106,27 +76,21 @@ export default function AttendanceRegisterPrint({
 
       <Box
         sx={{
-          overflowX:
-            "auto",
+          overflowX: "auto",
         }}
       >
         <table
           style={{
             width: "100%",
-            borderCollapse:
-              "collapse",
+            borderCollapse: "collapse",
             fontSize: 11,
           }}
         >
           <thead>
             <tr>
-              <th>
-                Sl
-              </th>
+              <th>Sl</th>
 
-              <th>
-                Code
-              </th>
+              <th>Code</th>
 
               <th
                 style={{
@@ -136,125 +100,67 @@ export default function AttendanceRegisterPrint({
                 Member
               </th>
 
-              {register.meetings.map(
-                (
-                  meeting,
-                ) => (
-                  <th
-                    key={
-                      meeting.meetingId
-                    }
-                  >
-                    {meeting.meetingDate.toLocaleDateString(
-                      "en-IN",
-                    )}
-                  </th>
-                ),
-              )}
+              {register.meetings.map((meeting) => (
+                <th key={meeting.meetingId}>{meeting.meetingDate.toLocaleDateString("en-IN")}</th>
+              ))}
 
-              <th>
-                Total
-              </th>
+              <th>Total</th>
 
-              <th>
-                Paid
-              </th>
+              <th>Paid</th>
 
-              <th>
-                Balance
-              </th>
+              <th>Balance</th>
             </tr>
           </thead>
 
           <tbody>
-            {register.rows.map(
-              (
-                row,
-                index,
-              ) => (
-                <tr
-                  key={
-                    row.memberId
-                  }
+            {register.rows.map((row, index) => (
+              <tr key={row.memberId}>
+                <td>{index + 1}</td>
+
+                <td>{row.memberCode}</td>
+
+                <td>{row.memberName}</td>
+
+                {row.attendance.map((cell) => (
+                  <td
+                    key={cell.meetingId}
+                    style={{
+                      textAlign: "center",
+                    }}
+                  >
+                    <AttendanceRegisterPrintCell cell={cell} />
+                  </td>
+                ))}
+
+                <td
+                  style={{
+                    textAlign: "right",
+                  }}
                 >
-                  <td>
-                    {index + 1}
-                  </td>
+                  ₹{row.totalFine}
+                </td>
 
-                  <td>
-                    {
-                      row.memberCode
-                    }
-                  </td>
+                <td
+                  style={{
+                    textAlign: "right",
+                  }}
+                >
+                  ₹{row.paidFine}
+                </td>
 
-                  <td>
-                    {
-                      row.memberName
-                    }
-                  </td>
-
-                  {row.attendance.map(
-                    (
-                      cell,
-                    ) => (
-                      <td
-                        key={
-                          cell.meetingId
-                        }
-                        style={{
-                          textAlign:
-                            "center",
-                        }}
-                      >
-                        <AttendanceRegisterPrintCell
-                          cell={
-                            cell
-                          }
-                        />
-                      </td>
-                    ),
-                  )}
-
-                  <td
-                    style={{
-                      textAlign:
-                        "right",
-                    }}
-                  >
-                    ₹
-                    {row.totalFine}
-                  </td>
-
-                  <td
-                    style={{
-                      textAlign:
-                        "right",
-                    }}
-                  >
-                    ₹
-                    {row.paidFine}
-                  </td>
-
-                  <td
-                    style={{
-                      textAlign:
-                        "right",
-                    }}
-                  >
-                    ₹
-                    {row.pendingFine}
-                  </td>
-                </tr>
-              ),
-            )}
+                <td
+                  style={{
+                    textAlign: "right",
+                  }}
+                >
+                  ₹{row.pendingFine}
+                </td>
+              </tr>
+            ))}
           </tbody>
 
           <tfoot>
-            <AttendanceRegisterPrintSummary
-              register={
-                register
-              }
-            />
+            <AttendanceRegisterPrintSummary register={register} />
           </tfoot>
         </table>
       </Box>
@@ -267,44 +173,22 @@ export default function AttendanceRegisterPrint({
           fontSize: 12,
         }}
       >
-        <Typography
-          variant="subtitle2"
-          fontWeight={700}
-        >
+        <Typography variant="subtitle2" fontWeight={700}>
           Legend
         </Typography>
 
-        <Typography variant="body2">
-          ✓ — Present
-        </Typography>
+        <Typography variant="body2">✓ — Present</Typography>
+
+        <Typography variant="body2">L — Approved Leave</Typography>
+
+        <Typography variant="body2">A10 — First Consecutive Absence (₹10)</Typography>
+
+        <Typography variant="body2">A20 — Second Consecutive Absence (₹20)</Typography>
+
+        <Typography variant="body2">A70 — Third Consecutive Absence (₹70)</Typography>
 
         <Typography variant="body2">
-          L — Approved Leave
-        </Typography>
-
-        <Typography variant="body2">
-          A10 — First
-          Consecutive Absence
-          (₹10)
-        </Typography>
-
-        <Typography variant="body2">
-          A20 — Second
-          Consecutive Absence
-          (₹20)
-        </Typography>
-
-        <Typography variant="body2">
-          A70 — Third
-          Consecutive Absence
-          (₹70)
-        </Typography>
-
-        <Typography variant="body2">
-          A100 — Fourth &
-          Subsequent
-          Consecutive
-          Absence (₹100)
+          A100 — Fourth & Subsequent Consecutive Absence (₹100)
         </Typography>
       </Stack>
 

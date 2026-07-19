@@ -7,9 +7,21 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
     "seed:members": "tsx src/scripts/index.ts members"
   },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,css,scss,md}": [
+      "prettier --write"
+    ]
+  },
   "dependencies": {
+    "@auth/mongodb-adapter": "^3.11.2",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@hookform/resolvers": "^5.4.0",
@@ -22,7 +34,7 @@
     "dotenv": "^17.4.2",
     "mongoose": "^9.7.3",
     "next": "16.2.10",
-    "next-auth": "^4.24.14",
+    "next-auth": "^5.0.0-beta.31",
     "notistack": "^3.0.2",
     "react": "19.2.4",
     "react-dom": "19.2.4",
@@ -40,7 +52,10 @@
     "@types/uuid": "^10.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
-    "prettier": "^3.9.4",
+    "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.1.0",
+    "prettier": "^3.9.5",
     "prettier-plugin-organize-imports": "^4.3.0",
     "tailwindcss": "^4",
     "tsx": "^4.23.0",

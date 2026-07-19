@@ -4,18 +4,9 @@ import { useMemo, useState } from "react";
 
 import { useRouter } from "next/navigation";
 
-import {
-  Alert,
-  Button,
-  Card,
-  CardContent,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Alert, Button, Card, CardContent, Stack, Typography } from "@mui/material";
 
-import type {
-  PaymentRecord,
-} from "../types";
+import type { PaymentRecord } from "../types";
 
 import PaymentTable from "./PaymentTable";
 
@@ -24,64 +15,30 @@ type Props = {
   initialRecords: PaymentRecord[];
 };
 
-export default function PaymentForm({
-  meetingId,
-  initialRecords,
-}: Props) {
+export default function PaymentForm({ meetingId, initialRecords }: Props) {
   const router = useRouter();
 
-  const [records, setRecords] =
-    useState(initialRecords);
+  const [records, setRecords] = useState(initialRecords);
 
-  const [saving, setSaving] =
-    useState(false);
+  const [saving, setSaving] = useState(false);
 
-  const [error, setError] =
-    useState("");
+  const [error, setError] = useState("");
 
   const totals = useMemo(() => {
-    const contribution =
-      records.reduce(
-        (sum, record) =>
-          sum +
-          record.contribution,
-        0,
-      );
+    const contribution = records.reduce((sum, record) => sum + record.contribution, 0);
 
-    const loan =
-      records.reduce(
-        (sum, record) =>
-          sum +
-          record.loanRepayment,
-        0,
-      );
+    const loan = records.reduce((sum, record) => sum + record.loanRepayment, 0);
 
-    const absent =
-      records.reduce(
-        (sum, record) =>
-          sum +
-          record.absentFine,
-        0,
-      );
+    const absent = records.reduce((sum, record) => sum + record.absentFine, 0);
 
-    const special =
-      records.reduce(
-        (sum, record) =>
-          sum +
-          record.specialLoanFine,
-        0,
-      );
+    const special = records.reduce((sum, record) => sum + record.specialLoanFine, 0);
 
     return {
       contribution,
       loan,
       absent,
       special,
-      total:
-        contribution +
-        loan +
-        absent +
-        special,
+      total: contribution + loan + absent + special,
     };
   }, [records]);
 
@@ -90,38 +47,25 @@ export default function PaymentForm({
       setSaving(true);
       setError("");
 
-      const response =
-        await fetch(
-          `/api/meetings/${meetingId}/payments`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type":
-                "application/json",
-            },
-            body: JSON.stringify({
-              payments: records,
-            }),
-          },
-        );
+      const response = await fetch(`/api/meetings/${meetingId}/payments`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          payments: records,
+        }),
+      });
 
       if (!response.ok) {
-        const body =
-          await response.json();
+        const body = await response.json();
 
-        throw new Error(
-          body.message ??
-            "Unable to save payments.",
-        );
+        throw new Error(body.message ?? "Unable to save payments.");
       }
 
       router.refresh();
     } catch (error) {
-      setError(
-        error instanceof Error
-          ? error.message
-          : "Unable to save payments.",
-      );
+      setError(error instanceof Error ? error.message : "Unable to save payments.");
     } finally {
       setSaving(false);
     }
@@ -129,56 +73,27 @@ export default function PaymentForm({
 
   return (
     <Stack spacing={3}>
-      {error && (
-        <Alert severity="error">
-          {error}
-        </Alert>
-      )}
+      {error && <Alert severity="error">{error}</Alert>}
 
-      <PaymentTable
-        records={records}
-        disabled={saving}
-        onChange={setRecords}
-      />
+      <PaymentTable records={records} disabled={saving} onChange={setRecords} />
 
       <Card>
         <CardContent>
           <Stack spacing={1}>
-            <Typography>
-              Contribution: ₹
-              {totals.contribution}
-            </Typography>
+            <Typography>Contribution: ₹{totals.contribution}</Typography>
 
-            <Typography>
-              Loan Repayment: ₹
-              {totals.loan}
-            </Typography>
+            <Typography>Loan Repayment: ₹{totals.loan}</Typography>
 
-            <Typography>
-              Absent Fine: ₹
-              {totals.absent}
-            </Typography>
+            <Typography>Absent Fine: ₹{totals.absent}</Typography>
 
-            <Typography>
-              Special Loan Fine: ₹
-              {totals.special}
-            </Typography>
+            <Typography>Special Loan Fine: ₹{totals.special}</Typography>
 
-            <Typography
-              variant="h6"
-            >
-              Grand Total: ₹
-              {totals.total}
-            </Typography>
+            <Typography variant="h6">Grand Total: ₹{totals.total}</Typography>
           </Stack>
         </CardContent>
       </Card>
 
-      <Button
-        variant="contained"
-        disabled={saving}
-        onClick={save}
-      >
+      <Button variant="contained" disabled={saving} onClick={save}>
         Save Payments
       </Button>
     </Stack>

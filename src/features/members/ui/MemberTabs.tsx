@@ -4,58 +4,39 @@ import { useState } from "react";
 
 import Link from "next/link";
 
-import {
-  Box,
-  Button,
-  Stack,
-  Tab,
-  Tabs,
-} from "@mui/material";
+import { Box, Button, Stack, Tab, Tabs } from "@mui/material";
 
 import PageHeader from "@/components/layout/PageHeader";
-import type {
-  AttendanceFineSummary,
-} from "@/features/reports/domain";
+import type { AttendanceFineSummary } from "@/features/reports/domain";
 
-import type {
-  MemberDetails,
-} from "../types";
+import type { MemberDetails } from "../types";
 
+import AttendanceFineTab from "./tabs/AttendanceFineTab";
 import GeneralTab from "./tabs/GeneralTab";
 import LoansTab from "./tabs/LoansTab";
 import PassbookTab from "./tabs/PassbookTab";
-import AttendanceFineTab from "./tabs/AttendanceFineTab";
 
 type Props = {
   attendanceFine: AttendanceFineSummary;
   member: MemberDetails;
 };
 
-export default function MemberTabs({
-  member,
-  attendanceFine,
-}: Props) {
-  const [tab, setTab] =
-    useState(0);
+export default function MemberTabs({ member, attendanceFine }: Props) {
+  const [tab, setTab] = useState(0);
 
   return (
     <Stack spacing={3}>
       <Stack
         direction="row"
-        justifyContent="space-between"
-        alignItems="center"
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
       >
-        <PageHeader
-          title={member.name}
-          subtitle={member.memberCode}
-          backHref="/members"
-        />
+        <PageHeader title={member.name} subtitle={member.memberCode} backHref="/members" />
 
-        <Button
-          component={Link}
-          href="/members/new"
-          variant="contained"
-        >
+        <Button component={Link} href="/members/new" variant="contained">
           New Member
         </Button>
       </Stack>
@@ -63,10 +44,7 @@ export default function MemberTabs({
       <Box>
         <Tabs
           value={tab}
-          onChange={(
-            _event,
-            value: number,
-          ) => setTab(value)}
+          onChange={(_event, value: number) => setTab(value)}
           variant="scrollable"
           scrollButtons="auto"
         >
@@ -76,37 +54,17 @@ export default function MemberTabs({
 
           <Tab label="Passbook" />
 
-          <Tab
-            label="Attendance Fine"
-          />
+          <Tab label="Attendance Fine" />
         </Tabs>
 
         <Box sx={{ mt: 3 }}>
-          {tab === 0 && (
-            <GeneralTab
-              member={member}
-            />
-          )}
+          {tab === 0 && <GeneralTab member={member} />}
 
-          {tab === 1 && (
-            <LoansTab
-              member={member}
-            />
-          )}
+          {tab === 1 && <LoansTab member={member} />}
 
-          {tab === 2 && (
-            <PassbookTab
-              member={member}
-            />
-          )}
+          {tab === 2 && <PassbookTab member={member} />}
 
-          {tab === 3 && (
-            <AttendanceFineTab
-              attendanceFine={
-                attendanceFine
-              }
-            />
-          )}
+          {tab === 3 && <AttendanceFineTab attendanceFine={attendanceFine} />}
         </Box>
       </Box>
     </Stack>

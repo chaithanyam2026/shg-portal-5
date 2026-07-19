@@ -1,14 +1,8 @@
 "use client";
 
-import type {
-  ReactNode,
-} from "react";
+import type { ReactNode } from "react";
 
-import {
-  Box,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 
 import BackButton from "./BackButton";
 
@@ -37,40 +31,35 @@ export default function PageHeader({
         mb: 3,
       }}
     >
-      <Stack
-        direction={{
-          xs: "column",
-          md: "row",
-        }}
-        justifyContent="space-between"
-        alignItems={{
-          xs: "flex-start",
-          md: "center",
-        }}
-        spacing={2}
-      >
+     <Stack
+  direction={{
+    xs: "column",
+    md: "row",
+  }}
+  spacing={2}
+  sx={{
+    justifyContent: "space-between",
+    alignItems: {
+      xs: "stretch",
+      md: "center",
+    },
+  }}
+>
         <Stack spacing={1}>
-          {showBack && (
-            <BackButton
-              fallbackHref={
-                backHref
-              }
-            />
-          )}
+          {showBack && <BackButton fallbackHref={backHref} />}
 
           <Typography
-            variant="h4"
-            component="h1"
-            fontWeight={600}
-          >
+  variant="h4"
+  component="h1"
+  sx={{
+    fontWeight: 600,
+  }}
+>
             {title}
           </Typography>
 
           {subtitle && (
-            <Typography
-              variant="body2"
-              color="text.secondary"
-            >
+            <Typography variant="body2" color="text.secondary">
               {subtitle}
             </Typography>
           )}

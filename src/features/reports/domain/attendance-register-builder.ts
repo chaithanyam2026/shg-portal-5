@@ -1,30 +1,27 @@
-import type {
-  AttendanceStatus,
-} from "@/features/meetings/domain/attendance-status";
+import type { AttendanceStatus } from "@/features/meetings/domain/attendance-status";
 
-export type AttendanceRegisterBuilderInput =
-  {
-    financialYearId: string;
+export type AttendanceRegisterBuilderInput = {
+  financialYearId: string;
 
-    financialYearName: string;
+  financialYearName: string;
 
-    members: {
+  members: {
+    memberId: string;
+
+    memberCode: string;
+
+    memberName: string;
+  }[];
+
+  meetings: {
+    meetingId: string;
+
+    meetingDate: Date;
+
+    attendance: {
       memberId: string;
 
-      memberCode: string;
-
-      memberName: string;
+      status: AttendanceStatus;
     }[];
-
-    meetings: {
-      meetingId: string;
-
-      meetingDate: Date;
-
-      attendance: {
-        memberId: string;
-
-        status: AttendanceStatus;
-      }[];
-    }[];
-  };
+  }[];
+};

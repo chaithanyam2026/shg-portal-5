@@ -6,15 +6,8 @@ type Props = {
   }>;
 };
 
-export default async function Page({
-  params,
-}: Props) {
-  const { id } =
-    await params;
+export default async function Page({ params }: Props) {
+  const { id } = await params;
 
-  return (
-    <AttendanceRegister
-      financialYearId={id}
-    />
-  );
+  return <AttendanceRegister financialYearId={id} />;
 }

@@ -1,6 +1,7 @@
 import connectMongo from "@/lib/db/mongodb";
 
 import FinancialYear from "@/models/FinancialYear";
+import { mapFinancialYearSummary } from "./internal";
 
 /**
  * Returns the currently active
@@ -9,16 +10,16 @@ import FinancialYear from "@/models/FinancialYear";
 export async function getActiveFinancialYear() {
   await connectMongo();
 
-  const financialYear =
-    await FinancialYear.findOne({
-      status: "IN_PROGRESS",
-    }).lean();
+  const financialYear = await FinancialYear.findOne({
+    status: "IN_PROGRESS",
+  }).lean();
 
   if (!financialYear) {
-    throw new Error(
-      "No active financial year found.",
-    );
+    throw new Error("No active financial year found.");
   }
 
-  return financialYear;
+  // return financialYear;
+  return mapFinancialYearSummary(
+    financialYear,
+  );
 }

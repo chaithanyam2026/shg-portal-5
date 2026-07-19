@@ -2,24 +2,13 @@
 
 import { useEffect, useState } from "react";
 
-import {
-  Alert,
-  Box,
-  Button,
-  CircularProgress,
-  Container,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Alert, Box, Button, CircularProgress, Container, Stack } from "@mui/material";
 
 import Link from "next/link";
 
-import MeetingTable from "@/features/meetings/ui/MeetingTable";
-import type {
-  MeetingListResult,
-  MeetingSummary,
-} from "@/features/meetings/types";
 import PageHeader from "@/components/layout/PageHeader";
+import type { MeetingListResult, MeetingSummary } from "@/features/meetings/types";
+import MeetingTable from "@/features/meetings/ui/MeetingTable";
 
 export default function MeetingsPage() {
   const [meetings, setMeetings] = useState<MeetingSummary[]>([]);
@@ -41,61 +30,45 @@ export default function MeetingsPage() {
         throw new Error("Failed to load meetings.");
       }
 
-      const result: MeetingListResult =
-        await response.json();
+      const result: MeetingListResult = await response.json();
 
       setMeetings(result.items);
     } catch (error) {
-      setError(
-        error instanceof Error
-          ? error.message
-          : "Failed to load meetings.",
-      );
+      setError(error instanceof Error ? error.message : "Failed to load meetings.");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <Container
-      maxWidth="lg"
-      sx={{ py: 3 }}
-    >
+    <Container maxWidth="lg" sx={{ py: 3 }}>
       <Stack spacing={3}>
         <Stack
           direction="row"
-          justifyContent="space-between"
-          alignItems="center"
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
         >
-          <PageHeader
-            title="Meetings"
-            showBack={false}
-          />
-
-         
+          <PageHeader title="Meetings" showBack={false} />
         </Stack>
-         <Button
-            component={Link}
-            href="/meetings/new"
-            variant="contained"
-          >
-            Create Meeting
-          </Button>
+        <Button component={Link} href="/meetings/new" variant="contained">
+          Create Meeting
+        </Button>
 
-        {error && (
-          <Alert severity="error">
-            {error}
-          </Alert>
-        )}
+        {error && <Alert severity="error">{error}</Alert>}
 
         {loading ? (
-          <Box textAlign="center">
+          <Box
+            sx={{
+              textAlign: "center",
+            }}
+          >
             <CircularProgress />
           </Box>
         ) : (
-          <MeetingTable
-            meetings={meetings}
-          />
+          <MeetingTable meetings={meetings} />
         )}
       </Stack>
     </Container>

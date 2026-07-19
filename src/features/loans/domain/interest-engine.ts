@@ -1,6 +1,4 @@
-import type {
-  RepaymentCycle,
-} from "./repayment-cycle";
+import type { RepaymentCycle } from "./repayment-cycle";
 
 /* const MILLISECONDS_PER_DAY =
   24 *
@@ -83,31 +81,19 @@ export function calculateInterest({
   annualInterestRate,
   repaymentCycle,
 }: CalculateInterestInput): InterestCalculation {
-  const days =
-    repaymentCycle.interestDays;
+  const days = repaymentCycle.interestDays;
 
-  if (
-    outstandingPrincipal <= 0 ||
-    annualInterestRate <= 0 ||
-    days <= 0
-  ) return {
-  interestDays: days,
-  interestAmount: 0,
-};
+  if (outstandingPrincipal <= 0 || annualInterestRate <= 0 || days <= 0)
+    return {
+      interestDays: days,
+      interestAmount: 0,
+    };
 
-  const interest =
-    (
-      outstandingPrincipal *
-      annualInterestRate *
-      days
-    ) /
-    (365 * 100);
+  const interest = (outstandingPrincipal * annualInterestRate * days) / (365 * 100);
 
   return {
-  interestDays: days,
+    interestDays: days,
 
-  interestAmount: Number(
-    interest.toFixed(2),
-  ),
-};
+    interestAmount: Number(interest.toFixed(2)),
+  };
 }

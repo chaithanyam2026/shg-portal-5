@@ -13,9 +13,7 @@ const TRANSACTION_ORDER: Record<string, number> = {
   [LEDGER_TRANSACTION_TYPE.LOAN_DISBURSEMENT]: 9,
 };
 
-export function sortLedgerEntries(
-  entries: LedgerEntry[],
-): LedgerEntry[] {
+export function sortLedgerEntries(entries: LedgerEntry[]): LedgerEntry[] {
   return [...entries].sort((a, b) => {
     const dateComparison = a.date.getTime() - b.date.getTime();
 
@@ -24,8 +22,7 @@ export function sortLedgerEntries(
     }
 
     const typeComparison =
-      TRANSACTION_ORDER[a.transactionType] -
-      TRANSACTION_ORDER[b.transactionType];
+      TRANSACTION_ORDER[a.transactionType] - TRANSACTION_ORDER[b.transactionType];
 
     if (typeComparison !== 0) {
       return typeComparison;

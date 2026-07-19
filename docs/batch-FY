@@ -1,3 +1,34 @@
+CLOSING
+Phase 2
+├── Batch 1  — Close Domain
+├── Batch 2  — Closing Balance Builder
+├── Batch 3  — Member Closing Balance Builder ====
+├── Batch 4  — Financial Year Validation
+├── Batch 5  — Close Service ---
+├── Batch 6  — API
+├── Batch 7  — Close Confirmation Dialog ===
+├── Batch 8  — Financial Year UI
+├── Batch 9  — Reports Lock
+├── Batch 10 — Opening Balance Generator
+├── Batch 11 — Create Next Financial Year Wizard
+├── Batch 12 — Integration
+
+Batch 12 — Integration
+Goal
+
+Complete the end-to-end integration of the Create Next Financial Year Wizard with the backend and ensure the new financial year is created correctly using the previous year's closing snapshot.
+
+Batch 12.1 — API & Service Integration ======
+Batch 12.2 — FinancialYear Model Integration
+Batch 12.3 — Validation & Business Rules
+
+Batch 12.4 — Wizard UX Integration
+Batch 12.5 — End-to-End Testing
+
+
+Generate contents and specify place to update or full file path
+
+=============
 Recommended development batches
 
 To keep the project compilable after every step, I would implement the Financial Year feature in this order:

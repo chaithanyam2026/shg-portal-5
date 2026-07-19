@@ -7,17 +7,11 @@ import {
   updateOutstandingBalance,
 } from "../../domain";
 
-import type {
-  LoanPassbook,
-} from "../../domain";
+import type { LoanPassbook } from "../../domain";
 
-import type {
-  BuildLoanLedgerInput,
-} from "./loan-ledger";
+import type { BuildLoanLedgerInput } from "./loan-ledger";
 
-import type {
-  LoanRepayment,
-} from "./meeting-loader";
+import type { LoanRepayment } from "./meeting-loader";
 
 type ProcessRepaymentsInput = {
   loan: BuildLoanLedgerInput;
@@ -49,131 +43,96 @@ export function processRepayments({
   pendingInterest,
   pendingLoanFine,
 }: ProcessRepaymentsInput): ProcessRepaymentsResult {
-  let previousRepaymentDate:
-    Date | undefined;
+  let previousRepaymentDate: Date | undefined;
 
   for (const repayment of repayments) {
-    const repaymentCycle =
-      getRepaymentCycle({
-        disbursedDate:
-          loan.disbursedDate,
+    const repaymentCycle = getRepaymentCycle({
+      disbursedDate: loan.disbursedDate,
 
-        repaymentDate:
-          repayment.meetingDate,
+      repaymentDate: repayment.meetingDate,
 
-        previousRepaymentDate,
-      });
+      previousRepaymentDate,
+    });
 
-    const interest =
-      calculateInterest({
-        outstandingPrincipal,
+    const interest = calculateInterest({
+      outstandingPrincipal,
 
-        annualInterestRate:
-          loan.interestRate,
+      annualInterestRate: loan.interestRate,
 
-        repaymentCycle,
-      });
+      repaymentCycle,
+    });
 
-    pendingInterest +=
-      interest.interestAmount;
+    pendingInterest += interest.interestAmount;
 
-    const monthlyFine =
-      calculateMonthlyFine({
-        disbursedDate:
-          loan.disbursedDate,
+    const monthlyFine = calculateMonthlyFine({
+      disbursedDate: loan.disbursedDate,
 
-        repaymentCycle,
+      repaymentCycle,
 
-        expectedMonthlyRepayment:
-          loan.expectedMonthlyRepayment,
+      expectedMonthlyRepayment: loan.expectedMonthlyRepayment,
 
-        principalPaidThisMonth: 0,
-      });
+      principalPaidThisMonth: 0,
+    });
 
-    if (
-      monthlyFine.isApplicable
-    ) {
-      pendingLoanFine +=
-        monthlyFine.fineAmount;
+    if (monthlyFine.isApplicable) {
+      pendingLoanFine += monthlyFine.fineAmount;
     }
 
-    const allocation =
-      allocateLoanPayment({
-        payment:
-          repayment.amountPaid,
+    const allocation = allocateLoanPayment({
+      payment: repayment.amountPaid,
 
-        outstandingPrincipal,
+      outstandingPrincipal,
 
-        outstandingInterest:
-          pendingInterest,
+      outstandingInterest: pendingInterest,
 
-        outstandingFine:
-          pendingLoanFine,
-      });
+      outstandingFine: pendingLoanFine,
+    });
 
-    const {
+    const { paidPrincipal, paidInterest, paidLoanFine } = allocation;
+
+    const balances = updateOutstandingBalance({
+      outstandingPrincipal,
+
+      pendingInterest,
+
+      pendingLoanFine,
+
       paidPrincipal,
+
       paidInterest,
+
       paidLoanFine,
-    } = allocation;
+    });
 
-    const balances =
-      updateOutstandingBalance({
-        outstandingPrincipal,
+    outstandingPrincipal = balances.outstandingPrincipal;
 
-        pendingInterest,
+    pendingInterest = balances.pendingInterest;
 
-        pendingLoanFine,
+    pendingLoanFine = balances.pendingLoanFine;
 
-        paidPrincipal,
+    const recalculatedFine = calculateMonthlyFine({
+      disbursedDate: loan.disbursedDate,
 
-        paidInterest,
+      repaymentCycle,
 
-        paidLoanFine,
-      });
+      expectedMonthlyRepayment: loan.expectedMonthlyRepayment,
 
-    outstandingPrincipal =
-      balances.outstandingPrincipal;
-
-    pendingInterest =
-      balances.pendingInterest;
-
-    pendingLoanFine =
-      balances.pendingLoanFine;
-
-    const recalculatedFine =
-      calculateMonthlyFine({
-        disbursedDate:
-          loan.disbursedDate,
-
-        repaymentCycle,
-
-        expectedMonthlyRepayment:
-          loan.expectedMonthlyRepayment,
-
-        principalPaidThisMonth:
-          paidPrincipal,
-      });
+      principalPaidThisMonth: paidPrincipal,
+    });
 
     entries.push(
       createLedgerEntry({
-        transactionDate:
-          repayment.meetingDate,
+        transactionDate: repayment.meetingDate,
 
-        meetingId:
-          repayment.meetingId,
+        meetingId: repayment.meetingId,
 
-        amountPaid:
-          repayment.amountPaid,
+        amountPaid: repayment.amountPaid,
 
-        interestDays:
-          interest.interestDays,
+        interestDays: interest.interestDays,
 
-        interestCharged:
-          interest.interestAmount,
+        interestCharged: interest.interestAmount,
 
-        loanFineCharged:
-          recalculatedFine.fineAmount,
+        loanFineCharged: recalculatedFine.fineAmount,
 
         paidPrincipal,
 
@@ -187,13 +146,11 @@ export function processRepayments({
 
         pendingLoanFine,
 
-        remainingAmount:
-          allocation.remainingAmount,
+        remainingAmount: allocation.remainingAmount,
       }),
     );
 
-    previousRepaymentDate =
-      repayment.meetingDate;
+    previousRepaymentDate = repayment.meetingDate;
   }
 
   return {

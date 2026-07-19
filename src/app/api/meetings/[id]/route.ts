@@ -9,10 +9,7 @@ type RouteContext = {
   }>;
 };
 
-export async function GET(
-  _request: NextRequest,
-  { params }: RouteContext,
-) {
+export async function GET(_request: NextRequest, { params }: RouteContext) {
   try {
     const { id } = await params;
 
@@ -22,53 +19,33 @@ export async function GET(
   } catch (error) {
     return NextResponse.json(
       {
-        message:
-          error instanceof Error
-            ? error.message
-            : "Failed to load meeting.",
+        message: error instanceof Error ? error.message : "Failed to load meeting.",
       },
       {
-        status:
-          error instanceof Error &&
-          error.message === "Meeting not found."
-            ? 404
-            : 500,
+        status: error instanceof Error && error.message === "Meeting not found." ? 404 : 500,
       },
     );
   }
 }
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: RouteContext,
-) {
-    console.log("\n\n\nPATCH /api/meetings/[id] HIT");
+export async function PATCH(request: NextRequest, { params }: RouteContext) {
+  console.log("\n\n\nPATCH /api/meetings/[id] HIT");
   try {
     const { id } = await params;
 
     const body = await request.json();
 
-
-    const meeting = await updateMeeting(
-      id,
-      body,
-      null,
-    );
+    const meeting = await updateMeeting(id, body, null);
 
     return NextResponse.json(meeting);
   } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : "Failed to update meeting.";
+    const message = error instanceof Error ? error.message : "Failed to update meeting.";
 
     let status = 400;
 
     if (message === "Meeting not found.") {
       status = 404;
-    } else if (
-      message === "Financial year not found."
-    ) {
+    } else if (message === "Financial year not found.") {
       status = 404;
     }
 

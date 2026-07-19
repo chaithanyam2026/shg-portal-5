@@ -1,6 +1,4 @@
-import type {
-  AttendanceRegisterCell,
-} from "../domain";
+import type { AttendanceRegisterCell } from "../domain";
 
 type Props = {
   cell: AttendanceRegisterCell;
@@ -12,9 +10,7 @@ type Props = {
  * No colors or chips are used to
  * keep the print layout clean.
  */
-export default function AttendanceRegisterPrintCell({
-  cell,
-}: Props) {
+export default function AttendanceRegisterPrintCell({ cell }: Props) {
   switch (cell.status) {
     case "PRESENT":
       return <>✓</>;
@@ -23,18 +19,11 @@ export default function AttendanceRegisterPrintCell({
       return <>L</>;
 
     case "ABSENT":
-      if (
-        cell.fineCharged <= 0
-      ) {
+      if (cell.fineCharged <= 0) {
         return <>A</>;
       }
 
-      return (
-        <>
-          A
-          {cell.fineCharged}
-        </>
-      );
+      return <>A{cell.fineCharged}</>;
 
     default:
       return <>-</>;

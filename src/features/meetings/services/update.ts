@@ -4,20 +4,13 @@ import FinancialYear from "@/models/FinancialYear";
 import Meeting from "@/models/Meeting";
 
 import { MEETING_STATUS } from "../domain/meeting-status";
-import {
-  UpdateMeetingInput,
-  UpdateMeetingSchema,
-} from "../validation";
+import { UpdateMeetingInput, UpdateMeetingSchema } from "../validation";
 
-export async function updateMeeting(
-  id: string,
-  input: UpdateMeetingInput,
-  userId?: string | null,
-) {
+export async function updateMeeting(id: string, input: UpdateMeetingInput, userId?: string | null) {
   await connectMongo();
-console.log("INPUT", input);
+  console.log("INPUT", input);
   const data = UpdateMeetingSchema.parse(input);
-console.log("PARSED", data);
+  console.log("PARSED", data);
   const meeting = await Meeting.findById(id);
 
   if (!meeting) {
@@ -25,32 +18,20 @@ console.log("PARSED", data);
   }
 
   if (meeting.status === MEETING_STATUS.CLOSED) {
-    throw new Error(
-      "Closed meetings cannot be edited.",
-    );
+    throw new Error("Closed meetings cannot be edited.");
   }
 
-  const financialYear =
-    await FinancialYear.findById(
-      meeting.financialYearId,
-    );
+  const financialYear = await FinancialYear.findById(meeting.financialYearId);
 
   if (!financialYear) {
-    throw new Error(
-      "Financial year not found.",
-    );
+    throw new Error("Financial year not found.");
   }
 
   if (data.meetingDate) {
     data.meetingDate.setHours(0, 0, 0, 0);
 
-    if (
-      data.meetingDate < financialYear.startDate ||
-      data.meetingDate > financialYear.endDate
-    ) {
-      throw new Error(
-        "Meeting date must be inside the financial year.",
-      );
+    if (data.meetingDate < financialYear.startDate || data.meetingDate > financialYear.endDate) {
+      throw new Error("Meeting date must be inside the financial year.");
     }
 
     const start = new Date(data.meetingDate);
@@ -72,9 +53,7 @@ console.log("PARSED", data);
     });
 
     if (exists) {
-      throw new Error(
-        "A meeting already exists for this date.",
-      );
+      throw new Error("A meeting already exists for this date.");
     }
 
     meeting.meetingDate = data.meetingDate;
@@ -101,13 +80,11 @@ console.log("PARSED", data);
   }
 
   if ("bankTransactions" in data) {
-    meeting.bankTransactions =
-      data.bankTransactions;
+    meeting.bankTransactions = data.bankTransactions;
   }
 
   if ("otherIncomes" in data) {
-    meeting.otherIncomes =
-      data.otherIncomes;
+    meeting.otherIncomes = data.otherIncomes;
   }
 
   if ("expenses" in data) {
@@ -123,11 +100,9 @@ console.log("PARSED", data);
   return {
     id: meeting._id.toString(),
 
-    financialYearId:
-      meeting.financialYearId.toString(),
+    financialYearId: meeting.financialYearId.toString(),
 
-    meetingDate:
-      meeting.meetingDate.toISOString(),
+    meetingDate: meeting.meetingDate.toISOString(),
 
     place: meeting.place,
 
@@ -139,40 +114,26 @@ console.log("PARSED", data);
 
     payments: meeting.payments,
 
-    bankTransactions:
-      meeting.bankTransactions,
+    bankTransactions: meeting.bankTransactions,
 
-    otherIncomes:
-      meeting.otherIncomes,
+    otherIncomes: meeting.otherIncomes,
 
     expenses: meeting.expenses,
 
     status: meeting.status,
 
-    startedAt:
-      meeting.startedAt?.toISOString() ??
-      null,
+    startedAt: meeting.startedAt?.toISOString() ?? null,
 
-    approvedAt:
-      meeting.approvedAt?.toISOString() ??
-      null,
+    approvedAt: meeting.approvedAt?.toISOString() ?? null,
 
-    closedAt:
-      meeting.closedAt?.toISOString() ??
-      null,
+    closedAt: meeting.closedAt?.toISOString() ?? null,
 
-    createdBy:
-      meeting.createdBy?.toString() ??
-      null,
+    createdBy: meeting.createdBy?.toString() ?? null,
 
-    updatedBy:
-      meeting.updatedBy?.toString() ??
-      null,
+    updatedBy: meeting.updatedBy?.toString() ?? null,
 
-    createdAt:
-      meeting.createdAt.toISOString(),
+    createdAt: meeting.createdAt.toISOString(),
 
-    updatedAt:
-      meeting.updatedAt.toISOString(),
+    updatedAt: meeting.updatedAt.toISOString(),
   };
 }

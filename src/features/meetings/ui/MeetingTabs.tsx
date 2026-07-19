@@ -4,10 +4,7 @@ import { SyntheticEvent } from "react";
 
 import { usePathname, useRouter } from "next/navigation";
 
-import {
-  Tab,
-  Tabs,
-} from "@mui/material";
+import { Tab, Tabs } from "@mui/material";
 
 import type { MeetingStatus } from "../domain/meeting-status";
 
@@ -16,10 +13,7 @@ type Props = {
   status: MeetingStatus;
 };
 
-export default function MeetingTabs({
-  meetingId,
-  status,
-}: Props) {
+export default function MeetingTabs({ meetingId, status }: Props) {
   const router = useRouter();
 
   const pathname = usePathname();
@@ -48,12 +42,12 @@ export default function MeetingTabs({
     {
       label: "Income",
       href: "/income",
-        disabled: status === "DRAFT",
+      disabled: status === "DRAFT",
     },
     {
       label: "Expenses",
       href: "/expenses",
-       disabled: status === "DRAFT",
+      disabled: status === "DRAFT",
     },
     {
       label: "Summary",
@@ -67,13 +61,8 @@ export default function MeetingTabs({
     return pathname === path;
   });
 
-  function handleChange(
-    _event: SyntheticEvent,
-    index: number,
-  ) {
-    router.push(
-      `/meetings/${meetingId}${tabs[index].href}`,
-    );
+  function handleChange(_event: SyntheticEvent, index: number) {
+    router.push(`/meetings/${meetingId}${tabs[index].href}`);
   }
 
   return (
@@ -84,11 +73,7 @@ export default function MeetingTabs({
       scrollButtons="auto"
     >
       {tabs.map((tab) => (
-        <Tab
-          key={tab.label}
-          label={tab.label}
-          disabled={tab.disabled}
-        />
+        <Tab key={tab.label} label={tab.label} disabled={tab.disabled} />
       ))}
     </Tabs>
   );

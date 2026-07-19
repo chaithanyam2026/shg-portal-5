@@ -7,41 +7,33 @@ export const EXPENSE_CATEGORY = {
   MISCELLANEOUS: "MISCELLANEOUS",
 } as const;
 
-export const EXPENSE_CATEGORY_VALUES =
-  Object.values(EXPENSE_CATEGORY);
+export const EXPENSE_CATEGORY_VALUES = Object.values(EXPENSE_CATEGORY);
 
-export type ExpenseCategory =
-  (typeof EXPENSE_CATEGORY_VALUES)[number];
+export type ExpenseCategory = (typeof EXPENSE_CATEGORY_VALUES)[number];
 
 export const EXPENSE_CATEGORY_OPTIONS = [
   {
-    value:
-      EXPENSE_CATEGORY.STATIONERY,
+    value: EXPENSE_CATEGORY.STATIONERY,
     label: "Stationery",
   },
   {
-    value:
-      EXPENSE_CATEGORY.REFRESHMENTS,
+    value: EXPENSE_CATEGORY.REFRESHMENTS,
     label: "Refreshments",
   },
   {
-    value:
-      EXPENSE_CATEGORY.BANK_CHARGES,
+    value: EXPENSE_CATEGORY.BANK_CHARGES,
     label: "Bank Charges",
   },
   {
-    value:
-      EXPENSE_CATEGORY.TRAVEL,
+    value: EXPENSE_CATEGORY.TRAVEL,
     label: "Travel",
   },
   {
-    value:
-      EXPENSE_CATEGORY.ADMINISTRATIVE,
+    value: EXPENSE_CATEGORY.ADMINISTRATIVE,
     label: "Administrative",
   },
   {
-    value:
-      EXPENSE_CATEGORY.MISCELLANEOUS,
+    value: EXPENSE_CATEGORY.MISCELLANEOUS,
     label: "Miscellaneous",
   },
 ] as const;

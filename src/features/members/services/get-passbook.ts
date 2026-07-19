@@ -3,91 +3,67 @@ import connectMongo from "@/lib/db/mongodb";
 import FinancialYear from "@/models/FinancialYear";
 import Meeting from "@/models/Meeting";
 
-import type {
-  MemberPassbook,
-} from "../domain";
+import type { MemberPassbook } from "../domain";
 
-import {
-  buildMemberPassbook,
-} from "./internal/member-passbook";
+import { buildMemberPassbook } from "./internal/member-passbook";
 
 /**
  * Returns the contribution passbook
  * for a member.
  */
-export async function getMemberPassbook(
-  memberId: string,
-): Promise<MemberPassbook> {
+export async function getMemberPassbook(memberId: string): Promise<MemberPassbook> {
   await connectMongo();
 
-  const financialYear =
-    await FinancialYear.findOne({
-      "members.memberId": memberId,
-      status: "IN_PROGRESS",
+  const financialYear = await FinancialYear.findOne({
+    "members.memberId": memberId,
+    status: "IN_PROGRESS",
+  })
+    .populate({
+      path: "members.memberId",
+      select: "memberCode name",
     })
-      .populate({
-        path: "members.memberId",
-        select:
-          "memberCode name",
-      })
-      .lean();
+    .lean();
 
   if (!financialYear) {
-    throw new Error(
-      "Financial year not found.",
-    );
+    throw new Error("Financial year not found.");
   }
 
-  const member =
-    financialYear.members.find(
-      (member) =>
-        member.memberId._id.toString() ===
-        memberId,
-    );
+  const member = financialYear.members.find(
+    (member) => member.memberId._id.toString() === memberId,
+  );
 
   if (!member) {
-    throw new Error(
-      "Member not found.",
-    );
+    throw new Error("Member not found.");
   }
 
-  const meetings =
-    await Meeting.find({
-      financialYearId:
-        financialYear._id,
+  const meetings = await Meeting.find({
+    financialYearId: financialYear._id,
 
-      status: "CLOSED",
+    status: "CLOSED",
+  })
+    .select({
+      meetingDate: 1,
+      payments: 1,
     })
-      .select({
-        meetingDate: 1,
-        payments: 1,
-      })
-      .sort({
-        meetingDate: 1,
-      })
-      .lean();
+    .sort({
+      meetingDate: 1,
+    })
+    .lean();
 
   return buildMemberPassbook({
     memberId,
 
-    memberCode:
-      member.memberId.memberCode,
+    memberCode: member.memberId.memberCode,
 
-    memberName:
-      member.memberId.name,
+    memberName: member.memberId.name,
 
-    financialYearId:
-      financialYear._id.toString(),
+    financialYearId: financialYear._id.toString(),
 
-    financialYearName:
-      financialYear.name,
+    financialYearName: financialYear.name,
 
-    startDate:
-      financialYear.startDate,
+    startDate: financialYear.startDate,
 
-    openingContribution:
-      member.opening
-        ?.contribution ?? 0,
+    openingContribution: member.opening?.contribution ?? 0,
 
     meetings,
   });

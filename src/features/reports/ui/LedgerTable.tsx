@@ -55,15 +55,9 @@ const COLUMNS = [
   },
 ];
 
-export function LedgerTable({
-  entries,
-}: Props) {
+export function LedgerTable({ entries }: Props) {
   if (entries.length === 0) {
-    return (
-      <Alert severity="info">
-        No transactions found.
-      </Alert>
-    );
+    return <Alert severity="info">No transactions found.</Alert>;
   }
 
   return (

@@ -1,10 +1,4 @@
-import {
-  Card,
-  CardContent,
-  Grid,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Card, CardContent, Grid, Stack, Typography } from "@mui/material";
 
 import { formatCurrency } from "@/lib/utils/currency";
 
@@ -23,11 +17,7 @@ type SummaryCardProps = {
   subtitle?: string;
 };
 
-function SummaryCard({
-  title,
-  value,
-  subtitle,
-}: SummaryCardProps) {
+function SummaryCard({ title, value, subtitle }: SummaryCardProps) {
   return (
     <Card
       variant="outlined"
@@ -37,25 +27,16 @@ function SummaryCard({
     >
       <CardContent>
         <Stack spacing={1}>
-          <Typography
-            variant="body2"
-            color="text.secondary"
-          >
+          <Typography variant="body2" color="text.secondary">
             {title}
           </Typography>
 
-          <Typography
-            variant="h5"
-            fontWeight={700}
-          >
+          <Typography variant="h5" fontWeight={700}>
             {formatCurrency(value)}
           </Typography>
 
           {subtitle && (
-            <Typography
-              variant="caption"
-              color="text.secondary"
-            >
+            <Typography variant="caption" color="text.secondary">
               {subtitle}
             </Typography>
           )}
@@ -71,59 +52,36 @@ export function IncomeExpenseSummary({
   totalIncome,
   totalExpense,
 }: Props) {
-  const netCashFlow =
-    totalIncome - totalExpense;
+  const netCashFlow = totalIncome - totalExpense;
 
   return (
     <Grid container spacing={2}>
       <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-        <SummaryCard
-          title="Opening Cash"
-          value={openingBalance.cashInHand}
-        />
+        <SummaryCard title="Opening Cash" value={openingBalance.cashInHand} />
       </Grid>
 
       <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-        <SummaryCard
-          title="Opening Bank"
-          value={openingBalance.bankBalance}
-        />
+        <SummaryCard title="Opening Bank" value={openingBalance.bankBalance} />
       </Grid>
 
       <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-        <SummaryCard
-          title="Total Income"
-          value={totalIncome}
-        />
+        <SummaryCard title="Total Income" value={totalIncome} />
       </Grid>
 
       <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-        <SummaryCard
-          title="Total Expense"
-          value={totalExpense}
-        />
+        <SummaryCard title="Total Expense" value={totalExpense} />
       </Grid>
 
       <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
-        <SummaryCard
-          title="Closing Cash"
-          value={closingBalance.cashInHand}
-        />
+        <SummaryCard title="Closing Cash" value={closingBalance.cashInHand} />
       </Grid>
 
       <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
-        <SummaryCard
-          title="Closing Bank"
-          value={closingBalance.bankBalance}
-        />
+        <SummaryCard title="Closing Bank" value={closingBalance.bankBalance} />
       </Grid>
 
       <Grid size={{ xs: 12, lg: 4 }}>
-        <SummaryCard
-          title="Net Cash Flow"
-          value={netCashFlow}
-          subtitle="Income − Expense"
-        />
+        <SummaryCard title="Net Cash Flow" value={netCashFlow} subtitle="Income − Expense" />
       </Grid>
     </Grid>
   );

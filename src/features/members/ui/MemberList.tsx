@@ -17,30 +17,21 @@ import {
   Typography,
 } from "@mui/material";
 
-import type {
-  MemberSummary,
-} from "../types";
+import type { MemberSummary } from "../types";
 
-import {
-  formatDate,
-} from "@/lib/utils/format";
 import PageHeader from "@/components/layout/PageHeader";
+import { formatDate } from "@/lib/utils/format";
 
 type Props = {
   members: MemberSummary[];
 };
 
-export default function MemberList({
-  members,
-}: Props) {
+export default function MemberList({ members }: Props) {
   if (members.length === 0) {
     return (
       <Card>
         <CardContent>
-          <Typography
-            align="center"
-            color="text.secondary"
-          >
+          <Typography align="center" color="text.secondary">
             No members found.
           </Typography>
         </CardContent>
@@ -52,118 +43,68 @@ export default function MemberList({
     <Stack spacing={3}>
       <Stack
         direction="row"
-        justifyContent="space-between"
-        alignItems="center"
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
       >
-        <PageHeader
-          title="Members"
-          showBack={false}
-        />
+        <PageHeader title="Members" showBack={false} />
 
-        <Button
-          component={Link}
-          href="/members/new"
-          variant="contained"
-        >
+        <Button component={Link} href="/members/new" variant="contained">
           New Member
         </Button>
       </Stack>
 
-      <TableContainer
-        component={Card}
-      >
+      <TableContainer component={Card}>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>
-                Code
-              </TableCell>
+              <TableCell>Code</TableCell>
 
-              <TableCell>
-                Name
-              </TableCell>
+              <TableCell>Name</TableCell>
 
-              <TableCell>
-                Phone
-              </TableCell>
+              <TableCell>Phone</TableCell>
 
-              <TableCell>
-                Joined
-              </TableCell>
+              <TableCell>Joined</TableCell>
 
-              <TableCell>
-                Status
-              </TableCell>
+              <TableCell>Status</TableCell>
 
-              <TableCell
-                align="center"
-              >
-                Action
-              </TableCell>
+              <TableCell align="center">Action</TableCell>
             </TableRow>
           </TableHead>
 
           <TableBody>
-            {members.map(
-              (member) => (
-                <TableRow
-                  hover
-                  key={member._id}
-                >
-                  <TableCell>
-                    {
-                      member.memberCode
-                    }
-                  </TableCell>
+            {members.map((member) => (
+              <TableRow hover key={member._id}>
+                <TableCell>{member.memberCode}</TableCell>
 
-                  <TableCell>
-                    {member.name}
-                  </TableCell>
+                <TableCell>{member.name}</TableCell>
 
-                  <TableCell>
-                    {member.phone}
-                  </TableCell>
+                <TableCell>{member.phone}</TableCell>
 
-                  <TableCell>
-                    {member.joinedDate
-                      ? formatDate(
-                        member.joinedDate,
-                      )
-                      : "-"}
-                  </TableCell>
+                <TableCell>{member.joinedDate ? formatDate(member.joinedDate) : "-"}</TableCell>
 
-                  <TableCell>
-                    <Chip
-                      label={
-                        member.status
-                      }
-                      color={
-                        member.status ===
-                          "ACTIVE"
-                          ? "success"
-                          : "default"
-                      }
-                      size="small"
-                    />
-                  </TableCell>
+                <TableCell>
+                  <Chip
+                    label={member.status}
+                    color={member.status === "ACTIVE" ? "success" : "default"}
+                    size="small"
+                  />
+                </TableCell>
 
-                  <TableCell
-                    align="center"
+                <TableCell align="center">
+                  <Button
+                    component={Link}
+                    href={`/members/${member._id}`}
+                    size="small"
+                    variant="outlined"
                   >
-                    <Button
-                      component={
-                        Link
-                      }
-                      href={`/members/${member._id}`}
-                      size="small"
-                      variant="outlined"
-                    >
-                      View
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ),
-            )}
+                    View
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>

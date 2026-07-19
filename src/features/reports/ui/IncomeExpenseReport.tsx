@@ -8,15 +8,9 @@ type Props = {
   report: IncomeExpenseReportModel;
 };
 
-export function IncomeExpenseReport({
-  report,
-}: Props) {
+export function IncomeExpenseReport({ report }: Props) {
   if (report.months.length === 0) {
-    return (
-      <Alert severity="info">
-        No transactions found.
-      </Alert>
-    );
+    return <Alert severity="info">No transactions found.</Alert>;
   }
 
   return (
@@ -29,10 +23,7 @@ export function IncomeExpenseReport({
       />
 
       {report.months.map((ledger) => (
-        <MonthlyLedgerSection
-          key={`${ledger.year}-${ledger.month}`}
-          ledger={ledger}
-        />
+        <MonthlyLedgerSection key={`${ledger.year}-${ledger.month}`} ledger={ledger} />
       ))}
     </Stack>
   );

@@ -5,13 +5,9 @@ import type {
   AttendanceFineDefaultersReport,
 } from "../domain/attendance-fine-defaulters";
 
-import {
-  buildAttendanceFineRegister,
-} from "./build-attendance-fine-register";
+import { buildAttendanceFineRegister } from "./build-attendance-fine-register";
 
-import {
-  getMemberAttendanceFine,
-} from "./get-member-attendance-fine";
+import { getMemberAttendanceFine } from "./get-member-attendance-fine";
 
 /**
  * Builds the Attendance Fine
@@ -28,14 +24,9 @@ export async function buildAttendanceFineDefaulters(
   /**
    * Load attendance fine register.
    */
-  const register =
-    await buildAttendanceFineRegister(
-      financialYearId,
-    );
+  const register = await buildAttendanceFineRegister(financialYearId);
 
-  const rows:
-    AttendanceFineDefaulter[] =
-    [];
+  const rows: AttendanceFineDefaulter[] = [];
 
   let totalFine = 0;
 
@@ -44,9 +35,7 @@ export async function buildAttendanceFineDefaulters(
   let pendingFine = 0;
 
   for (const member of register.rows) {
-    if (
-      member.pendingFine <= 0
-    ) {
+    if (member.pendingFine <= 0) {
       continue;
     }
 
@@ -55,99 +44,58 @@ export async function buildAttendanceFineDefaulters(
      * to determine the oldest
      * pending fine.
      */
-    const ledger =
-      await getMemberAttendanceFine(
-        financialYearId,
-        member.memberId,
-      );
+    const ledger = await getMemberAttendanceFine(financialYearId, member.memberId);
 
-    const oldestPending =
-      ledger.entries.find(
-        (entry) =>
-          entry.pendingFine > 0,
-      );
+    const oldestPending = ledger.entries.find((entry) => entry.pendingFine > 0);
 
     rows.push({
-      memberId:
-        member.memberId,
+      memberId: member.memberId,
 
-      memberCode:
-        member.memberCode,
+      memberCode: member.memberCode,
 
-      memberName:
-        member.memberName,
+      memberName: member.memberName,
 
-      presentCount:
-        member.presentCount,
+      presentCount: member.presentCount,
 
-      absentCount:
-        member.absentCount,
+      absentCount: member.absentCount,
 
-      leaveCount:
-        member.leaveCount,
+      leaveCount: member.leaveCount,
 
-      attendancePercentage:
-        member.attendancePercentage,
+      attendancePercentage: member.attendancePercentage,
 
-      totalFine:
-        member.totalFine,
+      totalFine: member.totalFine,
 
-      paidFine:
-        member.paidFine,
+      paidFine: member.paidFine,
 
-      pendingFine:
-        member.pendingFine,
+      pendingFine: member.pendingFine,
 
-      oldestPendingDate:
-        oldestPending
-          ?.meetingDate ??
-        null,
+      oldestPendingDate: oldestPending?.meetingDate ?? null,
     });
 
-    totalFine +=
-      member.totalFine;
+    totalFine += member.totalFine;
 
-    paidFine +=
-      member.paidFine;
+    paidFine += member.paidFine;
 
-    pendingFine +=
-      member.pendingFine;
+    pendingFine += member.pendingFine;
   }
 
-  rows.sort(
-    (a, b) => {
-      if (
-        a.pendingFine !==
-        b.pendingFine
-      ) {
-        return (
-          b.pendingFine -
-          a.pendingFine
-        );
-      }
+  rows.sort((a, b) => {
+    if (a.pendingFine !== b.pendingFine) {
+      return b.pendingFine - a.pendingFine;
+    }
 
-      if (
-        a.oldestPendingDate &&
-        b.oldestPendingDate
-      ) {
-        return (
-          a.oldestPendingDate.getTime() -
-          b.oldestPendingDate.getTime()
-        );
-      }
+    if (a.oldestPendingDate && b.oldestPendingDate) {
+      return a.oldestPendingDate.getTime() - b.oldestPendingDate.getTime();
+    }
 
-      return a.memberCode.localeCompare(
-        b.memberCode,
-      );
-    },
-  );
+    return a.memberCode.localeCompare(b.memberCode);
+  });
 
   return {
     rows,
 
     totals: {
-      members:
-        rows.length,
+      members: rows.length,
 
       totalFine,
 

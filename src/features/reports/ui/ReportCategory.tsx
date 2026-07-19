@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 
 type Props = {
   title: string;
@@ -11,17 +8,10 @@ type Props = {
   children: React.ReactNode;
 };
 
-export default function ReportCategory({
-  title,
-  children,
-}: Props) {
+export default function ReportCategory({ title, children }: Props) {
   return (
     <Stack spacing={2}>
-      <Typography
-        variant="h5"
-      >
-        {title}
-      </Typography>
+      <Typography variant="h5">{title}</Typography>
 
       {children}
     </Stack>

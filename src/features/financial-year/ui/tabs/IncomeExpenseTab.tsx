@@ -7,24 +7,12 @@ type Props = {
   financialYearId: string;
 };
 
-export async function IncomeExpenseTab({
-  financialYearId,
-}: Props) {
-  const report = await buildIncomeExpenseReport(
-    financialYearId,
-  );
+export async function IncomeExpenseTab({ financialYearId }: Props) {
+  const report = await buildIncomeExpenseReport(financialYearId);
 
   if (report.months.length === 0) {
-    return (
-      <Alert severity="info">
-        No transactions found.
-      </Alert>
-    );
+    return <Alert severity="info">No transactions found.</Alert>;
   }
 
-  return (
-    <IncomeExpenseReport
-      report={report}
-    />
-  );
+  return <IncomeExpenseReport report={report} />;
 }

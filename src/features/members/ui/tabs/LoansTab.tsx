@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 
 import Link from "next/link";
 
@@ -24,14 +21,9 @@ import {
   Typography,
 } from "@mui/material";
 
-import type {
-  MemberDetails,
-} from "../../types";
+import type { MemberDetails } from "../../types";
 
-import {
-  formatCurrency,
-  formatDate,
-} from "@/lib/utils/format";
+import { formatCurrency, formatDate } from "@/lib/utils/format";
 
 type LoanSummary = {
   _id: string;
@@ -53,43 +45,27 @@ type Props = {
   member: MemberDetails;
 };
 
-export default function LoansTab({
-  member,
-}: Props) {
-  const [loans, setLoans] =
-    useState<LoanSummary[]>([]);
+export default function LoansTab({ member }: Props) {
+  const [loans, setLoans] = useState<LoanSummary[]>([]);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
-  const [error, setError] =
-    useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     async function load() {
       try {
-        const response =
-          await fetch(
-            `/api/members/${member._id}/loans`,
-          );
+        const response = await fetch(`/api/members/${member._id}/loans`);
 
-        const result =
-          await response.json();
+        const result = await response.json();
 
         if (!response.ok) {
-          throw new Error(
-            result.message ??
-              "Unable to load loans.",
-          );
+          throw new Error(result.message ?? "Unable to load loans.");
         }
 
         setLoans(result);
       } catch (err) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : "Unable to load loans.",
-        );
+        setError(err instanceof Error ? err.message : "Unable to load loans.");
       } finally {
         setLoading(false);
       }
@@ -100,39 +76,24 @@ export default function LoansTab({
 
   if (loading) {
     return (
-      <Stack
-        alignItems="center"
-        py={5}
-      >
+      <Stack alignItems="center" py={5}>
         <CircularProgress />
       </Stack>
     );
   }
 
   if (error) {
-    return (
-      <Alert severity="error">
-        {error}
-      </Alert>
-    );
+    return <Alert severity="error">{error}</Alert>;
   }
 
   if (loans.length === 0) {
-    return (
-      <Alert severity="info">
-        No loans found for this
-        member.
-      </Alert>
-    );
+    return <Alert severity="info">No loans found for this member.</Alert>;
   }
 
   return (
     <Card>
       <CardContent>
-        <Typography
-          variant="h6"
-          gutterBottom
-        >
+        <Typography variant="h6" gutterBottom>
           Loans
         </Typography>
 
@@ -140,107 +101,55 @@ export default function LoansTab({
           <Table size="small">
             <TableHead>
               <TableRow>
-                <TableCell>
-                  Loan No
-                </TableCell>
+                <TableCell>Loan No</TableCell>
 
-                <TableCell>
-                  Type
-                </TableCell>
+                <TableCell>Type</TableCell>
 
-                <TableCell>
-                  Disbursed
-                </TableCell>
+                <TableCell>Disbursed</TableCell>
 
-                <TableCell align="right">
-                  Amount
-                </TableCell>
+                <TableCell align="right">Amount</TableCell>
 
-                <TableCell align="right">
-                  Outstanding
-                </TableCell>
+                <TableCell align="right">Outstanding</TableCell>
 
-                <TableCell>
-                  Status
-                </TableCell>
+                <TableCell>Status</TableCell>
 
-                <TableCell
-                  align="center"
-                >
-                  Action
-                </TableCell>
+                <TableCell align="center">Action</TableCell>
               </TableRow>
             </TableHead>
 
             <TableBody>
-              {loans.map(
-                (loan) => (
-                  <TableRow
-                    key={loan._id}
-                    hover
-                  >
-                    <TableCell>
-                      {
-                        loan.loanNumber
-                      }
-                    </TableCell>
+              {loans.map((loan) => (
+                <TableRow key={loan._id} hover>
+                  <TableCell>{loan.loanNumber}</TableCell>
 
-                    <TableCell>
-                      {
-                        loan.loanType
-                      }
-                    </TableCell>
+                  <TableCell>{loan.loanType}</TableCell>
 
-                    <TableCell>
-                      {formatDate(
-                        loan.disbursedDate,
-                      )}
-                    </TableCell>
+                  <TableCell>{formatDate(loan.disbursedDate)}</TableCell>
 
-                    <TableCell align="right">
-                      {formatCurrency(
-                        loan.disbursedAmount,
-                      )}
-                    </TableCell>
+                  <TableCell align="right">{formatCurrency(loan.disbursedAmount)}</TableCell>
 
-                    <TableCell align="right">
-                      {formatCurrency(
-                        loan.outstandingPrincipal,
-                      )}
-                    </TableCell>
+                  <TableCell align="right">{formatCurrency(loan.outstandingPrincipal)}</TableCell>
 
-                    <TableCell>
-                      <Chip
-                        label={
-                          loan.status
-                        }
-                        size="small"
-                        color={
-                          loan.status ===
-                          "ACTIVE"
-                            ? "success"
-                            : "default"
-                        }
-                      />
-                    </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={loan.status}
+                      size="small"
+                      color={loan.status === "ACTIVE" ? "success" : "default"}
+                    />
+                  </TableCell>
 
-                    <TableCell
-                      align="center"
+                  <TableCell align="center">
+                    <Button
+                      component={Link}
+                      href={`/loans/${loan._id}`}
+                      size="small"
+                      variant="outlined"
                     >
-                      <Button
-                        component={
-                          Link
-                        }
-                        href={`/loans/${loan._id}`}
-                        size="small"
-                        variant="outlined"
-                      >
-                        View
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ),
-              )}
+                      View
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </TableContainer>

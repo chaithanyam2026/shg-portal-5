@@ -1,27 +1,16 @@
 "use client";
 
-import {
-  useRouter,
-  useSearchParams,
-} from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
-import {
-  Stack,
-} from "@mui/material";
+import { Stack } from "@mui/material";
 
-import FinancialYearSelector
-  from "@/features/financial-year/ui/FinancialYearSelector";
+import FinancialYearSelector from "@/features/financial-year/ui/FinancialYearSelector";
 
-import type {
-  FinancialYearOption,
-} from "@/features/financial-year/domain/financial-year-option";
+import type { FinancialYearOption } from "@/features/financial-year/domain/financial-year-option";
 
-import type {
-  AttendanceFineCollectionReport,
-} from "../domain/attendance-fine-collection";
+import type { AttendanceFineCollectionReport } from "../domain/attendance-fine-collection";
 
-import AttendanceFineCollectionTable
-  from "./AttendanceFineCollectionTable";
+import AttendanceFineCollectionTable from "./AttendanceFineCollectionTable";
 
 type Props = {
   financialYearId: string;
@@ -33,50 +22,24 @@ type Props = {
   report: AttendanceFineCollectionReport;
 };
 
-export default function AttendanceFineCollectionPage({
-  financialYearId,
-  options,
-  report,
-}: Props) {
-  const router =
-    useRouter();
+export default function AttendanceFineCollectionPage({ financialYearId, options, report }: Props) {
+  const router = useRouter();
 
-  const searchParams =
-    useSearchParams();
+  const searchParams = useSearchParams();
 
-  function handleChange(
-    financialYearId: string,
-  ) {
-    const params =
-      new URLSearchParams(
-        searchParams.toString(),
-      );
+  function handleChange(financialYearId: string) {
+    const params = new URLSearchParams(searchParams.toString());
 
-    params.set(
-      "financialYear",
-      financialYearId,
-    );
+    params.set("financialYear", financialYearId);
 
-    router.push(
-      `/reports/attendance-fine-collection?${params.toString()}`,
-    );
+    router.push(`/reports/attendance-fine-collection?${params.toString()}`);
   }
 
   return (
     <Stack spacing={3}>
-      <FinancialYearSelector
-        value={
-          financialYearId
-        }
-        options={options}
-        onChange={
-          handleChange
-        }
-      />
+      <FinancialYearSelector value={financialYearId} options={options} onChange={handleChange} />
 
-      <AttendanceFineCollectionTable
-        report={report}
-      />
+      <AttendanceFineCollectionTable report={report} />
     </Stack>
   );
 }

@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 
 type Props = {
   rows: {
@@ -12,26 +9,21 @@ type Props = {
   }[];
 };
 
-export default function SummaryTotals({
-  rows,
-}: Props) {
+export default function SummaryTotals({ rows }: Props) {
   return (
     <Stack spacing={1}>
       {rows.map((row) => (
         <Stack
           key={row.label}
-          direction="row"
-          justifyContent="space-between"
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
         >
-          <Typography>
-            {row.label}
-          </Typography>
+          <Typography>{row.label}</Typography>
 
-          <Typography
-            fontWeight={600}
-          >
-            {row.value}
-          </Typography>
+          <Typography fontWeight={600}>{row.value}</Typography>
         </Stack>
       ))}
     </Stack>

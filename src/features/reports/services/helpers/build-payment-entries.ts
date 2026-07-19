@@ -13,9 +13,7 @@ type MeetingPayments = {
   }[];
 };
 
-export function buildPaymentEntries(
-  meeting: MeetingPayments,
-): LedgerEntry[] {
+export function buildPaymentEntries(meeting: MeetingPayments): LedgerEntry[] {
   return meeting.payments.flatMap((payment) => {
     const entries: LedgerEntry[] = [];
 

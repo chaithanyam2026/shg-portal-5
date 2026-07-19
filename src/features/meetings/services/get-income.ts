@@ -2,20 +2,14 @@ import connectMongo from "@/lib/db/mongodb";
 
 import Meeting from "@/models/Meeting";
 
-import type {
-  IncomeRecord,
-  IncomeSummary,
-} from "../types";
+import type { IncomeRecord, IncomeSummary } from "../types";
 
 function createSummary(
   meetingId: string,
   status: IncomeSummary["status"],
   records: IncomeRecord[],
 ): IncomeSummary {
-  const totalIncome = records.reduce(
-    (sum, record) => sum + record.amount,
-    0,
-  );
+  const totalIncome = records.reduce((sum, record) => sum + record.amount, 0);
 
   return {
     meetingId,
@@ -25,26 +19,17 @@ function createSummary(
   };
 }
 
-export async function getIncome(
-  meetingId: string,
-): Promise<IncomeSummary> {
+export async function getIncome(meetingId: string): Promise<IncomeSummary> {
   await connectMongo();
 
-  const meeting = await Meeting.findById(
-    meetingId,
-  ).lean();
+  const meeting = await Meeting.findById(meetingId).lean();
 
   if (!meeting) {
-    throw new Error(
-      "Meeting not found.",
-    );
+    throw new Error("Meeting not found.");
   }
 
-  const records: IncomeRecord[] = (
-    meeting.otherIncomes ?? []
-  ).map((income) => ({
-    transactionDate:
-      income.transactionDate.toISOString(),
+  const records: IncomeRecord[] = (meeting.otherIncomes ?? []).map((income) => ({
+    transactionDate: income.transactionDate.toISOString(),
 
     category: income.category,
 
@@ -53,9 +38,5 @@ export async function getIncome(
     remarks: income.remarks,
   }));
 
-  return createSummary(
-    meetingId,
-    meeting.status,
-    records,
-  );
+  return createSummary(meetingId, meeting.status, records);
 }

@@ -5,12 +5,9 @@ import {
   listFinancialYearOptions,
 } from "@/features/financial-year/services";
 
-import {
-  buildAttendanceFineCollection,
-} from "@/features/reports/services/build-attendance-fine-collection";
+import { buildAttendanceFineCollection } from "@/features/reports/services/build-attendance-fine-collection";
 
-import AttendanceFineCollectionPage
-  from "@/features/reports/ui/AttendanceFineCollectionPage";
+import AttendanceFineCollectionPage from "@/features/reports/ui/AttendanceFineCollectionPage";
 
 type Props = {
   searchParams: Promise<{
@@ -18,38 +15,22 @@ type Props = {
   }>;
 };
 
-export default async function AttendanceFineCollection({
-  searchParams,
-}: Props) {
-  const params =
-    await searchParams;
+export default async function AttendanceFineCollection({ searchParams }: Props) {
+  const params = await searchParams;
 
-  const financialYear =
-    await getSelectedFinancialYear(
-      params.financialYear,
-    );
+  const financialYear = await getSelectedFinancialYear(params.financialYear);
 
-  const options =
-    await listFinancialYearOptions();
+  const options = await listFinancialYearOptions();
 
-  const report =
-    await buildAttendanceFineCollection(
-      financialYear._id.toString(),
-    );
+  const report = await buildAttendanceFineCollection(financialYear._id.toString());
 
   return (
     <>
-      <PageHeader
-        title="Attendance Fine Collection"
-      />
+      <PageHeader title="Attendance Fine Collection" />
 
       <AttendanceFineCollectionPage
-        financialYearId={
-          financialYear._id.toString()
-        }
-        financialYearName={
-          financialYear.name
-        }
+        financialYearId={financialYear._id.toString()}
+        financialYearName={financialYear.name}
         options={options}
         report={report}
       />

@@ -15,5 +15,4 @@ export const PAYMENT_TYPES = [
 /**
  * Meeting payment type.
  */
-export type PaymentType =
-  (typeof PAYMENT_TYPES)[number];
+export type PaymentType = (typeof PAYMENT_TYPES)[number];

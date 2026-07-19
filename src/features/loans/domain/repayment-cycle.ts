@@ -16,13 +16,7 @@ export type RepaymentCycle = {
   interestDays: number;
 };
 
-const MILLISECONDS_PER_DAY =
-  24 *
-  60 *
-  60 *
-  1000;
-
-
+const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
 /**
  * Returns the previous transaction date
@@ -32,26 +26,16 @@ const MILLISECONDS_PER_DAY =
  * the loan disbursement date becomes
  * the previous transaction date.
  */
-function getPreviousTransactionDate(
-  input: RepaymentCycleInput,
-): Date {
-  return (
-    input.previousRepaymentDate ??
-    input.disbursedDate
-  );
+function getPreviousTransactionDate(input: RepaymentCycleInput): Date {
+  return input.previousRepaymentDate ?? input.disbursedDate;
 }
 
 /**
  * Returns whether the repayment is
  * the first repayment for the loan.
  */
-function isFirstRepayment(
-  input: RepaymentCycleInput,
-): boolean {
-  return (
-    input.previousRepaymentDate ==
-    null
-  );
+function isFirstRepayment(input: RepaymentCycleInput): boolean {
+  return input.previousRepaymentDate == null;
 }
 
 /**
@@ -64,45 +48,25 @@ function isFirstRepayment(
  * • Negative interval => 0
  * • Positive interval => Actual days
  */
-function calculateDays(
-  fromDate: Date,
-  toDate: Date,
-): number {
+function calculateDays(fromDate: Date, toDate: Date): number {
   return Math.max(
-    Math.floor(
-      (toDate.getTime() -
-        fromDate.getTime()) /
-        MILLISECONDS_PER_DAY,
-    ) + 1,
+    Math.floor((toDate.getTime() - fromDate.getTime()) / MILLISECONDS_PER_DAY) + 1,
     0,
   );
 }
 
-export function getRepaymentCycle(
-  input: RepaymentCycleInput,
-): RepaymentCycle {
-  const fromDate =
-    getPreviousTransactionDate(
-      input,
-    );
+export function getRepaymentCycle(input: RepaymentCycleInput): RepaymentCycle {
+  const fromDate = getPreviousTransactionDate(input);
 
-  const toDate =
-    input.repaymentDate;
+  const toDate = input.repaymentDate;
 
   return {
-    isFirstRepayment:
-      isFirstRepayment(
-        input,
-      ),
+    isFirstRepayment: isFirstRepayment(input),
 
     fromDate,
 
     toDate,
 
-    interestDays:
-      calculateDays(
-        fromDate,
-        toDate,
-      ),
+    interestDays: calculateDays(fromDate, toDate),
   };
 }

@@ -1,0 +1,67 @@
+Batch A — Auth Foundation
+Batch B — User Model
+Batch C — Login =====
+Batch D — Route Protection ====
+Batch E — Authorization
+Batch F — User Management
+
+
+D.1 — Route Configuration
+D.2 — Authorization Helpers ======
+D.3 — Middleware
+D.4 — Unauthorized & Forbidden Pages
+D.5 — Integration & Verification
+
+src/models/User.ts              ✅ Already migrated
+src/models/Member.ts
+src/models/FinancialYear.ts.    ✅ Already migrated
+src/models/Meeting.ts
+src/models/Loan.ts
+src/models/FinancialYearClosing.ts
+
+
+
+Usage:
+Helper Functions
+isAuthenticated()
+
+Checks whether a valid authenticated session exists.
+
+if (!isAuthenticated(session)) {
+  redirect("/login");
+}
+hasRole()
+
+Checks for one specific role.
+
+if (hasRole(session, "ADMIN")) {
+  // Admin-only functionality
+}
+hasAnyRole()
+
+Checks whether the authenticated user has one of several allowed roles.
+
+const canManageFinance = hasAnyRole(
+  session,
+  ["ADMIN", "TREASURER"],
+);
+canAccessRoute()
+
+Determines whether the current user may access a route.
+
+Examples:
+
+canAccessRoute(session);
+
+Returns true for any authenticated user.
+
+canAccessRoute(session, ["ADMIN"]);
+
+Returns true only for administrators.
+
+canAccessRoute(session, [
+  "ADMIN",
+  "SECRETARY",
+]);
+
+Returns true for either role.

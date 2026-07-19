@@ -6,19 +6,14 @@ import type {
   AttendanceRegisterRow,
 } from "../../domain";
 
-import {
-  buildAttendanceMeetingSummary,
-} from "./build-attendance-meeting-summary";
+import { buildAttendanceMeetingSummary } from "./build-attendance-meeting-summary";
 
 type Meeting = {
   meetingId: string;
 
   meetingDate: Date;
 
-  attendance: Map<
-    string,
-    "PRESENT" | "ABSENT" | "LEAVE"
-  >;
+  attendance: Map<string, "PRESENT" | "ABSENT" | "LEAVE">;
 };
 
 type Member = {
@@ -59,139 +54,83 @@ export function buildAttendanceRegister({
   /**
    * Sort meetings chronologically.
    */
-  const sortedMeetings = [
-    ...meetings,
-  ].sort(
-    (a, b) =>
-      a.meetingDate.getTime() -
-      b.meetingDate.getTime(),
+  const sortedMeetings = [...meetings].sort(
+    (a, b) => a.meetingDate.getTime() - b.meetingDate.getTime(),
   );
 
   /**
    * Attendance fine lookup.
    */
-  const fineMap = new Map(
-    fineLedger.map((ledger) => [
-      ledger.memberId,
-      ledger,
-    ]),
-  );
+  const fineMap = new Map(fineLedger.map((ledger) => [ledger.memberId, ledger]));
 
   /**
    * Meeting headers.
    */
-  const registerMeetings: AttendanceRegisterMeeting[] =
-    sortedMeetings.map(
-      (meeting) => ({
-        meetingId:
-          meeting.meetingId,
+  const registerMeetings: AttendanceRegisterMeeting[] = sortedMeetings.map((meeting) => ({
+    meetingId: meeting.meetingId,
 
-        meetingDate:
-          meeting.meetingDate,
-      }),
-    );
+    meetingDate: meeting.meetingDate,
+  }));
 
   /**
    * Register rows.
    */
-  const rows: AttendanceRegisterRow[] =
-    members.map((member) => {
-      const ledger =
-        fineMap.get(
-          member.memberId,
-        );
+  const rows: AttendanceRegisterRow[] = members.map((member) => {
+    const ledger = fineMap.get(member.memberId);
 
-      /**
-       * Quick lookup by meeting.
-       */
-      const entryMap = new Map(
-        (
-          ledger?.entries ??
-          []
-        ).map((entry) => [
-          entry.meetingId,
-          entry,
-        ]),
-      );
+    /**
+     * Quick lookup by meeting.
+     */
+    const entryMap = new Map((ledger?.entries ?? []).map((entry) => [entry.meetingId, entry]));
 
-      const attendance: AttendanceRegisterCell[] =
-        sortedMeetings.map(
-          (meeting) => {
-            const entry =
-              entryMap.get(
-                meeting.meetingId,
-              );
-
-            return {
-              meetingId:
-                meeting.meetingId,
-
-              meetingDate:
-                meeting.meetingDate,
-
-              status:
-                entry?.status ??
-                "PRESENT",
-
-              consecutiveAbsence:
-                entry?.consecutiveAbsence ??
-                0,
-
-              fineCharged:
-                entry?.fineCharged ??
-                0,
-
-              finePaid:
-                entry?.finePaid ??
-                0,
-
-              pendingFine:
-                entry?.pendingFine ??
-                0,
-            };
-          },
-        );
+    const attendance: AttendanceRegisterCell[] = sortedMeetings.map((meeting) => {
+      const entry = entryMap.get(meeting.meetingId);
 
       return {
-        memberId:
-          member.memberId,
+        meetingId: meeting.meetingId,
 
-        memberCode:
-          member.memberCode,
+        meetingDate: meeting.meetingDate,
 
-        memberName:
-          member.memberName,
+        status: entry?.status ?? "PRESENT",
 
-        attendance,
+        consecutiveAbsence: entry?.consecutiveAbsence ?? 0,
 
-        totalFine:
-          ledger?.totalFine ??
-          0,
+        fineCharged: entry?.fineCharged ?? 0,
 
-        paidFine:
-          ledger?.paidFine ??
-          0,
+        finePaid: entry?.finePaid ?? 0,
 
-        pendingFine:
-          ledger?.pendingFine ??
-          0,
+        pendingFine: entry?.pendingFine ?? 0,
       };
     });
+
+    return {
+      memberId: member.memberId,
+
+      memberCode: member.memberCode,
+
+      memberName: member.memberName,
+
+      attendance,
+
+      totalFine: ledger?.totalFine ?? 0,
+
+      paidFine: ledger?.paidFine ?? 0,
+
+      pendingFine: ledger?.pendingFine ?? 0,
+    };
+  });
 
   /**
    * Meeting footer summary.
    */
-  const summary =
-    buildAttendanceMeetingSummary({
-      meetings:
-        registerMeetings,
+  const summary = buildAttendanceMeetingSummary({
+    meetings: registerMeetings,
 
-      rows,
-    });
+    rows,
+  });
 
   return {
-    meetings:
-      registerMeetings,
+    meetings: registerMeetings,
 
     rows,
 

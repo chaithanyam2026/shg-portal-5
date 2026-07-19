@@ -1,268 +1,117 @@
 import { z } from "zod";
-import {
-  ATTENDANCE_STATUS_VALUES,
-} from "./domain/attendance-status";
-import {
-  BANK_TRANSACTION_TYPE_VALUES,
-} from "./domain/bank-transaction";
+import { ATTENDANCE_STATUS_VALUES } from "./domain/attendance-status";
+import { BANK_TRANSACTION_TYPE_VALUES } from "./domain/bank-transaction";
 
-import {
-  INCOME_CATEGORY_VALUES,
-} from "./domain/income";
+import { INCOME_CATEGORY_VALUES } from "./domain/income";
 
-import {
-  EXPENSE_CATEGORY_VALUES,
-} from "./domain/expense";
+import { EXPENSE_CATEGORY_VALUES } from "./domain/expense";
 
-export const ObjectIdSchema = z
-  .string()
-  .regex(
-    /^[0-9a-fA-F]{24}$/,
-    "Invalid id.",
-  );
+export const ObjectIdSchema = z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid id.");
 
 export const CreateMeetingSchema = z.object({
   meetingDate: z.coerce.date(),
 
-  place: z
-    .string()
-    .trim()
-    .min(2)
-    .max(150),
+  place: z.string().trim().min(2).max(150),
 
-  agenda: z
-    .string()
-    .trim()
-    .max(1000)
-    .optional()
-    .default(""),
+  agenda: z.string().trim().max(1000).optional().default(""),
 
-  remarks: z
-    .string()
-    .trim()
-    .max(2000)
-    .optional()
-    .default(""),
+  remarks: z.string().trim().max(2000).optional().default(""),
 });
 
-export const AttendanceRecordSchema =
-  z.object({
-    memberId: z
-      .string()
-      .regex(
-        /^[0-9a-fA-F]{24}$/,
-        "Invalid member id.",
-      ),
+export const AttendanceRecordSchema = z.object({
+  memberId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid member id."),
 
-    status: z.enum(
-      ATTENDANCE_STATUS_VALUES as [
-        string,
-        ...string[],
-      ],
-    ),
+  status: z.enum(ATTENDANCE_STATUS_VALUES as [string, ...string[]]),
 
-    remarks: z
-      .string()
-      .trim()
-      .max(500)
-      .optional()
-      .default(""),
-  });
+  remarks: z.string().trim().max(500).optional().default(""),
+});
 
-export const UpdateAttendanceSchema =
-  z.object({
-    attendance: z.array(
-      AttendanceRecordSchema,
-    ),
-  });
+export const UpdateAttendanceSchema = z.object({
+  attendance: z.array(AttendanceRecordSchema),
+});
 
-export type UpdateAttendanceInput =
-  z.infer<
-    typeof UpdateAttendanceSchema
-  >;
+export type UpdateAttendanceInput = z.infer<typeof UpdateAttendanceSchema>;
 
+export type CreateMeetingInput = z.infer<typeof CreateMeetingSchema>;
 
+export type UpdateMeetingInput = z.infer<typeof UpdateMeetingSchema>;
 
-export type CreateMeetingInput =
-  z.infer<typeof CreateMeetingSchema>;
+export const PaymentRecordSchema = z.object({
+  memberId: ObjectIdSchema,
 
-export type UpdateMeetingInput =
-  z.infer<typeof UpdateMeetingSchema>;
+  contribution: z.coerce.number().min(0),
 
-export const PaymentRecordSchema =
-  z.object({
-    memberId: ObjectIdSchema,
+  loanRepayment: z.coerce.number().min(0),
 
-    contribution: z.coerce
-      .number()
-      .min(0),
+  absentFine: z.coerce.number().min(0),
 
-    loanRepayment: z.coerce
-      .number()
-      .min(0),
+  specialLoanFine: z.coerce.number().min(0),
 
-    absentFine: z.coerce
-      .number()
-      .min(0),
+  remarks: z.string().trim().max(500).optional().default(""),
+});
 
-    specialLoanFine: z.coerce
-      .number()
-      .min(0),
+export const UpdatePaymentsSchema = z.object({
+  payments: z.array(PaymentRecordSchema),
+});
 
-    remarks: z
-      .string()
-      .trim()
-      .max(500)
-      .optional()
-      .default(""),
-  });
+export type UpdatePaymentsInput = z.infer<typeof UpdatePaymentsSchema>;
 
-export const UpdatePaymentsSchema =
-  z.object({
-    payments: z.array(
-      PaymentRecordSchema,
-    ),
-  });
+export const BankTransactionRecordSchema = z.object({
+  transactionDate: z.coerce.date(),
 
-export type UpdatePaymentsInput =
-  z.infer<
-    typeof UpdatePaymentsSchema
-  >;
+  type: z.enum(BANK_TRANSACTION_TYPE_VALUES as [string, ...string[]]),
 
-export const BankTransactionRecordSchema =
-  z.object({
-    transactionDate:
-      z.coerce.date(),
+  amount: z.coerce.number().min(0),
 
-    type: z.enum(
-      BANK_TRANSACTION_TYPE_VALUES as [
-        string,
-        ...string[],
-      ],
-    ),
+  remarks: z.string().trim().max(500).optional().default(""),
+});
 
-    amount: z.coerce
-      .number()
-      .min(0),
+export const UpdateBankTransactionsSchema = z.object({
+  bankTransactions: z.array(BankTransactionRecordSchema),
+});
 
-    remarks: z
-      .string()
-      .trim()
-      .max(500)
-      .optional()
-      .default(""),
-  });
+export type UpdateBankTransactionsInput = z.infer<typeof UpdateBankTransactionsSchema>;
 
-export const UpdateBankTransactionsSchema =
-  z.object({
-    bankTransactions: z.array(
-      BankTransactionRecordSchema,
-    ),
-  });
+export const IncomeRecordSchema = z.object({
+  transactionDate: z.coerce.date(),
 
-export type UpdateBankTransactionsInput =
-  z.infer<
-    typeof UpdateBankTransactionsSchema
-  >;
+  category: z.enum(INCOME_CATEGORY_VALUES as [string, ...string[]]),
 
-export const IncomeRecordSchema =
-  z.object({
-    transactionDate:
-      z.coerce.date(),
+  amount: z.coerce.number().min(0),
 
-    category: z.enum(
-      INCOME_CATEGORY_VALUES as [
-        string,
-        ...string[],
-      ],
-    ),
+  remarks: z.string().trim().max(500).optional().default(""),
+});
 
-    amount: z.coerce
-      .number()
-      .min(0),
+export const UpdateIncomeSchema = z.object({
+  otherIncomes: z.array(IncomeRecordSchema),
+});
 
-    remarks: z
-      .string()
-      .trim()
-      .max(500)
-      .optional()
-      .default(""),
-  });
+export type UpdateIncomeInput = z.infer<typeof UpdateIncomeSchema>;
 
-export const UpdateIncomeSchema =
-  z.object({
-    otherIncomes: z.array(
-      IncomeRecordSchema,
-    ),
-  });
+export const ExpenseRecordSchema = z.object({
+  transactionDate: z.coerce.date(),
 
-export type UpdateIncomeInput =
-  z.infer<
-    typeof UpdateIncomeSchema
-  >;
+  category: z.enum(EXPENSE_CATEGORY_VALUES as [string, ...string[]]),
 
-export const ExpenseRecordSchema =
-  z.object({
-    transactionDate:
-      z.coerce.date(),
+  amount: z.coerce.number().min(0),
 
-    category: z.enum(
-      EXPENSE_CATEGORY_VALUES as [
-        string,
-        ...string[],
-      ],
-    ),
+  remarks: z.string().trim().max(500).optional().default(""),
+});
 
-    amount: z.coerce
-      .number()
-      .min(0),
+export const UpdateExpensesSchema = z.object({
+  expenses: z.array(ExpenseRecordSchema),
+});
 
-    remarks: z
-      .string()
-      .trim()
-      .max(500)
-      .optional()
-      .default(""),
-  });
+export type UpdateExpensesInput = z.infer<typeof UpdateExpensesSchema>;
 
-export const UpdateExpensesSchema =
-  z.object({
-    expenses: z.array(
-      ExpenseRecordSchema,
-    ),
-  });
+export const UpdateMeetingSchema = CreateMeetingSchema.partial().extend({
+  attendance: AttendanceRecordSchema.array().optional(),
 
-export type UpdateExpensesInput =
-  z.infer<
-    typeof UpdateExpensesSchema
-  >;
+  payments: PaymentRecordSchema.array().optional(),
 
-  export const UpdateMeetingSchema =
-  CreateMeetingSchema
-    .partial()
-    .extend({
-      attendance:
-        AttendanceRecordSchema
-          .array()
-          .optional(),
+  bankTransactions: BankTransactionRecordSchema.array().optional(),
 
-      payments:
-        PaymentRecordSchema
-          .array()
-          .optional(),
+  otherIncomes: IncomeRecordSchema.array().optional(),
 
-      bankTransactions:
-        BankTransactionRecordSchema
-          .array()
-          .optional(),
-
-      otherIncomes:
-        IncomeRecordSchema
-          .array()
-          .optional(),
-
-      expenses:
-        ExpenseRecordSchema
-          .array()
-          .optional(),
-    });
+  expenses: ExpenseRecordSchema.array().optional(),
+});

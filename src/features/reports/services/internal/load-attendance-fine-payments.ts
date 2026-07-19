@@ -22,42 +22,32 @@ export type AttendanceFinePayment = {
  */
 export async function loadAttendanceFinePayments(
   financialYearId: string,
-): Promise<
-  AttendanceFinePayment[]
-> {
+): Promise<AttendanceFinePayment[]> {
   await connectMongo();
 
-  const meetings =
-    await Meeting.find({
-      financialYearId,
-      status: "CLOSED",
+  const meetings = await Meeting.find({
+    financialYearId,
+    status: "CLOSED",
+  })
+    .sort({
+      meetingDate: 1,
     })
-      .sort({
-        meetingDate: 1,
-      })
-      .lean();
+    .lean();
 
-  const payments: AttendanceFinePayment[] =
-    [];
+  const payments: AttendanceFinePayment[] = [];
 
   for (const meeting of meetings) {
-    const meetingPayments =
-      meeting.payments ?? [];
+    const meetingPayments = meeting.payments ?? [];
 
     for (const payment of meetingPayments) {
       payments.push({
-        meetingId:
-          meeting._id.toString(),
+        meetingId: meeting._id.toString(),
 
-        meetingDate:
-          meeting.meetingDate,
+        meetingDate: meeting.meetingDate,
 
-        memberId:
-          payment.memberId.toString(),
+        memberId: payment.memberId.toString(),
 
-        finePaid:
-          payment.attendanceFine ??
-          0,
+        finePaid: payment.attendanceFine ?? 0,
       });
     }
   }

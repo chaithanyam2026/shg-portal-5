@@ -9,10 +9,7 @@ type RouteContext = {
   }>;
 };
 
-export async function POST(
-  _request: NextRequest,
-  { params }: RouteContext,
-) {
+export async function POST(_request: NextRequest, { params }: RouteContext) {
   try {
     const { id } = await params;
 

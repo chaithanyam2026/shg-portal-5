@@ -2,14 +2,9 @@
  * Attendance status recorded for
  * each meeting.
  */
-export const ATTENDANCE_STATUSES = [
-  "PRESENT",
-  "ABSENT",
-  "LEAVE",
-] as const;
+export const ATTENDANCE_STATUSES = ["PRESENT", "ABSENT", "LEAVE"] as const;
 
-export type AttendanceStatus =
-  (typeof ATTENDANCE_STATUSES)[number];
+export type AttendanceStatus = (typeof ATTENDANCE_STATUSES)[number];
 
 /**
  * Fine generated for one meeting.

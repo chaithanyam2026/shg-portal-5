@@ -4,11 +4,9 @@ export const ATTENDANCE_STATUS = {
   EXCUSED: "EXCUSED",
 } as const;
 
-export const ATTENDANCE_STATUS_VALUES =
-  Object.values(ATTENDANCE_STATUS);
+export const ATTENDANCE_STATUS_VALUES = Object.values(ATTENDANCE_STATUS);
 
-export type AttendanceStatus =
-  (typeof ATTENDANCE_STATUS_VALUES)[number];
+export type AttendanceStatus = (typeof ATTENDANCE_STATUS_VALUES)[number];
 
 export const ATTENDANCE_STATUS_OPTIONS = [
   {
@@ -25,13 +23,8 @@ export const ATTENDANCE_STATUS_OPTIONS = [
   },
 ] as const;
 
-export function getAttendanceStatusLabel(
-  status: AttendanceStatus,
-): string {
-  const option =
-    ATTENDANCE_STATUS_OPTIONS.find(
-      (item) => item.value === status,
-    );
+export function getAttendanceStatusLabel(status: AttendanceStatus): string {
+  const option = ATTENDANCE_STATUS_OPTIONS.find((item) => item.value === status);
 
   return option?.label ?? status;
 }

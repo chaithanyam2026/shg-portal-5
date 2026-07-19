@@ -3,18 +3,10 @@
 import FinancialYear from "@/models/FinancialYear";
 import Loan from "@/models/Loan";
 
-import {
-    LOAN_STATUS,
-  NORMAL_LOAN_TYPE,
-  SPECIAL_LOAN_TYPE,
-} from "../domain";
-
-import {
-  ACTIVE_LOAN_STATUS,
-} from "../domain";
+import { LOAN_STATUS, NORMAL_LOAN_TYPE, SPECIAL_LOAN_TYPE } from "../domain";
 
 type Input = {
-    financialYearId: string;
+  financialYearId: string;
 };
 
 /**
@@ -24,160 +16,119 @@ type Input = {
  * This is intended to run exactly
  * once during Financial Year activation.
  */
-export async function createOpeningLoans({
-    financialYearId,
-}: Input): Promise<void> {
-    //await connectMongo();
+export async function createOpeningLoans({ financialYearId }: Input): Promise<void> {
+  //await connectMongo();
 
-    const financialYear =
-        await FinancialYear.findById(
-            financialYearId,
-        ).lean();
+  const financialYear = await FinancialYear.findById(financialYearId).lean();
 
-    if (
-        financialYear.members.length === 0
-    ) {
-        return;
+  if (financialYear.members.length === 0) {
+    return;
+  }
+
+  if (!financialYear) {
+    throw new Error("Financial Year not found.");
+  }
+
+  let sequenceNumber = 1;
+
+  for (const member of financialYear.members) {
+    const opening = member.opening ?? {
+      loan: 0,
+      specialLoan: 0,
+    };
+
+    if (opening.loan <= 0 && opening.specialLoan <= 0) {
+      continue;
     }
 
-    if (!financialYear) {
-        throw new Error(
-            "Financial Year not found.",
-        );
+    if (opening.loan > 0) {
+      await createLoan({
+        financialYear,
+        memberId: member.memberId,
+        sequenceNumber: sequenceNumber++,
+        amount: opening.loan,
+        loanType: NORMAL_LOAN_TYPE,
+      });
     }
 
-    let sequenceNumber = 1;
-
-    for (const member of financialYear.members) {
-        const opening =
-            member.opening ?? {
-                loan: 0,
-                specialLoan: 0,
-            };
-
-        if (
-            opening.loan <= 0 &&
-            opening.specialLoan <= 0
-        ) {
-            continue;
-        }
-
-        if (
-            opening.loan > 0
-        ) {
-            await createLoan({
-                financialYear,
-                memberId:
-                    member.memberId,
-                sequenceNumber:
-                    sequenceNumber++,
-                amount:
-                    opening.loan,
-                loanType:
-                    NORMAL_LOAN_TYPE
-            });
-        }
-
-        if (
-            opening.specialLoan > 0
-        ) {
-            await createLoan({
-                financialYear,
-                memberId:
-                    member.memberId,
-                sequenceNumber:
-                    sequenceNumber++,
-                amount:
-                    opening.specialLoan,
-                loanType:
-                    SPECIAL_LOAN_TYPE,
-                expiryDate:
-                    opening.specialLoanExpiry,
-            });
-        }
+    if (opening.specialLoan > 0) {
+      await createLoan({
+        financialYear,
+        memberId: member.memberId,
+        sequenceNumber: sequenceNumber++,
+        amount: opening.specialLoan,
+        loanType: SPECIAL_LOAN_TYPE,
+        expiryDate: opening.specialLoanExpiry,
+      });
     }
+  }
 }
 
 type CreateLoanInput = {
-    financialYear: Awaited<
-        ReturnType<
-            typeof FinancialYear.findById
-        >
-    > extends {
-        toObject(): infer T;
-    }
+  financialYear: Awaited<ReturnType<typeof FinancialYear.findById>> extends {
+    toObject(): infer T;
+  }
     ? T
     : never;
 
-    memberId: unknown;
+  memberId: unknown;
 
-    sequenceNumber: number;
+  sequenceNumber: number;
 
-    amount: number;
+  amount: number;
 
-    loanType: string;
+  loanType: string;
 
-    expiryDate?: Date | null;
+  expiryDate?: Date | null;
 };
 
 async function createLoan({
-    financialYear,
-    memberId,
-    sequenceNumber,
-    amount,
-    loanType,
-    expiryDate = null,
+  financialYear,
+  memberId,
+  sequenceNumber,
+  amount,
+  loanType,
+  expiryDate = null,
 }: CreateLoanInput) {
-    const loanNumber =
-        `${financialYear.name}-${String(
-            sequenceNumber,
-        ).padStart(4, "0")}`;
+  const loanNumber = `${financialYear.name}-${String(sequenceNumber).padStart(4, "0")}`;
 
-    const existing =
-        await Loan.exists({
-            financialYearId:
-                financialYear._id,
+  const existing = await Loan.exists({
+    financialYearId: financialYear._id,
 
-            memberId,
+    memberId,
 
-            loanType,
-        });
+    loanType,
+  });
 
-    if (existing) {
-        return;
-    }
+  if (existing) {
+    return;
+  }
 
-    await Loan.create({
-        financialYearId:
-            financialYear._id,
+  await Loan.create({
+    financialYearId: financialYear._id,
 
-        memberId,
+    memberId,
 
-        loanNumber,
+    loanNumber,
 
-        sequenceNumber,
+    sequenceNumber,
 
-        loanType,
+    loanType,
 
-        status:
-            LOAN_STATUS.ACTIVE,
+    status: LOAN_STATUS.ACTIVE,
 
-        sanctionedAmount:
-            amount,
+    sanctionedAmount: amount,
 
-        disbursedAmount:
-            amount,
+    disbursedAmount: amount,
 
-        interestRate: 10,
+    interestRate: 10,
 
-        expectedMonthlyRepayment: 0,
+    expectedMonthlyRepayment: 0,
 
-        disbursedDate:
-            financialYear.startDate,
+    disbursedDate: financialYear.startDate,
 
-        expiryDate,
+    expiryDate,
 
-        remarks:
-            "Opening balance migration",
-    });
+    remarks: "Opening balance migration",
+  });
 }

@@ -1,6 +1,4 @@
-import type {
-  AttendanceRegister,
-} from "../domain";
+import type { AttendanceRegister } from "../domain";
 
 type Props = {
   register: AttendanceRegister;
@@ -15,11 +13,8 @@ type Props = {
  * - Leave count
  * - Fine generated
  */
-export default function AttendanceRegisterPrintSummary({
-  register,
-}: Props) {
-  const summary =
-    register.summary;
+export default function AttendanceRegisterPrintSummary({ register }: Props) {
+  const summary = register.summary;
 
   const emptyCells = (
     <>
@@ -41,23 +36,16 @@ export default function AttendanceRegisterPrintSummary({
           Present
         </td>
 
-        {summary.map(
-          (item) => (
-            <td
-              key={
-                item.meetingId
-              }
-              style={{
-                textAlign:
-                  "center",
-              }}
-            >
-              {
-                item.presentCount
-              }
-            </td>
-          ),
-        )}
+        {summary.map((item) => (
+          <td
+            key={item.meetingId}
+            style={{
+              textAlign: "center",
+            }}
+          >
+            {item.presentCount}
+          </td>
+        ))}
 
         {emptyCells}
       </tr>
@@ -72,23 +60,16 @@ export default function AttendanceRegisterPrintSummary({
           Absent
         </td>
 
-        {summary.map(
-          (item) => (
-            <td
-              key={
-                item.meetingId
-              }
-              style={{
-                textAlign:
-                  "center",
-              }}
-            >
-              {
-                item.absentCount
-              }
-            </td>
-          ),
-        )}
+        {summary.map((item) => (
+          <td
+            key={item.meetingId}
+            style={{
+              textAlign: "center",
+            }}
+          >
+            {item.absentCount}
+          </td>
+        ))}
 
         {emptyCells}
       </tr>
@@ -103,23 +84,16 @@ export default function AttendanceRegisterPrintSummary({
           Leave
         </td>
 
-        {summary.map(
-          (item) => (
-            <td
-              key={
-                item.meetingId
-              }
-              style={{
-                textAlign:
-                  "center",
-              }}
-            >
-              {
-                item.leaveCount
-              }
-            </td>
-          ),
-        )}
+        {summary.map((item) => (
+          <td
+            key={item.meetingId}
+            style={{
+              textAlign: "center",
+            }}
+          >
+            {item.leaveCount}
+          </td>
+        ))}
 
         {emptyCells}
       </tr>
@@ -134,24 +108,16 @@ export default function AttendanceRegisterPrintSummary({
           Fine Generated
         </td>
 
-        {summary.map(
-          (item) => (
-            <td
-              key={
-                item.meetingId
-              }
-              style={{
-                textAlign:
-                  "right",
-              }}
-            >
-              ₹
-              {
-                item.fineGenerated
-              }
-            </td>
-          ),
-        )}
+        {summary.map((item) => (
+          <td
+            key={item.meetingId}
+            style={{
+              textAlign: "right",
+            }}
+          >
+            ₹{item.fineGenerated}
+          </td>
+        ))}
 
         {emptyCells}
       </tr>

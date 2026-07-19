@@ -12,58 +12,35 @@ import {
   TableRow,
 } from "@mui/material";
 
-import {
-  EXPENSE_CATEGORY,
-} from "../domain/expense";
+import { EXPENSE_CATEGORY } from "../domain/expense";
 
-import type {
-  ExpenseRecord,
-} from "../types";
+import type { ExpenseRecord } from "../types";
 
 import ExpenseRow from "./ExpenseRow";
 
 type Props = {
   records: ExpenseRecord[];
   disabled?: boolean;
-  onChange(
-    records: ExpenseRecord[],
-  ): void;
+  onChange(records: ExpenseRecord[]): void;
 };
 
-export default function ExpenseTable({
-  records,
-  disabled = false,
-  onChange,
-}: Props) {
-  function updateRecord(
-    index: number,
-    value: ExpenseRecord,
-  ) {
+export default function ExpenseTable({ records, disabled = false, onChange }: Props) {
+  function updateRecord(index: number, value: ExpenseRecord) {
     const next = [...records];
     next[index] = value;
     onChange(next);
   }
 
-  function deleteRecord(
-    index: number,
-  ) {
-    onChange(
-      records.filter(
-        (_, i) => i !== index,
-      ),
-    );
+  function deleteRecord(index: number) {
+    onChange(records.filter((_, i) => i !== index));
   }
 
   function addRecord() {
     onChange([
       ...records,
       {
-        transactionDate:
-          new Date()
-            .toISOString()
-            .slice(0, 10),
-        category:
-          EXPENSE_CATEGORY.MISCELLANEOUS,
+        transactionDate: new Date().toISOString().slice(0, 10),
+        category: EXPENSE_CATEGORY.MISCELLANEOUS,
         amount: 0,
         remarks: "",
       },
@@ -72,11 +49,7 @@ export default function ExpenseTable({
 
   return (
     <Stack spacing={2}>
-      <Button
-        variant="outlined"
-        disabled={disabled}
-        onClick={addRecord}
-      >
+      <Button variant="outlined" disabled={disabled} onClick={addRecord}>
         Add Expense
       </Button>
 
@@ -95,38 +68,21 @@ export default function ExpenseTable({
           <TableBody>
             {records.length === 0 && (
               <TableRow>
-                <TableCell
-                  colSpan={5}
-                  align="center"
-                >
+                <TableCell colSpan={5} align="center">
                   No expense records.
                 </TableCell>
               </TableRow>
             )}
 
-            {records.map(
-              (
-                record,
-                index,
-              ) => (
-                <ExpenseRow
-                  key={index}
-                  record={record}
-                  disabled={disabled}
-                  onChange={(value) =>
-                    updateRecord(
-                      index,
-                      value,
-                    )
-                  }
-                  onDelete={() =>
-                    deleteRecord(
-                      index,
-                    )
-                  }
-                />
-              ),
-            )}
+            {records.map((record, index) => (
+              <ExpenseRow
+                key={index}
+                record={record}
+                disabled={disabled}
+                onChange={(value) => updateRecord(index, value)}
+                onDelete={() => deleteRecord(index)}
+              />
+            ))}
           </TableBody>
         </Table>
       </TableContainer>

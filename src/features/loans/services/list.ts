@@ -2,24 +2,18 @@ import connectMongo from "@/lib/db/mongodb";
 
 import Loan from "@/models/Loan";
 
-import type {
-  LoanSummary,
-} from "../types";
+import type { LoanSummary } from "../types";
 
-import type {
-  LoanStatus,
-} from "../domain/loan-status";
+import type { LoanStatus } from "../domain/loan-status";
 
-import type {
-  LoanType,
-} from "../domain/loan-type";
+import type { LoanType } from "../domain/loan-type";
 
-import {
-  ObjectIdSchema,
-} from "../validation";
+import { ObjectIdSchema } from "../validation";
 
 type ListLoansInput = {
   financialYearId?: string;
+
+  memberId?: string;
 
   loanType?: LoanType;
 
@@ -28,156 +22,100 @@ type ListLoansInput = {
   search?: string;
 };
 
-export async function listLoans(
-  filters: ListLoansInput = {},
-): Promise<
-  LoanSummary[]
-> {
+export async function listLoans(filters: ListLoansInput = {}): Promise<LoanSummary[]> {
   await connectMongo();
 
-  const query: Record<
-    string,
-    unknown
-  > = {};
+  const query: Record<string, unknown> = {};
 
-  if (
-    filters.financialYearId
-  ) {
-    query.financialYearId =
-      ObjectIdSchema.parse(
-        filters.financialYearId,
-      );
+  if (filters.financialYearId) {
+    query.financialYearId = ObjectIdSchema.parse(filters.financialYearId);
   }
 
-  if (
-    filters.loanType
-  ) {
-    query.loanType =
-      filters.loanType;
+  if (filters.memberId) {
+    query.memberId = ObjectIdSchema.parse(filters.memberId);
   }
 
-  if (
-    filters.status
-  ) {
-    query.status =
-      filters.status;
+  if (filters.loanType) {
+    query.loanType = filters.loanType;
   }
 
-  const loans =
-    await Loan.find(query)
-      .populate({
-        path: "memberId",
-        select:
-          "memberCode name",
-      })
-      .populate({
-        path:
-          "financialYearId",
-        select: "name",
-      })
-      .sort({
-        disbursedDate: -1,
-      })
-      .lean();
-
-  let filteredLoans =
-    loans;
-
-  if (
-    filters.search?.trim()
-  ) {
-    const search =
-      filters.search
-        .trim()
-        .toLowerCase();
-
-    filteredLoans =
-      loans.filter(
-        (loan) => {
-          const member =
-            loan.memberId as {
-              memberCode: string;
-              name: string;
-            };
-
-          return (
-            loan.loanNumber
-              .toLowerCase()
-              .includes(
-                search,
-              ) ||
-            member.memberCode
-              .toLowerCase()
-              .includes(
-                search,
-              ) ||
-            member.name
-              .toLowerCase()
-              .includes(
-                search,
-              )
-          );
-        },
-      );
+  if (filters.status) {
+    query.status = filters.status;
   }
 
-  return filteredLoans.map(
-  (loan) => {
-    const member =
-      loan.memberId as {
-        _id: unknown;
+  const loans = await Loan.find(query)
+    .populate({
+      path: "memberId",
+      select: "memberCode name",
+    })
+    .populate({
+      path: "financialYearId",
+      select: "name",
+    })
+    .sort({
+      disbursedDate: -1,
+    })
+    .lean();
+
+  let filteredLoans = loans;
+
+  if (filters.search?.trim()) {
+    const search = filters.search.trim().toLowerCase();
+
+    filteredLoans = loans.filter((loan) => {
+      const member = loan.memberId as {
         memberCode: string;
         name: string;
       };
 
-    const financialYear =
-      loan.financialYearId as {
-        _id: unknown;
-        name: string;
-      };
+      return (
+        loan.loanNumber.toLowerCase().includes(search) ||
+        member.memberCode.toLowerCase().includes(search) ||
+        member.name.toLowerCase().includes(search)
+      );
+    });
+  }
+
+  return filteredLoans.map((loan) => {
+    const member = loan.memberId as {
+      _id: unknown;
+      memberCode: string;
+      name: string;
+    };
+
+    const financialYear = loan.financialYearId as {
+      _id: unknown;
+      name: string;
+    };
 
     return {
-      _id:
-        loan._id.toString(),
+      _id: loan._id.toString(),
 
-      loanNumber:
-        loan.loanNumber,
+      loanNumber: loan.loanNumber,
 
-      loanType:
-        loan.loanType,
+      loanType: loan.loanType,
 
-      status:
-        loan.status,
+      status: loan.status,
 
-      financialYearId:
-        financialYear._id.toString(),
+      financialYearId: financialYear._id.toString(),
 
-      financialYearName:
-        financialYear.name,
+      financialYearName: financialYear.name,
 
-      memberId:
-        member._id.toString(),
+      memberId: member._id.toString(),
 
-      memberCode:
-        member.memberCode,
+      memberCode: member.memberCode,
 
-      memberName:
-        member.name,
+      memberName: member.name,
 
-      sanctionedAmount:
-        loan.sanctionedAmount,
+      sanctionedAmount: loan.sanctionedAmount,
 
-      disbursedAmount:
-        loan.disbursedAmount,
+      disbursedAmount: loan.disbursedAmount,
 
-      interestRate:
-        loan.interestRate,
+      interestRate: loan.interestRate,
 
-      expectedMonthlyRepayment:
-        loan.expectedMonthlyRepayment,
+      expectedMonthlyRepayment: loan.expectedMonthlyRepayment,
 
-      disbursedDate:
-        loan.disbursedDate.toISOString(),
+      disbursedDate: loan.disbursedDate.toISOString(),
 
       /**
        * These values are calculated by
@@ -186,12 +124,9 @@ export async function listLoans(
        * They are placeholders until the
        * summary engine is integrated.
        */
-      outstandingPrincipal:
-        loan.disbursedAmount,
+      outstandingPrincipal: loan.disbursedAmount,
 
-      totalPayable:
-        loan.disbursedAmount,
+      totalPayable: loan.disbursedAmount,
     };
-  },
-);
+  });
 }

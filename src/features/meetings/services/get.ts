@@ -4,9 +4,7 @@ import Meeting from "@/models/Meeting";
 
 import type { MeetingDetails } from "../types";
 
-export async function getMeeting(
-  id: string,
-): Promise<MeetingDetails> {
+export async function getMeeting(id: string): Promise<MeetingDetails> {
   await connectMongo();
 
   const meeting = await Meeting.findById(id).lean();
@@ -18,11 +16,9 @@ export async function getMeeting(
   return {
     id: meeting._id.toString(),
 
-    financialYearId:
-      meeting.financialYearId.toString(),
+    financialYearId: meeting.financialYearId.toString(),
 
-    meetingDate:
-      meeting.meetingDate.toISOString(),
+    meetingDate: meeting.meetingDate.toISOString(),
 
     place: meeting.place,
 
@@ -32,25 +28,18 @@ export async function getMeeting(
 
     status: meeting.status,
 
-    startedAt:
-      meeting.startedAt?.toISOString() ?? null,
+    startedAt: meeting.startedAt?.toISOString() ?? null,
 
-    approvedAt:
-      meeting.approvedAt?.toISOString() ?? null,
+    approvedAt: meeting.approvedAt?.toISOString() ?? null,
 
-    closedAt:
-      meeting.closedAt?.toISOString() ?? null,
+    closedAt: meeting.closedAt?.toISOString() ?? null,
 
-    createdBy:
-      meeting.createdBy?.toString() ?? null,
+    createdBy: meeting.createdBy?.toString() ?? null,
 
-    updatedBy:
-      meeting.updatedBy?.toString() ?? null,
+    updatedBy: meeting.updatedBy?.toString() ?? null,
 
-    createdAt:
-      meeting.createdAt.toISOString(),
+    createdAt: meeting.createdAt.toISOString(),
 
-    updatedAt:
-      meeting.updatedAt.toISOString(),
+    updatedAt: meeting.updatedAt.toISOString(),
   };
 }

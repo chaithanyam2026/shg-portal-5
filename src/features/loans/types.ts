@@ -1,10 +1,6 @@
-import type {
-  LoanStatus,
-} from "./domain/loan-status";
+import type { LoanStatus } from "./domain/loan-status";
 
-import type {
-  LoanType,
-} from "./domain/loan-type";
+import type { LoanType } from "./domain/loan-type";
 
 /**
  * Common loan information shared by
@@ -45,24 +41,17 @@ export type LoanBase = {
  */
 export type LoanLookup = Pick<
   LoanBase,
-  | "_id"
-  | "loanNumber"
-  | "loanType"
-  | "memberId"
-  | "memberCode"
-  | "memberName"
-  | "status"
+  "_id" | "loanNumber" | "loanType" | "memberId" | "memberCode" | "memberName" | "status"
 >;
 
 /**
  * Used by the loan list page.
  */
-export type LoanSummary =
-  LoanBase & {
-    outstandingPrincipal: number;
+export type LoanSummary = LoanBase & {
+  outstandingPrincipal: number;
 
-    totalPayable: number;
-  };
+  totalPayable: number;
+};
 
 /**
  * Filters used by the loan list.
@@ -81,28 +70,27 @@ export type LoanListFilters = {
  * Complete loan details used by
  * the Loan Details page.
  */
-export type LoanDetails =
-  LoanBase & {
-    remarks: string;
+export type LoanDetails = LoanBase & {
+  remarks: string;
 
-    outstandingPrincipal: number;
+  outstandingPrincipal: number;
 
-    paidPrincipal: number;
+  paidPrincipal: number;
 
-    paidInterest: number;
+  paidInterest: number;
 
-    pendingInterest: number;
+  pendingInterest: number;
 
-    paidLoanFine: number;
+  paidLoanFine: number;
 
-    pendingLoanFine: number;
+  pendingLoanFine: number;
 
-    totalPayable: number;
+  totalPayable: number;
 
-    effectiveInterestPercentage: number;
+  effectiveInterestPercentage: number;
 
-    isClosable: boolean;
-  };
+  isClosable: boolean;
+};
 
 /**
  * Computed loan summary.

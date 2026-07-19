@@ -1,8 +1,6 @@
 "use client";
 
-import type {
-  PropsWithChildren,
-} from "react";
+import type { PropsWithChildren } from "react";
 
 import {
   AppBar,
@@ -14,29 +12,18 @@ import {
   useTheme,
 } from "@mui/material";
 
-import Sidebar, {
-  DRAWER_WIDTH,
-} from "./Sidebar";
 import MobileNavigation from "./MobileNavigation";
+import Sidebar, { DRAWER_WIDTH } from "./Sidebar";
 
-type Props =
-  PropsWithChildren;
+type Props = PropsWithChildren;
 
 /**
  * Common application layout.
  */
-export default function AppLayout({
-  children,
-}: Props) {
-  const theme =
-    useTheme();
+export default function AppLayout({ children }: Props) {
+  const theme = useTheme();
 
-  const mobile =
-    useMediaQuery(
-      theme.breakpoints.down(
-        "md",
-      ),
-    );
+  const mobile = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
     <Box
@@ -51,13 +38,9 @@ export default function AppLayout({
         position="fixed"
         elevation={1}
         sx={{
-          width: mobile
-            ? "100%"
-            : `calc(100% - ${DRAWER_WIDTH}px)`,
+          width: mobile ? "100%" : `calc(100% - ${DRAWER_WIDTH}px)`,
 
-          ml: mobile
-            ? 0
-            : `${DRAWER_WIDTH}px`,
+          ml: mobile ? 0 : `${DRAWER_WIDTH}px`,
         }}
       >
         <Toolbar>
@@ -76,9 +59,7 @@ export default function AppLayout({
         </Toolbar>
       </AppBar>
 
-      {!mobile && (
-        <Sidebar />
-      )}
+      {!mobile && <Sidebar />}
 
       <Box
         component="main"
@@ -87,9 +68,7 @@ export default function AppLayout({
 
           p: 3,
 
-          width: mobile
-            ? "100%"
-            : `calc(100% - ${DRAWER_WIDTH}px)`,
+          width: mobile ? "100%" : `calc(100% - ${DRAWER_WIDTH}px)`,
         }}
       >
         <Toolbar />

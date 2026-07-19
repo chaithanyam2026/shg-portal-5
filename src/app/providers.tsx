@@ -2,11 +2,7 @@
 
 import { ReactNode } from "react";
 
-import {
-  CssBaseline,
-  ThemeProvider,
-  createTheme,
-} from "@mui/material";
+import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 
 type Props = {
   children: ReactNode;
@@ -32,9 +28,7 @@ const theme = createTheme({
   },
 });
 
-export default function Providers({
-  children,
-}: Props) {
+export default function Providers({ children }: Props) {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />

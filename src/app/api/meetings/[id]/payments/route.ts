@@ -9,58 +9,38 @@ type RouteContext = {
   }>;
 };
 
-export async function GET(
-  _request: NextRequest,
-  { params }: RouteContext,
-) {
+export async function GET(_request: NextRequest, { params }: RouteContext) {
   try {
     const { id } = await params;
 
-    const payments =
-      await getPayments(id);
+    const payments = await getPayments(id);
 
     return NextResponse.json(payments);
   } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : "Failed to load payments.";
+    const message = error instanceof Error ? error.message : "Failed to load payments.";
 
     return NextResponse.json(
       {
         message,
       },
       {
-        status:
-          message === "Meeting not found."
-            ? 404
-            : 500,
+        status: message === "Meeting not found." ? 404 : 500,
       },
     );
   }
 }
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: RouteContext,
-) {
+export async function PATCH(request: NextRequest, { params }: RouteContext) {
   try {
     const { id } = await params;
 
     const body = await request.json();
 
-    const result =
-      await updatePayments(
-        id,
-        body,
-      );
+    const result = await updatePayments(id, body);
 
     return NextResponse.json(result);
   } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : "Failed to update payments.";
+    const message = error instanceof Error ? error.message : "Failed to update payments.";
 
     let status = 400;
 

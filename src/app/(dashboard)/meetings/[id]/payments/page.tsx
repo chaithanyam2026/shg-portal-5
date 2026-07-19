@@ -1,8 +1,4 @@
-import {
-  Container,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Container, Stack, Typography } from "@mui/material";
 
 import { getPayments } from "@/features/meetings/services/get-payments";
 import MeetingTabs from "@/features/meetings/ui/MeetingTabs";
@@ -14,13 +10,10 @@ type Props = {
   }>;
 };
 
-export default async function PaymentsPage({
-  params,
-}: Props) {
+export default async function PaymentsPage({ params }: Props) {
   const { id } = await params;
 
-  const payments =
-    await getPayments(id);
+  const payments = await getPayments(id);
 
   return (
     <Container
@@ -30,21 +23,11 @@ export default async function PaymentsPage({
       }}
     >
       <Stack spacing={3}>
-        <Typography variant="h4">
-          Member Payments
-        </Typography>
+        <Typography variant="h4">Member Payments</Typography>
 
-        <MeetingTabs
-          meetingId={id}
-           status={payments.status}
-        />
+        <MeetingTabs meetingId={id} status={payments.status} />
 
-        <PaymentForm
-          meetingId={id}
-          initialRecords={
-            payments.records
-          }
-        />
+        <PaymentForm meetingId={id} initialRecords={payments.records} />
       </Stack>
     </Container>
   );

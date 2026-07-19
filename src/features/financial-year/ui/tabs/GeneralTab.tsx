@@ -6,12 +6,6 @@ type Props = {
   financialYear: FinancialYearDetails;
 };
 
-export default function GeneralTab({
-  financialYear,
-}: Props) {
-  return (
-    <GeneralForm
-      financialYear={financialYear}
-    />
-  );
+export default function GeneralTab({ financialYear }: Props) {
+  return <GeneralForm financialYear={financialYear} />;
 }

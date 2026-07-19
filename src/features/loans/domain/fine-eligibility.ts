@@ -1,6 +1,4 @@
-import type {
-  RepaymentCycle,
-} from "./repayment-cycle";
+import type { RepaymentCycle } from "./repayment-cycle";
 
 /**
  * Input required to determine
@@ -86,36 +84,27 @@ export function getFineEligibility({
    * immediately preceding calendar
    * month.
    */
-  const evaluationDate =
-    new Date(
-      repaymentCycle.toDate.getFullYear(),
-      repaymentCycle.toDate.getMonth() - 1,
-      1,
-    );
+  const evaluationDate = new Date(
+    repaymentCycle.toDate.getFullYear(),
+    repaymentCycle.toDate.getMonth() - 1,
+    1,
+  );
 
-  const evaluationMonth =
-    evaluationDate.getMonth();
+  const evaluationMonth = evaluationDate.getMonth();
 
-  const evaluationYear =
-    evaluationDate.getFullYear();
+  const evaluationYear = evaluationDate.getFullYear();
 
   /**
    * Is this the month in which the
    * loan was originally disbursed?
    */
   const isStartingMonth =
-    disbursedDate.getFullYear() ===
-      evaluationYear &&
-    disbursedDate.getMonth() ===
-      evaluationMonth;
+    disbursedDate.getFullYear() === evaluationYear && disbursedDate.getMonth() === evaluationMonth;
 
   /**
    * Partial starting month is exempt.
    */
-  if (
-    isStartingMonth &&
-    disbursedDate.getDate() > 1
-  ) {
+  if (isStartingMonth && disbursedDate.getDate() > 1) {
     return {
       isEligible: false,
 
@@ -123,8 +112,7 @@ export function getFineEligibility({
 
       evaluationYear,
 
-      reason:
-        "Partial starting month is exempt from loan fine.",
+      reason: "Partial starting month is exempt from loan fine.",
     };
   }
 
@@ -135,7 +123,6 @@ export function getFineEligibility({
 
     evaluationYear,
 
-    reason:
-      "Monthly loan fine evaluation applicable.",
+    reason: "Monthly loan fine evaluation applicable.",
   };
 }

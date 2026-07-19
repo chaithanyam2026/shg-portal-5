@@ -1,8 +1,4 @@
-import {
-  Container,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Container, Stack, Typography } from "@mui/material";
 
 import { getSummary } from "@/features/meetings/services/get-summary";
 
@@ -15,13 +11,10 @@ type Props = {
   }>;
 };
 
-export default async function SummaryPage({
-  params,
-}: Props) {
+export default async function SummaryPage({ params }: Props) {
   const { id } = await params;
 
-  const summary =
-    await getSummary(id);
+  const summary = await getSummary(id);
 
   return (
     <Container
@@ -31,19 +24,11 @@ export default async function SummaryPage({
       }}
     >
       <Stack spacing={3}>
-        <Typography variant="h4">
-          Meeting Summary
-        </Typography>
+        <Typography variant="h4">Meeting Summary</Typography>
 
-        <MeetingTabs
-          meetingId={id}
-          status={summary.status}
-        />
+        <MeetingTabs meetingId={id} status={summary.status} />
 
-        <SummaryView
-         meetingId={id}
-          summary={summary}
-        />
+        <SummaryView meetingId={id} summary={summary} />
       </Stack>
     </Container>
   );

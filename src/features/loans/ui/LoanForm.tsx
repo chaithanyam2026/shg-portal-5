@@ -1,430 +1,278 @@
 "use client";
 
-import { useState, useMemo } from "react";
-
+import { useMemo, useState } from "react";
 
 import {
-    Alert,
-    Button,
-    Card,
-    CardContent,
-    Stack,
-    TextField,
-    MenuItem,
-    Typography,
-} from "@mui/material";
-import {
-    FormControl,
-    InputLabel,
-    Select,
+  Alert,
+  Button,
+  Card,
+  CardContent,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+  Typography,
 } from "@mui/material";
 
-import type {
-    MemberLookup,
-} from "@/features/financial-year/types";
+import type { MemberLookup } from "@/features/financial-year/types";
 
-import type {
-    CreateLoanInput,
-} from "../validation";
+import type { CreateLoanInput } from "../validation";
 
-import {
-    LOAN_TYPES,
-} from "../domain";
+import { LOAN_TYPES } from "../domain";
 
 type Props = {
-    financialYearId: string;
+  financialYearId: string;
 
-    members: MemberLookup[];
+  members: MemberLookup[];
 
-    loading?: boolean;
+  loading?: boolean;
 
-    onSubmit(
-        values: CreateLoanInput,
-    ): Promise<void>;
+  onSubmit(values: CreateLoanInput): Promise<void>;
 };
 
-export default function LoanForm({
+export default function LoanForm({ financialYearId, members, loading = false, onSubmit }: Props) {
+  const [values, setValues] = useState<CreateLoanInput>({
     financialYearId,
-    members,
-    loading = false,
-    onSubmit,
-}: Props) {
-    const [values, setValues] =
-        useState<CreateLoanInput>({
-            financialYearId,
 
-            memberId: "",
+    memberId: "",
 
-            loanType:
-                LOAN_TYPES[0],
+    loanType: LOAN_TYPES[0],
 
-            sanctionedAmount: 0,
+    sanctionedAmount: 0,
 
-            disbursedAmount: 0,
+    disbursedAmount: 0,
 
-            interestRate: 0,
+    interestRate: 0,
 
-            expectedMonthlyRepayment: 0,
+    expectedMonthlyRepayment: 0,
 
-            disbursedDate:
-                new Date()
-                    .toISOString()
-                    .split("T")[0],
+    disbursedDate: new Date().toISOString().split("T")[0],
 
-            remarks: "",
-        });
+    remarks: "",
+  });
 
-    const [error, setError] =
-        useState("");
+  const [error, setError] = useState("");
 
-    const validationError =
-        useMemo(() => {
-            if (!values.memberId) {
-                return "Please select a member.";
-            }
-
-            if (
-                values.sanctionedAmount <=
-                0
-            ) {
-                return "Sanctioned amount must be greater than zero.";
-            }
-
-            if (
-                values.disbursedAmount <=
-                0
-            ) {
-                return "Disbursed amount must be greater than zero.";
-            }
-
-            if (
-                values.disbursedAmount >
-                values.sanctionedAmount
-            ) {
-                return "Disbursed amount cannot exceed sanctioned amount.";
-            }
-
-            if (
-                values.interestRate < 0
-            ) {
-                return "Interest rate cannot be negative.";
-            }
-
-            if (
-                values.expectedMonthlyRepayment <=
-                0
-            ) {
-                return "Minimum monthly repayment must be greater than zero.";
-            }
-
-            if (
-                !values.disbursedDate
-            ) {
-                return "Please select the disbursed date.";
-            }
-
-            return "";
-        }, [values]);
-
-    async function submit() {
-        if (validationError) {
-            setError(
-                validationError,
-            );
-
-            return;
-        }
-
-        setError("");
-
-        try {
-            await onSubmit(
-                values,
-            );
-        } catch (err) {
-            setError(
-                err instanceof Error
-                    ? err.message
-                    : "Unable to create loan.",
-            );
-        }
+  const validationError = useMemo(() => {
+    if (!values.memberId) {
+      return "Please select a member.";
     }
 
-    return (
-        <Card>
-            <CardContent>
-                <Stack spacing={3}>
-                    <Typography variant="h6">
-                        New Loan
-                    </Typography>
+    if (values.sanctionedAmount <= 0) {
+      return "Sanctioned amount must be greater than zero.";
+    }
 
-                    {(error ||
-                        validationError) && (
-                            <Alert severity="error">
-                                {error ||
-                                    validationError}
-                            </Alert>
-                        )}
+    if (values.disbursedAmount <= 0) {
+      return "Disbursed amount must be greater than zero.";
+    }
 
-                    <FormControl
-                        fullWidth
-                        required
-                    >
-                        <InputLabel>
-                            Member
-                        </InputLabel>
+    if (values.disbursedAmount > values.sanctionedAmount) {
+      return "Disbursed amount cannot exceed sanctioned amount.";
+    }
 
-                        <Select
-                            label="Member"
-                            value={
-                                values.memberId
-                            }
-                            onChange={(
-                                event,
-                            ) =>
-                                setValues({
-                                    ...values,
-                                    memberId:
-                                        event.target
-                                            .value,
-                                })
-                            }
-                        >
-                            {members.map(
-                                (
-                                    member,
-                                ) => (
-                                    <MenuItem
-                                        key={
-                                            member._id
-                                        }
-                                        value={
-                                            member._id
-                                        }
-                                    >
-                                        {
-                                            member.memberCode
-                                        }{" "}
-                                        —{" "}
-                                        {
-                                            member.name
-                                        }
-                                    </MenuItem>
-                                ),
-                            )}
-                        </Select>
-                    </FormControl>
+    if (values.interestRate < 0) {
+      return "Interest rate cannot be negative.";
+    }
 
-                    <FormControl
-                        fullWidth
-                        required
-                    >
-                        <InputLabel>
-                            Loan Type
-                        </InputLabel>
+    if (values.expectedMonthlyRepayment <= 0) {
+      return "Minimum monthly repayment must be greater than zero.";
+    }
 
-                        <Select
-                            label="Loan Type"
-                            value={
-                                values.loanType
-                            }
-                            onChange={(
-                                event,
-                            ) =>
-                                setValues({
-                                    ...values,
-                                    loanType:
-                                        event.target
-                                            .value as CreateLoanInput["loanType"],
-                                })
-                            }
-                        >
-                            {LOAN_TYPES.map(
-                                (type) => (
-                                    <MenuItem
-                                        key={type}
-                                        value={type}
-                                    >
-                                        {type}
-                                    </MenuItem>
-                                ),
-                            )}
-                        </Select>
-                    </FormControl>
+    if (!values.disbursedDate) {
+      return "Please select the disbursed date.";
+    }
 
-                    <Stack
-                        direction={{
-                            xs: "column",
-                            sm: "row",
-                        }}
-                        spacing={2}
-                    >
-                        <TextField
-                            label="Sanctioned Amount"
-                            type="number"
-                            fullWidth
-                            required
-                            value={
-                                values.sanctionedAmount
-                            }
-                            onChange={(
-                                event,
-                            ) =>
-                                setValues({
-                                    ...values,
-                                    sanctionedAmount:
-                                        Number(
-                                            event.target.value,
-                                        ),
-                                })
-                            }
-                        />
+    return "";
+  }, [values]);
 
-                        <TextField
-                            label="Disbursed Amount"
-                            type="number"
-                            fullWidth
-                            required
-                            value={
-                                values.disbursedAmount
-                            }
-                            onChange={(
-                                event,
-                            ) =>
-                                setValues({
-                                    ...values,
-                                    disbursedAmount:
-                                        Number(
-                                            event.target.value,
-                                        ),
-                                })
-                            }
-                        />
-                    </Stack>
+  async function submit() {
+    if (validationError) {
+      setError(validationError);
 
-                    <Stack
-                        direction={{
-                            xs: "column",
-                            sm: "row",
-                        }}
-                        spacing={2}
-                    >
-                        <TextField
-                            label="Interest Rate (%)"
-                            type="number"
-                            fullWidth
-                            required
-                            value={
-                                values.interestRate
-                            }
-                            onChange={(
-                                event,
-                            ) =>
-                                setValues({
-                                    ...values,
-                                    interestRate:
-                                        Number(
-                                            event.target.value,
-                                        ),
-                                })
-                            }
-                        />
+      return;
+    }
 
-                        <TextField
-                            label="Minimum Monthly Repayment"
-                            type="number"
-                            fullWidth
-                            required
-                            value={
-                                values.expectedMonthlyRepayment
-                            }
-                            onChange={(
-                                event,
-                            ) =>
-                                setValues({
-                                    ...values,
-                                    expectedMonthlyRepayment:
-                                        Number(
-                                            event.target.value,
-                                        ),
-                                })
-                            }
-                        />
-                    </Stack>
+    setError("");
 
-                    <TextField
-                        label="Disbursed Date"
-                        type="date"
-                        fullWidth
-                        required
-                        value={
-                            values.disbursedDate
-                        }
-                        onChange={(
-                            event,
-                        ) =>
-                            setValues({
-                                ...values,
-                                disbursedDate:
-                                    event.target.value,
-                            })
-                        }
-                        slotProps={{
-                            inputLabel: {
-                                shrink: true,
-                            },
-                        }}
-                    />
+    try {
+      await onSubmit(values);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to create loan.");
+    }
+  }
 
-                    <TextField
-                        label="Remarks"
-                        fullWidth
-                        multiline
-                        minRows={3}
-                        value={
-                            values.remarks
-                        }
-                        onChange={(
-                            event,
-                        ) =>
-                            setValues({
-                                ...values,
-                                remarks:
-                                    event.target.value,
-                            })
-                        }
-                    />
+  return (
+    <Card>
+      <CardContent>
+        <Stack spacing={3}>
+          <Typography variant="h6">New Loan</Typography>
 
-                    <Stack
-                        direction="row"
-                        justifyContent="flex-end"
-                        spacing={2}
-                    >
-                        <Button
-                            variant="outlined"
-                            type="button"
-                        >
-                            Cancel
-                        </Button>
+          {(error || validationError) && <Alert severity="error">{error || validationError}</Alert>}
 
-                        <Button
-                            variant="contained"
-                            onClick={submit}
-                            disabled={
-                                loading ||
-                                Boolean(
-                                    validationError,
-                                )
-                            }
-                        >
-                            {loading
-                                ? "Creating..."
-                                : "Create Loan"}
-                        </Button>
-                    </Stack>
+          <FormControl fullWidth required>
+            <InputLabel>Member</InputLabel>
 
-                </Stack>
-            </CardContent>
-        </Card>
-    );
+            <Select
+              label="Member"
+              value={values.memberId}
+              onChange={(event) =>
+                setValues({
+                  ...values,
+                  memberId: event.target.value,
+                })
+              }
+            >
+              {members.map((member) => (
+                <MenuItem key={member._id} value={member._id}>
+                  {member.memberCode} — {member.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <FormControl fullWidth required>
+            <InputLabel>Loan Type</InputLabel>
+
+            <Select
+              label="Loan Type"
+              value={values.loanType}
+              onChange={(event) =>
+                setValues({
+                  ...values,
+                  loanType: event.target.value as CreateLoanInput["loanType"],
+                })
+              }
+            >
+              {LOAN_TYPES.map((type) => (
+                <MenuItem key={type} value={type}>
+                  {type}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <Stack
+            direction={{
+              xs: "column",
+              sm: "row",
+            }}
+            spacing={2}
+          >
+            <TextField
+              label="Sanctioned Amount"
+              type="number"
+              fullWidth
+              required
+              value={values.sanctionedAmount}
+              onChange={(event) =>
+                setValues({
+                  ...values,
+                  sanctionedAmount: Number(event.target.value),
+                })
+              }
+            />
+
+            <TextField
+              label="Disbursed Amount"
+              type="number"
+              fullWidth
+              required
+              value={values.disbursedAmount}
+              onChange={(event) =>
+                setValues({
+                  ...values,
+                  disbursedAmount: Number(event.target.value),
+                })
+              }
+            />
+          </Stack>
+
+          <Stack
+            direction={{
+              xs: "column",
+              sm: "row",
+            }}
+            spacing={2}
+          >
+            <TextField
+              label="Interest Rate (%)"
+              type="number"
+              fullWidth
+              required
+              value={values.interestRate}
+              onChange={(event) =>
+                setValues({
+                  ...values,
+                  interestRate: Number(event.target.value),
+                })
+              }
+            />
+
+            <TextField
+              label="Minimum Monthly Repayment"
+              type="number"
+              fullWidth
+              required
+              value={values.expectedMonthlyRepayment}
+              onChange={(event) =>
+                setValues({
+                  ...values,
+                  expectedMonthlyRepayment: Number(event.target.value),
+                })
+              }
+            />
+          </Stack>
+
+          <TextField
+            label="Disbursed Date"
+            type="date"
+            fullWidth
+            required
+            value={values.disbursedDate}
+            onChange={(event) =>
+              setValues({
+                ...values,
+                disbursedDate: event.target.value,
+              })
+            }
+            slotProps={{
+              inputLabel: {
+                shrink: true,
+              },
+            }}
+          />
+
+          <TextField
+            label="Remarks"
+            fullWidth
+            multiline
+            minRows={3}
+            value={values.remarks}
+            onChange={(event) =>
+              setValues({
+                ...values,
+                remarks: event.target.value,
+              })
+            }
+          />
+
+          <Stack direction="row" justifyContent="flex-end" spacing={2}>
+            <Button variant="outlined" type="button">
+              Cancel
+            </Button>
+
+            <Button
+              variant="contained"
+              onClick={submit}
+              disabled={loading || Boolean(validationError)}
+            >
+              {loading ? "Creating..." : "Create Loan"}
+            </Button>
+          </Stack>
+        </Stack>
+      </CardContent>
+    </Card>
+  );
 }
