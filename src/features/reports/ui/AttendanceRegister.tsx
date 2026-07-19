@@ -46,7 +46,12 @@ export default function AttendanceRegister({ financialYearId }: Props) {
 
   if (loading) {
     return (
-      <Stack alignItems="center" py={6}>
+      <Stack
+        sx={{
+          alignItems: "center",
+          py: 6,
+        }}
+      >
         <CircularProgress />
       </Stack>
     );

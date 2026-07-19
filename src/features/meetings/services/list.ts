@@ -2,6 +2,7 @@ import Meeting from "@/models/Meeting";
 
 import connectMongo from "@/lib/db/mongodb";
 
+import type { MeetingStatus } from "../domain/meeting-status";
 import type { MeetingListFilter, MeetingListResult } from "../types";
 
 export type MeetingSummary = {
@@ -42,7 +43,7 @@ export async function listMeetings(filter: MeetingListFilter): Promise<MeetingLi
     ];
   }
 
-  const sort = filter.sort === "-meetingDate" ? { meetingDate: -1 } : { meetingDate: 1 };
+  const sort = filter.sort === "-meetingDate" ? { meetingDate: -1 as const } : { meetingDate: 1 as const };
 
   const [items, total] = await Promise.all([
     Meeting.find(query)

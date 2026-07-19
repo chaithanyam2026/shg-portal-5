@@ -1,4 +1,5 @@
 import Meeting from "@/models/Meeting";
+import { Types } from "mongoose";
 
 export type LoanRepayment = {
   meetingId: string;
@@ -9,7 +10,22 @@ export type LoanRepayment = {
 };
 
 type LoadLoanRepaymentsInput = {
-  memberId: unknown;
+  memberId: {
+    toString(): string;
+  };
+};
+
+type MeetingRepaymentDocument = {
+  _id: {
+    toString(): string;
+  };
+  meetingDate: Date;
+  payments: Array<{
+    memberId: {
+      toString(): string;
+    };
+    loanRepayment: number;
+  }>;
 };
 
 /**
@@ -21,9 +37,11 @@ type LoadLoanRepaymentsInput = {
 export async function loadLoanRepayments({
   memberId,
 }: LoadLoanRepaymentsInput): Promise<LoanRepayment[]> {
-  const meetings = await Meeting.find({
-    "payments.memberId": memberId,
-  })
+  const memberObjectId = new Types.ObjectId(memberId.toString());
+
+  const meetings = (await Meeting.find()
+    .where("payments.memberId")
+    .equals(memberObjectId)
     .select({
       meetingDate: 1,
       payments: 1,
@@ -31,7 +49,7 @@ export async function loadLoanRepayments({
     .sort({
       meetingDate: 1,
     })
-    .lean();
+    .lean()) as unknown as MeetingRepaymentDocument[];
 
   const repayments: LoanRepayment[] = [];
 

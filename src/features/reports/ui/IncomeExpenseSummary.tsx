@@ -31,7 +31,7 @@ function SummaryCard({ title, value, subtitle }: SummaryCardProps) {
             {title}
           </Typography>
 
-          <Typography variant="h5" fontWeight={700}>
+          <Typography variant="h5" sx={{ fontWeight: 700 }}>
             {formatCurrency(value)}
           </Typography>
 

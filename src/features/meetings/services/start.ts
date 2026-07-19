@@ -1,6 +1,7 @@
 import connectMongo from "@/lib/db/mongodb";
 
 import Meeting from "@/models/Meeting";
+import { Types } from "mongoose";
 
 import { MEETING_STATUS } from "../domain/meeting-status";
 
@@ -23,7 +24,7 @@ export async function startMeeting(id: string, userId?: string | null): Promise<
   meeting.startedAt = new Date();
 
   if (userId) {
-    meeting.updatedBy = userId;
+    meeting.updatedBy = new Types.ObjectId(userId);
   }
 
   await meeting.save();

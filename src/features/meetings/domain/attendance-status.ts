@@ -4,9 +4,14 @@ export const ATTENDANCE_STATUS = {
   EXCUSED: "EXCUSED",
 } as const;
 
-export const ATTENDANCE_STATUS_VALUES = Object.values(ATTENDANCE_STATUS);
+export type AttendanceStatus =
+  (typeof ATTENDANCE_STATUS)[keyof typeof ATTENDANCE_STATUS];
 
-export type AttendanceStatus = (typeof ATTENDANCE_STATUS_VALUES)[number];
+export const ATTENDANCE_STATUS_VALUES = [
+  ATTENDANCE_STATUS.PRESENT,
+  ATTENDANCE_STATUS.ABSENT,
+  ATTENDANCE_STATUS.EXCUSED,
+] as const;
 
 export const ATTENDANCE_STATUS_OPTIONS = [
   {

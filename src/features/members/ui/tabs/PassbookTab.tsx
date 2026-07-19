@@ -64,7 +64,12 @@ export default function PassbookTab({ member }: Props) {
 
   if (loading) {
     return (
-      <Stack alignItems="center" py={4}>
+      <Stack
+        sx={{
+          alignItems: "center",
+          py: 4,
+        }}
+      >
         <CircularProgress />
       </Stack>
     );

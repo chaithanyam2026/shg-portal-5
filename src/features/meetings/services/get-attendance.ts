@@ -4,11 +4,15 @@ import Meeting from "@/models/Meeting";
 
 import type { AttendanceSummary } from "../types";
 import { loadFinancialYearMembers } from "./internal/load-financial-year-members";
+import type { MeetingDocument } from "@/models/Meeting";
+import type { AttendanceStatus } from "../domain/attendance-status";
+
 
 export async function getAttendance(meetingId: string): Promise<AttendanceSummary> {
   await connectMongo();
 
-  const meeting = await Meeting.findById(meetingId).lean();
+  const meeting = await Meeting.findById(meetingId)
+    .lean<MeetingDocument>();
 
   if (!meeting) {
     throw new Error("Meeting not found.");
@@ -60,7 +64,7 @@ export async function getAttendance(meetingId: string): Promise<AttendanceSummar
 
         memberName: member?.name ?? "",
 
-        status: record.status,
+        status: record.status as AttendanceStatus,
 
         remarks: record.remarks,
       };

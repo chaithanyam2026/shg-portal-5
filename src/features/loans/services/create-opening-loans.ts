@@ -1,9 +1,10 @@
 // import connectMongo from "@/lib/db/mongodb";
-
+import { Types } from "mongoose";
 import FinancialYear from "@/models/FinancialYear";
 import Loan from "@/models/Loan";
 
-import { LOAN_STATUS, NORMAL_LOAN_TYPE, SPECIAL_LOAN_TYPE } from "../domain";
+import { ACTIVE_LOAN_STATUS, NORMAL_LOAN_TYPE, SPECIAL_LOAN_TYPE } from "../domain";
+import type { LoanType } from "../domain";
 
 type Input = {
   financialYearId: string;
@@ -21,12 +22,12 @@ export async function createOpeningLoans({ financialYearId }: Input): Promise<vo
 
   const financialYear = await FinancialYear.findById(financialYearId).lean();
 
-  if (financialYear.members.length === 0) {
-    return;
-  }
-
   if (!financialYear) {
     throw new Error("Financial Year not found.");
+  }
+
+  if (financialYear.members.length === 0) {
+    return;
   }
 
   let sequenceNumber = 1;
@@ -64,12 +65,12 @@ export async function createOpeningLoans({ financialYearId }: Input): Promise<vo
   }
 }
 
-type CreateLoanInput = {
-  financialYear: Awaited<ReturnType<typeof FinancialYear.findById>> extends {
-    toObject(): infer T;
-  }
-    ? T
-    : never;
+/* type CreateLoanInput = {
+  financialYear: {
+    _id: unknown;
+    name: string;
+    startDate: Date;
+  };
 
   memberId: unknown;
 
@@ -78,6 +79,24 @@ type CreateLoanInput = {
   amount: number;
 
   loanType: string;
+
+  expiryDate?: Date | null;
+}; */
+
+type CreateLoanInput = {
+  financialYear: {
+    _id: Types.ObjectId;
+    name: string;
+    startDate: Date;
+  };
+
+  memberId: Types.ObjectId;
+
+  sequenceNumber: number;
+
+  amount: number;
+
+  loanType: LoanType;
 
   expiryDate?: Date | null;
 };
@@ -115,7 +134,7 @@ async function createLoan({
 
     loanType,
 
-    status: LOAN_STATUS.ACTIVE,
+    status: ACTIVE_LOAN_STATUS,
 
     sanctionedAmount: amount,
 

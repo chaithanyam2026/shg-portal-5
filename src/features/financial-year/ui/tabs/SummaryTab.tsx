@@ -39,7 +39,18 @@ export default function SummaryTab({ financialYear }: Props) {
     opening.investments -
     opening.otherLoans;
 
-  const memberTotals = financialYear.openingMemberTotals;
+  const memberTotals = financialYear.members.reduce(
+    (totals, member) => ({
+      contribution: totals.contribution + member.opening.contribution,
+      loan: totals.loan + member.opening.loan,
+      specialLoan: totals.specialLoan + member.opening.specialLoan,
+    }),
+    {
+      contribution: 0,
+      loan: 0,
+      specialLoan: 0,
+    },
+  );
 
   function openCloseDialog() {
     setCloseDialogOpen(true);

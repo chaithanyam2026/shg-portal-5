@@ -19,9 +19,7 @@ export async function validateLoanEligibility({
 
     loanType,
 
-    status: {
-      $in: ACTIVE_LOAN_STATUS,
-    },
+    status: ACTIVE_LOAN_STATUS,
   })
     .select({
       loanNumber: 1,

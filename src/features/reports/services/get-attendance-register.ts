@@ -2,10 +2,30 @@ import connectMongo from "@/lib/db/mongodb";
 
 import FinancialYear from "@/models/FinancialYear";
 import Meeting from "@/models/Meeting";
+import type { FinancialYearDocument, FinancialYearMemberOpening } from "@/models/FinancialYear";
+import type { Types } from "mongoose";
 
 import { buildAttendanceRegister } from "./internal";
 
 import type { AttendanceRegister } from "../domain";
+import type { AttendanceStatus } from "../domain";
+
+type PopulatedFinancialYearMember = {
+  memberId: {
+    _id: Types.ObjectId;
+    memberCode: string;
+    name: string;
+  };
+  opening: FinancialYearMemberOpening;
+};
+
+type PopulatedFinancialYear = Omit<FinancialYearDocument, "members"> & {
+  members: PopulatedFinancialYearMember[];
+};
+
+function toReportAttendanceStatus(status: string): AttendanceStatus {
+  return status === "EXCUSED" ? "LEAVE" : (status as AttendanceStatus);
+}
 
 /**
  * Returns the attendance register
@@ -19,7 +39,7 @@ export async function getAttendanceRegister(financialYearId: string): Promise<At
       path: "members.memberId",
       select: "memberCode name",
     })
-    .lean();
+    .lean<PopulatedFinancialYear>();
 
   if (!financialYear) {
     throw new Error("Financial year not found.");
@@ -56,7 +76,7 @@ export async function getAttendanceRegister(financialYearId: string): Promise<At
       attendance: meeting.attendance.map((record) => ({
         memberId: record.memberId.toString(),
 
-        status: record.status,
+        status: toReportAttendanceStatus(record.status),
       })),
     })),
   });

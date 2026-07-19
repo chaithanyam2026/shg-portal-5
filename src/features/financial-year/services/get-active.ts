@@ -1,13 +1,13 @@
 import connectMongo from "@/lib/db/mongodb";
 
-import FinancialYear from "@/models/FinancialYear";
+import FinancialYear, { FinancialYearDocument } from "@/models/FinancialYear";
 import { mapFinancialYearSummary } from "./internal";
 
 /**
  * Returns the currently active
  * financial year.
  */
-export async function getActiveFinancialYear() {
+export async function getActiveFinancialYear(): Promise<FinancialYearDocument | null> {
   await connectMongo();
 
   const financialYear = await FinancialYear.findOne({
@@ -15,11 +15,11 @@ export async function getActiveFinancialYear() {
   }).lean();
 
   if (!financialYear) {
-    throw new Error("No active financial year found.");
+    return null;
   }
 
-  // return financialYear;
-  return mapFinancialYearSummary(
-    financialYear,
-  );
+  return financialYear;
+  // return mapFinancialYearSummary(
+  //   financialYear,
+  // );
 }

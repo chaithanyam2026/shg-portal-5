@@ -32,8 +32,12 @@ type Props = {
   onSubmit(values: CreateLoanInput): Promise<void>;
 };
 
+type LoanFormValues = Omit<CreateLoanInput, "disbursedDate"> & {
+  disbursedDate: string;
+};
+
 export default function LoanForm({ financialYearId, members, loading = false, onSubmit }: Props) {
-  const [values, setValues] = useState<CreateLoanInput>({
+  const [values, setValues] = useState<LoanFormValues>({
     financialYearId,
 
     memberId: "",
@@ -97,7 +101,10 @@ export default function LoanForm({ financialYearId, members, loading = false, on
     setError("");
 
     try {
-      await onSubmit(values);
+      await onSubmit({
+        ...values,
+        disbursedDate: new Date(values.disbursedDate),
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to create loan.");
     }
@@ -141,7 +148,7 @@ export default function LoanForm({ financialYearId, members, loading = false, on
               onChange={(event) =>
                 setValues({
                   ...values,
-                  loanType: event.target.value as CreateLoanInput["loanType"],
+                  loanType: event.target.value as LoanFormValues["loanType"],
                 })
               }
             >
@@ -258,7 +265,13 @@ export default function LoanForm({ financialYearId, members, loading = false, on
             }
           />
 
-          <Stack direction="row" justifyContent="flex-end" spacing={2}>
+          <Stack
+            direction="row"
+            spacing={2}
+            sx={{
+              justifyContent: "flex-end",
+            }}
+          >
             <Button variant="outlined" type="button">
               Cancel
             </Button>

@@ -8,6 +8,7 @@ import {
 import AttendanceReportPage from "@/features/reports/ui/AttendanceReportPage";
 
 import { buildAttendanceRegister } from "@/features/reports/services/build-attendance-register";
+import { redirect } from "next/navigation";
 
 type Props = {
   searchParams: Promise<{
@@ -19,6 +20,9 @@ const AttendancePage = async ({ searchParams }: Props) => {
   const params = await searchParams;
 
   const financialYear = await getSelectedFinancialYear(params.financialYear);
+  if (!financialYear) {
+    redirect("/financial-years");
+  }
 
   const options = await listFinancialYearOptions();
 

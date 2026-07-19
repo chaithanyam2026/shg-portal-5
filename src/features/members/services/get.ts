@@ -35,9 +35,9 @@ export async function getMember(id: string): Promise<MemberDetails> {
 
     address: member.address ?? "",
 
-    status: member.status,
+    status: member.active ? "ACTIVE" : "INACTIVE",
 
-    joinedDate: member.joinedDate?.toISOString(),
+    joinedDate: member.joinDate?.toISOString(),
 
     remarks: member.remarks ?? "",
   };

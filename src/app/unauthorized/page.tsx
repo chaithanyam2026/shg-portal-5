@@ -53,10 +53,11 @@ export default function UnauthorizedPage() {
               You must sign in before accessing this page.
             </Typography>
           </Box>
-
-          <Button component={Link} href="/login" variant="contained" size="large" fullWidth>
-            Go to Login
-          </Button>
+          <Link href="/login">
+            <Button variant="contained" size="large" fullWidth>
+              Go to Login
+            </Button>
+          </Link>
         </Stack>
       </Paper>
     </Container>

@@ -5,14 +5,15 @@ import {
   validateMemberPassbook,
   WEEKLY_CONTRIBUTION_ENTRY,
 } from "../../domain";
+import type { Types } from "mongoose";
 
 type MeetingContribution = {
-  _id: unknown;
+  _id: Types.ObjectId;
 
   meetingDate: Date;
 
   payments: {
-    memberId: unknown;
+    memberId: Types.ObjectId;
 
     contribution: number;
   }[];

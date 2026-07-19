@@ -1,6 +1,47 @@
-import { model, models, Schema, type InferSchemaType } from "mongoose";
+import { HydratedDocument, Model, Schema, Types, model, models } from "mongoose";
+import type { LoanType } from "@/features/loans/domain";
 
-const LoanSchema = new Schema(
+import type { LoanStatus } from "@/features/loans/domain";
+
+
+export interface LoanDocument {
+  _id: Types.ObjectId;
+
+  financialYearId: Types.ObjectId;
+
+  memberId: Types.ObjectId;
+
+  loanNumber: string;
+
+  sequenceNumber: number;
+
+  loanType: LoanType;
+
+status: LoanStatus;
+
+  sanctionedAmount: number;
+
+  disbursedAmount: number;
+
+  interestRate: number;
+
+  expectedMonthlyRepayment: number;
+
+  disbursedDate: Date;
+
+  expiryDate: Date | null;
+
+  remarks: string;
+
+  createdAt: Date;
+
+  updatedAt: Date;
+}
+
+export type LoanHydratedDocument =
+  HydratedDocument<LoanDocument>;
+
+const LoanSchema = new Schema<LoanDocument>(
   {
     financialYearId: {
       type: Schema.Types.ObjectId,
@@ -89,8 +130,8 @@ LoanSchema.index({
   status: 1,
 });
 
-export type LoanDocument = InferSchemaType<typeof LoanSchema>;
-
-const Loan = models.Loan ?? model("Loan", LoanSchema);
+export const Loan: Model<LoanDocument> =
+  (models.Loan as Model<LoanDocument>) ??
+  model<LoanDocument>("Loan", LoanSchema);
 
 export default Loan;

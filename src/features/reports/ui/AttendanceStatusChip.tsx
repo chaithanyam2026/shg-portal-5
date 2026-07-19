@@ -41,7 +41,7 @@ export default function AttendanceStatusChip({ cell }: Props) {
       placement="top"
       title={
         <Stack spacing={0.5}>
-          <Typography variant="body2" fontWeight={600}>
+          <Typography variant="body2" sx={{ fontWeight: 600 }}>
             {cell.meetingDate.toLocaleDateString("en-IN")}
           </Typography>
 

@@ -55,7 +55,7 @@ export default function AttendanceRegisterPrint({
       <AttendanceRegisterPrintToolbar backHref={`/reports/attendance/${financialYearId}`} />
 
       <Stack spacing={0.5}>
-        <Typography variant="h5" fontWeight={700} align="center">
+        <Typography variant="h5" align="center" sx={{ fontWeight: 700 }}>
           {shgName}
         </Typography>
 
@@ -173,7 +173,7 @@ export default function AttendanceRegisterPrint({
           fontSize: 12,
         }}
       >
-        <Typography variant="subtitle2" fontWeight={700}>
+        <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
           Legend
         </Typography>
 

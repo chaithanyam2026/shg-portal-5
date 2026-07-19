@@ -18,6 +18,7 @@ import {
   USER_STATUS,
   USER_STATUS_VALUES,
 } from "@/lib/constants/user-status";
+import { createSchemaOptions } from "@/lib/db/schema-options";
 
 /**
  * User document shape.
@@ -58,7 +59,7 @@ export type UserHydratedDocument =
  * the Member collection.
  */
 const userSchema =
-  createSchema<UserDocument>({
+  new Schema<UserDocument>({
     username: {
       type: String,
       required: true,
@@ -100,7 +101,7 @@ const userSchema =
       type: Date,
       default: null,
     },
-  });
+  }, createSchemaOptions(),);
 
 /**
  * Indexes

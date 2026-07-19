@@ -1,5 +1,3 @@
-import { ATTENDANCE_STATUS } from "@/features/meetings/domain/attendance-status";
-
 import type {
   AttendanceRegister,
   AttendanceRegisterBuilderInput,
@@ -32,15 +30,15 @@ export function buildAttendanceRegister({
 
     for (const record of meeting.attendance) {
       switch (record.status) {
-        case ATTENDANCE_STATUS.PRESENT:
+        case "PRESENT":
           presentCount++;
           break;
 
-        case ATTENDANCE_STATUS.ABSENT:
+        case "ABSENT":
           absentCount++;
           break;
 
-        case ATTENDANCE_STATUS.LEAVE:
+        case "LEAVE":
           leaveCount++;
           break;
       }
@@ -59,8 +57,7 @@ export function buildAttendanceRegister({
 
       leaveCount,
 
-      attendancePercentage:
-        denominator === 0 ? 100 : Number(((presentCount * 100) / denominator).toFixed(2)),
+      fineGenerated: 0,
     };
   });
 
@@ -76,30 +73,38 @@ export function buildAttendanceRegister({
     for (const meeting of sortedMeetings) {
       const record = meeting.attendance.find((item) => item.memberId === member.memberId);
 
-      const status = record?.status ?? ATTENDANCE_STATUS.ABSENT;
+      const status = record?.status ?? "ABSENT";
 
       attendance.push({
         meetingId: meeting.meetingId,
 
+        meetingDate: meeting.meetingDate,
+
         status,
+
+        consecutiveAbsence: 0,
+
+        fineCharged: 0,
+
+        pendingFine: 0,
+
+        finePaid: 0,
       });
 
       switch (status) {
-        case ATTENDANCE_STATUS.PRESENT:
+        case "PRESENT":
           presentCount++;
           break;
 
-        case ATTENDANCE_STATUS.ABSENT:
+        case "ABSENT":
           absentCount++;
           break;
 
-        case ATTENDANCE_STATUS.LEAVE:
+        case "LEAVE":
           leaveCount++;
           break;
       }
     }
-
-    const denominator = presentCount + absentCount;
 
     return {
       memberId: member.memberId,
@@ -110,22 +115,15 @@ export function buildAttendanceRegister({
 
       attendance,
 
-      presentCount,
+      totalFine: 0,
 
-      absentCount,
+      paidFine: 0,
 
-      leaveCount,
-
-      attendancePercentage:
-        denominator === 0 ? 100 : Number(((presentCount * 100) / denominator).toFixed(2)),
+      pendingFine: 0,
     };
   });
 
   return {
-    financialYearId,
-
-    financialYearName,
-
     meetings: sortedMeetings.map((meeting) => ({
       meetingId: meeting.meetingId,
 
@@ -134,8 +132,6 @@ export function buildAttendanceRegister({
 
     rows,
 
-    meetingSummary,
-
-    totalMembers: sortedMembers.length,
+    summary: meetingSummary,
   };
 }

@@ -86,17 +86,17 @@ export default function AttendanceFineCollectionTable({ report }: Props) {
 
           <TableRow>
             <TableCell colSpan={4}>
-              <Typography fontWeight={600}>Totals</Typography>
+              <Typography sx={{ fontWeight: 600 }}>Totals</Typography>
             </TableCell>
 
             <TableCell align="right">
-              <Typography fontWeight={600}>
+              <Typography sx={{ fontWeight: 600 }}>
                 {formatCurrency(report.totals.generatedFine)}
               </Typography>
             </TableCell>
 
             <TableCell align="right">
-              <Typography fontWeight={600}>
+              <Typography sx={{ fontWeight: 600 }}>
                 {formatCurrency(report.totals.collectedFine)}
               </Typography>
             </TableCell>
@@ -107,7 +107,9 @@ export default function AttendanceFineCollectionTable({ report }: Props) {
                 color: report.totals.pendingFine > 0 ? "error.main" : "success.main",
               }}
             >
-              <Typography fontWeight={600}>{formatCurrency(report.totals.pendingFine)}</Typography>
+              <Typography sx={{ fontWeight: 600 }}>
+                {formatCurrency(report.totals.pendingFine)}
+              </Typography>
             </TableCell>
           </TableRow>
         </TableBody>

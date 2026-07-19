@@ -2,8 +2,6 @@
 
 import { Alert, Stack, Typography } from "@mui/material";
 
-import type { FinancialYearLookup } from "@/features/financial-year/types";
-
 import Link from "next/link";
 import { useState } from "react";
 
@@ -19,6 +17,11 @@ import { LOAN_STATUSES, LOAN_TYPES } from "../domain";
 import type { LoanSummary } from "../types";
 
 import LoanCard from "./LoanCard";
+
+type FinancialYearLookup = {
+  _id: string;
+  name: string;
+};
 
 type Props = {
   loans: LoanSummary[];

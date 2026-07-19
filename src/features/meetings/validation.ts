@@ -21,7 +21,7 @@ export const CreateMeetingSchema = z.object({
 export const AttendanceRecordSchema = z.object({
   memberId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid member id."),
 
-  status: z.enum(ATTENDANCE_STATUS_VALUES as [string, ...string[]]),
+  status: z.enum(ATTENDANCE_STATUS_VALUES),
 
   remarks: z.string().trim().max(500).optional().default(""),
 });
@@ -59,7 +59,7 @@ export type UpdatePaymentsInput = z.infer<typeof UpdatePaymentsSchema>;
 export const BankTransactionRecordSchema = z.object({
   transactionDate: z.coerce.date(),
 
-  type: z.enum(BANK_TRANSACTION_TYPE_VALUES as [string, ...string[]]),
+  type: z.enum(BANK_TRANSACTION_TYPE_VALUES),
 
   amount: z.coerce.number().min(0),
 
@@ -75,7 +75,7 @@ export type UpdateBankTransactionsInput = z.infer<typeof UpdateBankTransactionsS
 export const IncomeRecordSchema = z.object({
   transactionDate: z.coerce.date(),
 
-  category: z.enum(INCOME_CATEGORY_VALUES as [string, ...string[]]),
+  category: z.enum(INCOME_CATEGORY_VALUES),
 
   amount: z.coerce.number().min(0),
 
@@ -91,7 +91,7 @@ export type UpdateIncomeInput = z.infer<typeof UpdateIncomeSchema>;
 export const ExpenseRecordSchema = z.object({
   transactionDate: z.coerce.date(),
 
-  category: z.enum(EXPENSE_CATEGORY_VALUES as [string, ...string[]]),
+  category: z.enum(EXPENSE_CATEGORY_VALUES),
 
   amount: z.coerce.number().min(0),
 

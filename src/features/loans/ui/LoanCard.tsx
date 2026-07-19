@@ -25,7 +25,13 @@ export default function LoanCard({ loan }: Props) {
       <CardActionArea component={Link} href={`/loans/${loan._id}`}>
         <CardContent>
           <Stack spacing={2}>
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Stack
+              direction="row"
+              sx={{
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
               <Typography variant="h6">{loan.loanNumber}</Typography>
 
               <Chip label={loan.status} color={statusColor} size="small" />
@@ -52,7 +58,13 @@ export default function LoanCard({ loan }: Props) {
                 <strong>Date:</strong> {new Date(loan.disbursedDate).toLocaleDateString()}
               </Typography>
             </Stack>
-            <Stack direction="row" justifyContent="flex-end" alignItems="center">
+            <Stack
+              direction="row"
+              sx={{
+                alignItems: "center",
+                justifyContent: "flex-end",
+              }}
+            >
               <Button size="small" endIcon={<ArrowForwardIosIcon />}>
                 View Details
               </Button>

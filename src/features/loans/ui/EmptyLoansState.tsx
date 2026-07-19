@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { Alert, Button, Stack } from "@mui/material";
 
 export default function EmptyLoansState() {

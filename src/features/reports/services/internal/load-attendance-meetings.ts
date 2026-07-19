@@ -1,16 +1,22 @@
 import connectMongo from "@/lib/db/mongodb";
 
 import Meeting from "@/models/Meeting";
+import type { Types } from "mongoose";
 
 import { MEETING_STATUS } from "@/features/meetings/domain";
+import type { AttendanceStatus } from "@/features/reports/domain";
 
 export type AttendanceMeeting = {
   meetingId: string;
 
   meetingDate: Date;
 
-  attendance: Map<string, "PRESENT" | "ABSENT" | "LEAVE">;
+  attendance: Map<string, AttendanceStatus>;
 };
+
+function toReportAttendanceStatus(status: string): AttendanceStatus {
+  return status === "EXCUSED" ? "LEAVE" : (status as AttendanceStatus);
+}
 
 /**
  * Loads all CLOSED meetings for a
@@ -38,9 +44,9 @@ export async function loadAttendanceMeetings(
 
     attendance: new Map(
       meeting.attendance.map(
-        (record: { memberId: unknown; status: "PRESENT" | "ABSENT" | "LEAVE" }) => [
+        (record: { memberId: Types.ObjectId; status: string }) => [
           record.memberId.toString(),
-          record.status,
+          toReportAttendanceStatus(record.status),
         ],
       ),
     ),

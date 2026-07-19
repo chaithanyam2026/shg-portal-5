@@ -13,7 +13,7 @@ type MeetingBankTransactions = {
 };
 
 export function buildBankEntries(meeting: MeetingBankTransactions): LedgerEntry[] {
-  return meeting.bankTransactions.flatMap((transaction) => {
+  return meeting.bankTransactions.flatMap((transaction): LedgerEntry[] => {
     if (transaction.amount <= 0) {
       return [];
     }

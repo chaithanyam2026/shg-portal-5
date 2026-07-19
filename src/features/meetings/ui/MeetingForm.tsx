@@ -58,8 +58,10 @@ export default function MeetingForm({
         type="date"
         required
         fullWidth
-        InputLabelProps={{
-          shrink: true,
+        slotProps={{
+          inputLabel: {
+            shrink: true,
+          },
         }}
         value={values.meetingDate}
         onChange={(event) => update("meetingDate", event.target.value)}

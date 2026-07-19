@@ -23,10 +23,10 @@ export default function AttendanceRegisterPrintToolbar({ backHref }: Props) {
     <Stack
       direction="row"
       spacing={2}
-      justifyContent="flex-end"
       className="no-print"
       sx={{
         mb: 2,
+        justifyContent: "flex-end",
       }}
     >
       <Button

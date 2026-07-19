@@ -19,17 +19,24 @@ type Props = {
   passbook: LoanPassbook;
 };
 
-function formatAmount(value: number) {
+/* function formatAmount(value: number) {
   return `₹${value.toLocaleString("en-IN", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`;
-}
+} */
 
 export default function PassbookTab({ passbook }: Props) {
   if (passbook.entries.length === 0) {
     return (
-      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
+      <Stack
+        direction="row"
+        sx={{
+          alignItems: "center",
+          justifyContent: "space-between",
+          mb: 2,
+        }}
+      >
         <Typography variant="h6">Loan Passbook</Typography>
 
         <Typography variant="body2" color="text.secondary">

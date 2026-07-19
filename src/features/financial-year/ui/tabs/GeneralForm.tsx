@@ -14,9 +14,10 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, type Resolver } from "react-hook-form";
 
 import {
+  UpdateFinancialYearInput,
   UpdateFinancialYearFormInput,
   UpdateFinancialYearSchema,
 } from "../../validation";
@@ -26,6 +27,18 @@ import type { FinancialYearDetails } from "../../types";
 type Props = {
   financialYear: FinancialYearDetails;
 };
+
+type UpdateFinancialYearFormValues = Omit<
+  UpdateFinancialYearInput,
+  "startDate" | "endDate"
+> & {
+  startDate: string;
+  endDate: string;
+};
+
+function formatDateInputValue(value: Date | string) {
+  return new Date(value).toISOString().slice(0, 10);
+}
 
 export default function GeneralForm({
   financialYear,
@@ -42,27 +55,32 @@ export default function GeneralForm({
       isSubmitting,
       isDirty,
     },
-  } = useForm<UpdateFinancialYearFormInput>({
-    resolver: zodResolver(UpdateFinancialYearSchema),
+  } = useForm<
+    UpdateFinancialYearFormValues,
+    unknown,
+    UpdateFinancialYearInput
+  >({
+    resolver: zodResolver(UpdateFinancialYearSchema) as unknown as Resolver<
+      UpdateFinancialYearFormValues,
+      unknown,
+      UpdateFinancialYearInput
+    >,
 
     defaultValues: {
       name: financialYear.name,
 
-      startDate: financialYear.startDate,
+      startDate: formatDateInputValue(financialYear.startDate),
 
-      endDate: financialYear.endDate,
+      endDate: formatDateInputValue(financialYear.endDate),
 
       remarks: financialYear.remarks,
     },
   });
 
   async function onSubmit(
-    values: UpdateFinancialYearFormInput,
+    data: UpdateFinancialYearInput,
   ) {
     setError("");
-
-    const data =
-      UpdateFinancialYearSchema.parse(values);
 
     const response = await fetch(
       `/api/financial-years/${financialYear._id}`,
@@ -83,7 +101,7 @@ export default function GeneralForm({
     if (!response.ok) {
       setError(
         result.message ??
-          "Unable to update financial year.",
+        "Unable to update financial year.",
       );
 
       return;
@@ -129,16 +147,12 @@ export default function GeneralForm({
                   label="Start Date"
                   type="date"
                   fullWidth
-                  InputLabelProps={{
-                    shrink: true,
+                  slotProps={{
+                    inputLabel: {
+                      shrink: true,
+                    },
                   }}
-                  value={
-                    field.value
-                      ? new Date(field.value)
-                          .toISOString()
-                          .slice(0, 10)
-                      : ""
-                  }
+                  value={field.value}
                   onChange={(e) =>
                     field.onChange(
                       e.target.value,
@@ -163,16 +177,12 @@ export default function GeneralForm({
                   label="End Date"
                   type="date"
                   fullWidth
-                  InputLabelProps={{
-                    shrink: true,
+                  slotProps={{
+                    inputLabel: {
+                      shrink: true,
+                    },
                   }}
-                  value={
-                    field.value
-                      ? new Date(field.value)
-                          .toISOString()
-                          .slice(0, 10)
-                      : ""
-                  }
+                  value={field.value}
                   onChange={(e) =>
                     field.onChange(
                       e.target.value,

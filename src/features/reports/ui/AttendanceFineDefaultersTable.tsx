@@ -104,15 +104,21 @@ export default function AttendanceFineDefaultersTable({ report }: Props) {
 
           <TableRow>
             <TableCell colSpan={6}>
-              <Typography fontWeight={600}>Total ({report.totals.members} Members)</Typography>
+              <Typography sx={{ fontWeight: 600 }}>
+                Total ({report.totals.members} Members)
+              </Typography>
             </TableCell>
 
             <TableCell align="right">
-              <Typography fontWeight={600}>{formatCurrency(report.totals.totalFine)}</Typography>
+              <Typography sx={{ fontWeight: 600 }}>
+                {formatCurrency(report.totals.totalFine)}
+              </Typography>
             </TableCell>
 
             <TableCell align="right">
-              <Typography fontWeight={600}>{formatCurrency(report.totals.paidFine)}</Typography>
+              <Typography sx={{ fontWeight: 600 }}>
+                {formatCurrency(report.totals.paidFine)}
+              </Typography>
             </TableCell>
 
             <TableCell
@@ -121,7 +127,9 @@ export default function AttendanceFineDefaultersTable({ report }: Props) {
                 color: report.totals.pendingFine > 0 ? "error.main" : "success.main",
               }}
             >
-              <Typography fontWeight={600}>{formatCurrency(report.totals.pendingFine)}</Typography>
+              <Typography sx={{ fontWeight: 600 }}>
+                {formatCurrency(report.totals.pendingFine)}
+              </Typography>
             </TableCell>
 
             <TableCell />

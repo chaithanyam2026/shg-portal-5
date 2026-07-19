@@ -72,9 +72,11 @@ export default function MemberRow({
           type="number"
           value={row.openingContribution}
           disabled={disabled}
-          inputProps={{
-            min: 0,
-            step: 1,
+          slotProps={{
+            htmlInput: {
+              min: 0,
+              step: 1,
+            },
           }}
           onChange={(event) =>
             onChange({
@@ -91,9 +93,11 @@ export default function MemberRow({
           type="number"
           value={row.openingLoan}
           disabled={disabled}
-          inputProps={{
-            min: 0,
-            step: 1,
+          slotProps={{
+            htmlInput: {
+              min: 0,
+              step: 1,
+            },
           }}
           onChange={(event) =>
             onChange({
@@ -110,9 +114,11 @@ export default function MemberRow({
           type="number"
           value={row.openingSpecialLoan}
           disabled={disabled}
-          inputProps={{
-            min: 0,
-            step: 1,
+          slotProps={{
+            htmlInput: {
+              min: 0,
+              step: 1,
+            },
           }}
           onChange={(event) => {
             const value = Number(event.target.value);
@@ -132,8 +138,10 @@ export default function MemberRow({
           type="date"
           value={row.specialLoanExpiry}
           disabled={disabled || row.openingSpecialLoan <= 0}
-          InputLabelProps={{
-            shrink: true,
+          slotProps={{
+            inputLabel: {
+              shrink: true,
+            },
           }}
           onChange={(event) =>
             onChange({

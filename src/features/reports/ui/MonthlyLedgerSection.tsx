@@ -32,7 +32,7 @@ function BalanceItem({ label, value }: BalanceItemProps) {
         {label}
       </Typography>
 
-      <Typography fontWeight={600}>{formatCurrency(value)}</Typography>
+      <Typography sx={{ fontWeight: 600 }}>{formatCurrency(value)}</Typography>
     </Stack>
   );
 }
@@ -65,7 +65,7 @@ export function MonthlyLedgerSection({ ledger }: Props) {
               Income
             </Typography>
 
-            <Typography fontWeight={600}>{formatCurrency(ledger.totalIncome)}</Typography>
+            <Typography sx={{ fontWeight: 600 }}>{formatCurrency(ledger.totalIncome)}</Typography>
           </Grid>
 
           <Grid size={{ xs: 6, md: 4 }}>
@@ -73,7 +73,7 @@ export function MonthlyLedgerSection({ ledger }: Props) {
               Expense
             </Typography>
 
-            <Typography fontWeight={600}>{formatCurrency(ledger.totalExpense)}</Typography>
+            <Typography sx={{ fontWeight: 600 }}>{formatCurrency(ledger.totalExpense)}</Typography>
           </Grid>
         </Grid>
       </AccordionSummary>

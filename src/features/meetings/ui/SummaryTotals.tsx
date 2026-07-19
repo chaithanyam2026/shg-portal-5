@@ -23,7 +23,7 @@ export default function SummaryTotals({ rows }: Props) {
         >
           <Typography>{row.label}</Typography>
 
-          <Typography fontWeight={600}>{row.value}</Typography>
+          <Typography sx={{ fontWeight: 600 }}>{row.value}</Typography>
         </Stack>
       ))}
     </Stack>

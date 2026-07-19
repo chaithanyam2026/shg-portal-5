@@ -47,7 +47,7 @@ export async function loadAttendanceFinePayments(
 
         memberId: payment.memberId.toString(),
 
-        finePaid: payment.attendanceFine ?? 0,
+        finePaid: payment.absentFine ?? 0,
       });
     }
   }

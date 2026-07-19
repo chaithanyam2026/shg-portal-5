@@ -1,5 +1,7 @@
 import connectMongo from "@/lib/db/mongodb";
 
+import { Types } from "mongoose";
+
 import Meeting from "@/models/Meeting";
 
 import { MEETING_STATUS } from "../domain/meeting-status";
@@ -22,7 +24,7 @@ export async function updateAttendance(meetingId: string, input: UpdateAttendanc
   }
 
   meeting.attendance = data.attendance.map((record) => ({
-    memberId: record.memberId,
+    memberId: new Types.ObjectId(record.memberId),
 
     status: record.status,
 

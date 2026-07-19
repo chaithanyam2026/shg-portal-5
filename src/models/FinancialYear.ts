@@ -8,7 +8,7 @@ import {
 } from "mongoose";
 
 import { MemberOpeningBalanceSchema, OpeningBalanceSchema } from "@/features/financial-year/domain";
-import { createSchema } from "@/lib/db/schema";
+import { createSchemaOptions } from "@/lib/db/schema-options";
 
 export type FinancialYearStatus =
   | "DRAFT"
@@ -124,96 +124,146 @@ export interface FinancialYearDocument {
 
 export type FinancialYearHydratedDocument =
   HydratedDocument<FinancialYearDocument>;
-  
+
 
 const financialYearSchema =
-  createSchema<FinancialYearDocument>({
-  name: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-    maxlength: 100,
-  },
+  new Schema<FinancialYearDocument>(
+    {
+      name: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true,
+        maxlength: 100,
+      },
 
-  startDate: {
-    type: Date,
-    required: true,
-  },
-
-  endDate: {
-    type: Date,
-    required: true,
-  },
-
-  remarks: {
-    type: String,
-    default: "",
-    trim: true,
-    maxlength: 1000,
-  },
-
-  status: {
-    type: String,
-    enum: ["DRAFT", "IN_PROGRESS", "VALIDATED", "APPROVED", "CLOSED"],
-    default: "DRAFT",
-    index: true,
-  },
-
-  sourceFinancialYearId: {
-    type: Schema.Types.ObjectId,
-    ref: "FinancialYear",
-    default: null,
-  },
-
-  closing: {
-    type: {
-      closedAt: {
+      startDate: {
         type: Date,
         required: true,
       },
 
-      closedBy: {
-        type: Schema.Types.ObjectId,
-        ref: "User",
+      endDate: {
+        type: Date,
         required: true,
       },
 
-      summary: {
-        bankBalance: {
-          type: Number,
-          default: 0,
+      remarks: {
+        type: String,
+        default: "",
+        trim: true,
+        maxlength: 1000,
+      },
+
+      status: {
+        type: String,
+        enum: ["DRAFT", "IN_PROGRESS", "VALIDATED", "APPROVED", "CLOSED"],
+        default: "DRAFT",
+        index: true,
+      },
+
+      sourceFinancialYearId: {
+        type: Schema.Types.ObjectId,
+        ref: "FinancialYear",
+        default: null,
+      },
+
+      closing: {
+        type: {
+          closedAt: {
+            type: Date,
+            required: true,
+          },
+
+          closedBy: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
+          },
+
+          summary: {
+            bankBalance: {
+              type: Number,
+              default: 0,
+            },
+
+            cashInHand: {
+              type: Number,
+              default: 0,
+            },
+
+            excessCorpus: {
+              type: Number,
+              default: 0,
+            },
+
+            investments: {
+              type: Number,
+              default: 0,
+            },
+
+            otherLoans: {
+              type: Number,
+              default: 0,
+            },
+
+            totalAssets: {
+              type: Number,
+              default: 0,
+            },
+
+            totalLiabilities: {
+              type: Number,
+              default: 0,
+            },
+          },
+
+          members: [
+            {
+              memberId: {
+                type: Schema.Types.ObjectId,
+                ref: "Member",
+                required: true,
+              },
+
+              /* savings: {
+                type: Number,
+                default: 0,
+              }, */
+
+              loanOutstanding: {
+                type: Number,
+                default: 0,
+              },
+
+              specialLoanOutstanding: {
+                type: Number,
+                default: 0,
+              },
+
+              /* specialLoanExpiry: {
+                type: Date,
+                default: null,
+              }, */
+
+              /* attendanceFine: {
+                type: Number,
+                default: 0,
+              }, */
+
+              /*  loanFine: {
+                 type: Number,
+                 default: 0,
+               }, */
+
+              totalOutstanding: {
+                type: Number,
+                default: 0,
+              },
+            },
+          ],
         },
 
-        cashInHand: {
-          type: Number,
-          default: 0,
-        },
-
-        excessCorpus: {
-          type: Number,
-          default: 0,
-        },
-
-        investments: {
-          type: Number,
-          default: 0,
-        },
-
-        otherLoans: {
-          type: Number,
-          default: 0,
-        },
-
-        totalAssets: {
-          type: Number,
-          default: 0,
-        },
-
-        totalLiabilities: {
-          type: Number,
-          default: 0,
-        },
+        default: null,
       },
 
       members: [
@@ -224,125 +274,76 @@ const financialYearSchema =
             required: true,
           },
 
-          /* savings: {
-            type: Number,
-            default: 0,
-          }, */
+          opening: {
+            contribution: {
+              type: Number,
+              default: 0,
+              min: 0,
+            },
 
-          loanOutstanding: {
-            type: Number,
-            default: 0,
-          },
+            loan: {
+              type: Number,
+              default: 0,
+              min: 0,
+            },
 
-          specialLoanOutstanding: {
-            type: Number,
-            default: 0,
-          },
+            specialLoan: {
+              type: Number,
+              default: 0,
+              min: 0,
+            },
 
-          /* specialLoanExpiry: {
-            type: Date,
-            default: null,
-          }, */
-
-          /* attendanceFine: {
-            type: Number,
-            default: 0,
-          }, */
-
-         /*  loanFine: {
-            type: Number,
-            default: 0,
-          }, */
-
-          totalOutstanding: {
-            type: Number,
-            default: 0,
+            specialLoanExpiry: {
+              type: Date,
+              default: null,
+            },
           },
         },
       ],
-    },
 
-    default: null,
-  },
-
-  members: [
-    {
-      memberId: {
-        type: Schema.Types.ObjectId,
-        ref: "Member",
-        required: true,
-      },
-
-      opening: {
-        contribution: {
-          type: Number,
-          default: 0,
-          min: 0,
+      executiveCommittee: {
+        president: {
+          type: Schema.Types.ObjectId,
+          ref: "Member",
+          default: null,
         },
 
-        loan: {
-          type: Number,
-          default: 0,
-          min: 0,
+        vicePresident: {
+          type: Schema.Types.ObjectId,
+          ref: "Member",
+          default: null,
         },
 
-        specialLoan: {
-          type: Number,
-          default: 0,
-          min: 0,
+        secretary: {
+          type: Schema.Types.ObjectId,
+          ref: "Member",
+          default: null,
         },
 
-        specialLoanExpiry: {
-          type: Date,
+        jointSecretary: {
+          type: Schema.Types.ObjectId,
+          ref: "Member",
+          default: null,
+        },
+
+        treasurer: {
+          type: Schema.Types.ObjectId,
+          ref: "Member",
           default: null,
         },
       },
-    },
-  ],
 
-  executiveCommittee: {
-    president: {
-      type: Schema.Types.ObjectId,
-      ref: "Member",
-      default: null,
-    },
+      openingBalances: {
+        type: OpeningBalanceSchema,
+        default: null,
+      },
 
-    vicePresident: {
-      type: Schema.Types.ObjectId,
-      ref: "Member",
-      default: null,
-    },
+      memberOpeningBalances: {
+        type: [MemberOpeningBalanceSchema],
+        default: [],
+      },
 
-    secretary: {
-      type: Schema.Types.ObjectId,
-      ref: "Member",
-      default: null,
-    },
-
-    jointSecretary: {
-      type: Schema.Types.ObjectId,
-      ref: "Member",
-      default: null,
-    },
-
-    treasurer: {
-      type: Schema.Types.ObjectId,
-      ref: "Member",
-      default: null,
-    },
-  },
-
-  openingBalances: {
-    type: OpeningBalanceSchema,
-    default: null,
-  },
-
-  memberOpeningBalances: {
-    type: [MemberOpeningBalanceSchema],
-    default: [],
-  },
-
-});
+    }, createSchemaOptions(),);
 
 /**
  * Indexes

@@ -259,21 +259,25 @@ export default function AttendanceFineTab({ attendanceFine }: Props) {
 
             <TableRow>
               <TableCell colSpan={3}>
-                <Typography fontWeight={700}>Totals</Typography>
+                <Typography sx={{ fontWeight: 700 }}>Totals</Typography>
               </TableCell>
 
               <TableCell align="right">
-                <Typography fontWeight={700}>{formatCurrency(attendanceFine.totalFine)}</Typography>
+                <Typography sx={{ fontWeight: 700 }}>
+                  {formatCurrency(attendanceFine.totalFine)}
+                </Typography>
               </TableCell>
 
               <TableCell align="right">
-                <Typography fontWeight={700}>{formatCurrency(attendanceFine.paidFine)}</Typography>
+                <Typography sx={{ fontWeight: 700 }}>
+                  {formatCurrency(attendanceFine.paidFine)}
+                </Typography>
               </TableCell>
 
               <TableCell align="right">
                 <Typography
-                  fontWeight={700}
                   color={attendanceFine.pendingFine > 0 ? "error.main" : "success.main"}
+                  sx={{ fontWeight: 700 }}
                 >
                   {formatCurrency(attendanceFine.pendingFine)}
                 </Typography>

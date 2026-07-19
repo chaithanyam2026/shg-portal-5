@@ -2,7 +2,7 @@
 
 import { Chip, Stack } from "@mui/material";
 
-import type { MeetingSummary } from "../types";
+import type { MeetingDashboardSummary } from "../types";
 
 import MeetingActionButton from "@/features/meetings/ui/MeetingActionButton";
 import SummaryCard from "./SummaryCard";
@@ -11,7 +11,7 @@ import ValidationItem from "./ValidationItem";
 
 type Props = {
   meetingId: string;
-  summary: MeetingSummary;
+  summary: MeetingDashboardSummary;
 };
 
 export default function SummaryView({ meetingId, summary }: Props) {

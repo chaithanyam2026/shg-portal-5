@@ -1,15 +1,22 @@
-import { Schema, SchemaDefinition, SchemaOptions } from "mongoose";
+import {
+  Schema,
+  type SchemaDefinition,
+  type SchemaOptions,
+} from "mongoose";
 
 import { createSchemaOptions } from "./schema-options";
 
 /**
  * Creates a standard application schema.
+ *
+ * Do NOT force generic document types here.
+ * Let Mongoose infer the schema shape.
  */
-export function createSchema<T>(
-  definition: SchemaDefinition<T>,
+export function createSchema(
+  definition: SchemaDefinition,
   options?: SchemaOptions,
-): Schema<T> {
-  return new Schema<T>(definition, {
+) {
+  return new Schema(definition, {
     ...createSchemaOptions(),
     ...options,
   });

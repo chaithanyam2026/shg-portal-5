@@ -18,9 +18,13 @@ export type SelectedFinancialYear = {
  */
 export async function getSelectedFinancialYear(
   financialYearId?: string,
-): Promise<SelectedFinancialYear> {
+): Promise<SelectedFinancialYear | null> {
   if (!financialYearId) {
     const financialYear = await getActiveFinancialYear();
+
+    if (!financialYear) {
+      return null;
+    }
 
     return {
       _id: financialYear._id.toString(),

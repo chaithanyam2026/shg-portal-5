@@ -11,72 +11,41 @@ import type { FinancialYearDetails, MemberLookup } from "../../types";
 
 import AddIcon from "@mui/icons-material/Add";
 
-import MemberRow from "./MemberRow";
-
-type Member = {
-  _id: string;
-  memberCode: string;
-  name: string;
-};
-
-type MemberRow = {
-  memberId: string;
-  openingContribution?: number;
-  openingLoan?: number;
-  openingSpecialLoan?: number;
-  specialLoanExpiry?: string;
-};
+import MemberRow, { type MemberRowData } from "./MemberRow";
 
 type Props = {
   financialYear: FinancialYearDetails;
   members: MemberLookup[];
 };
 
+function formatDateInputValue(value: Date | string | null) {
+  return value ? new Date(value).toISOString().slice(0, 10) : "";
+}
+
 export default function MembersForm({ financialYear, members }: Props) {
   const router = useRouter();
-
-  //const [members, setMembers] = useState<Member[]>([]);
-
-  const [selected, setSelected] = useState(financialYear.members.map((m) => m._id));
-
-  // const [loading, setLoading] = useState(false);
 
   const [saving, setSaving] = useState(false);
 
   const [error, setError] = useState("");
 
   const [dirty, setDirty] = useState(false);
+
   const initialRows = useMemo(
     () =>
-      (financialYear.members ?? []).map((member) => ({
-        memberId: getMemberId(member),
+      financialYear.members.map((member) => ({
+        memberId: member.member._id,
         openingContribution: member.opening.contribution ?? 0,
         openingLoan: member.opening.loan ?? 0,
         openingSpecialLoan: member.opening.specialLoan ?? 0,
-        specialLoanExpiry: member.opening.specialLoan
-          ? new Date(member.opening.specialLoanExpiry).toISOString().slice(0, 10)
-          : "",
+        specialLoanExpiry: formatDateInputValue(member.opening.specialLoanExpiry),
       })),
-    [financialYear],
+    [financialYear.members],
   );
 
   const [success, setSuccess] = useState(false);
 
-  const [rows, setRows] = useState<MemberRow[]>(
-    financialYear.members.map((member) => ({
-      memberId: getMemberId(member),
-
-      openingContribution: member.opening.contribution,
-
-      openingLoan: member.opening.loan,
-
-      openingSpecialLoan: member.opening.specialLoan,
-
-      specialLoanExpiry: member.opening.specialLoan
-        ? new Date(member.opening.specialLoanExpiry).toISOString().slice(0, 10)
-        : "",
-    })),
-  );
+  const [rows, setRows] = useState<MemberRowData[]>(initialRows);
 
   function addMember() {
     setRows((previous) => [
@@ -103,7 +72,7 @@ export default function MembersForm({ financialYear, members }: Props) {
     setError("");
   }
 
-  function updateMember(index: number, changes: Partial<MemberRow>) {
+  function updateMember(index: number, changes: Partial<MemberRowData>) {
     setRows((previous) =>
       previous.map((row, currentIndex) =>
         currentIndex === index
@@ -117,54 +86,6 @@ export default function MembersForm({ financialYear, members }: Props) {
     setDirty(true);
   }
 
-  function getMemberId(member: any): string {
-    if (!member?.memberId) {
-      return "";
-    }
-
-    // memberId is already a string/ObjectId
-    if (typeof member.memberId === "string") {
-      return member.memberId;
-    }
-
-    // populated Member document
-    if (member.memberId._id) {
-      return member.memberId._id.toString();
-    }
-
-    // ObjectId instance
-    return member.memberId.toString();
-  }
-
-  /* function resetMembers() {
-    setRows(
-      financialYear.members.map((member) => ({
-        memberId: getMemberId(member),
-  
-        openingContribution:
-          member.openingContribution,
-  
-        openingLoan:
-          member.openingLoan,
-  
-        openingSpecialLoan:
-          member.openingSpecialLoan,
-  
-        specialLoanExpiry:
-          member.specialLoanExpiry
-            ? new Date(
-                member.specialLoanExpiry,
-              )
-                .toISOString()
-                .slice(0, 10)
-            : "",
-      })),
-    );
-  } */
-
-  function isMemberSelected(memberId: string) {
-    return rows.some((row) => row.memberId === memberId);
-  }
   function validateRows(): string | null {
     const selectedMembers = new Set<string>();
 
@@ -201,7 +122,6 @@ export default function MembersForm({ financialYear, members }: Props) {
     return null;
   }
   function buildPayload() {
-    console.log("\n\n\ buildPayload");
     return {
       members: rows.map((row) => ({
         memberId: row.memberId,
@@ -217,98 +137,7 @@ export default function MembersForm({ financialYear, members }: Props) {
     };
   }
 
-  /* useEffect(() => {
-    async function loadMembers() {
-      try {
-        setLoading(true);
-
-        const response = await fetch("/api/members");
-
-        const result = await response.json();
-
-        if (!response.ok) {
-          throw new Error(
-            result.message ??
-              "Unable to load members.",
-          );
-        }
-
-        setMembers(result);
-      } catch (err) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError(
-            "Unable to load members.",
-          );
-        }
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadMembers();
-  }, []); */
-
-  function toggleMember(id: string) {
-    setSelected((previous) =>
-      previous.includes(id) ? previous.filter((x) => x !== id) : [...previous, id],
-    );
-  }
-
-  async function save() {
-    console.log("\n\n Save");
-    try {
-      setSaving(true);
-      setError("");
-
-      const response = await fetch(`/api/financial-years/${financialYear._id}`, {
-        method: "PATCH",
-
-        headers: {
-          "Content-Type": "application/json",
-        },
-
-        body: JSON.stringify({
-          members: selected,
-        }),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message ?? "Unable to save members.");
-      }
-
-      router.refresh();
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("Unable to save members.");
-      }
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  /*  if (loading) {
-     return (
-       <Card variant="outlined">
-         <CardContent>
-           <Stack
-             alignItems="center"
-             py={4}
-           >
-             <CircularProgress />
-           </Stack>
-         </CardContent>
-       </Card>
-     );
-   } */
-
   async function saveMembers() {
-    console.log("\n\n saveMembers");
     const validationError = validateRows();
 
     if (validationError) {
@@ -353,19 +182,16 @@ export default function MembersForm({ financialYear, members }: Props) {
   }
 
   const selectedMemberIds = rows.map((row) => row.memberId);
-  {
-    error && <Alert severity="error">{error}</Alert>;
-  }
-
-  {
-    success && <Alert severity="success">Members updated successfully.</Alert>;
-  }
 
   return (
     <>
       <Card variant="outlined">
         <CardContent>
           <Stack spacing={3}>
+            {error && <Alert severity="error">{error}</Alert>}
+
+            {success && <Alert severity="success">Members updated successfully.</Alert>}
+
             <Button variant="outlined" startIcon={<AddIcon />} onClick={addMember}>
               Add Member
             </Button>

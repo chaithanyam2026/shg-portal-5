@@ -33,7 +33,7 @@ export async function updateBankTransactions(
 
   await meeting.save();
 
-  const saved = await Meeting.findById(meetingId).lean();
+  await Meeting.findById(meetingId).lean();
 
   return createResponse("Bank transactions updated successfully.");
 }

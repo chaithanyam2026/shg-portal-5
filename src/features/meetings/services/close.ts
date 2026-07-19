@@ -1,4 +1,5 @@
 import connectMongo from "@/lib/db/mongodb";
+import { Types } from "mongoose";
 
 import Meeting from "@/models/Meeting";
 
@@ -23,7 +24,7 @@ export async function closeMeeting(id: string, userId?: string | null): Promise<
   meeting.closedAt = new Date();
 
   if (userId) {
-    meeting.updatedBy = userId;
+    meeting.updatedBy = new Types.ObjectId(userId);
   }
 
   await meeting.save();

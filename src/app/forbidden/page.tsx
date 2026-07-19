@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Box, Button, Container, Paper, Stack, Typography } from "@mui/material";
 
+
 export const metadata = {
   title: "Forbidden",
 };
@@ -54,9 +55,11 @@ export default function ForbiddenPage() {
             </Typography>
           </Box>
 
-          <Button component={Link} href="/" variant="contained" size="large" fullWidth>
-            Go to Dashboard
-          </Button>
+          <Link href="/">
+            <Button variant="contained" size="large" fullWidth>
+              Go to Dashboard
+            </Button>
+          </Link>
         </Stack>
       </Paper>
     </Container>

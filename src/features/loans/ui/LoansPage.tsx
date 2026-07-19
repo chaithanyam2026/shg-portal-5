@@ -70,7 +70,7 @@ export default function LoansPage({ loans, financialYears }: Props) {
             onStatusChange={setStatus}
           />
 
-          <LoanList loans={filteredLoans} />
+          <LoanList loans={filteredLoans} financialYears={financialYears} />
         </Stack>
 
         <Fab

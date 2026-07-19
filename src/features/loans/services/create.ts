@@ -95,6 +95,22 @@ export async function createLoan(input: CreateLoanInput): Promise<LoanDetails> {
 
     remarks: loan.remarks,
 
+    outstandingPrincipal: loan.disbursedAmount,
+
+    paidPrincipal: 0,
+
+    paidInterest: 0,
+
+    pendingInterest: 0,
+
+    paidLoanFine: 0,
+
+    pendingLoanFine: 0,
+
+    totalPayable: loan.disbursedAmount,
+
+    effectiveInterestPercentage: 0,
+
     isClosable: false,
   };
 }

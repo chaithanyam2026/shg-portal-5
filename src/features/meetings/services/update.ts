@@ -2,6 +2,7 @@ import connectMongo from "@/lib/db/mongodb";
 
 import FinancialYear from "@/models/FinancialYear";
 import Meeting from "@/models/Meeting";
+import { Types } from "mongoose";
 
 import { MEETING_STATUS } from "../domain/meeting-status";
 import { UpdateMeetingInput, UpdateMeetingSchema } from "../validation";
@@ -71,28 +72,39 @@ export async function updateMeeting(id: string, input: UpdateMeetingInput, userI
     meeting.remarks = data.remarks;
   }
 
-  if ("attendance" in data) {
-    meeting.attendance = data.attendance;
+  if (data.attendance) {
+    meeting.attendance = data.attendance.map((record) => ({
+      memberId: new Types.ObjectId(record.memberId),
+      status: record.status,
+      remarks: record.remarks,
+    }));
   }
 
-  if ("payments" in data) {
-    meeting.payments = data.payments;
+  if (data.payments) {
+    meeting.payments = data.payments.map((payment) => ({
+      memberId: new Types.ObjectId(payment.memberId),
+      contribution: payment.contribution,
+      loanRepayment: payment.loanRepayment,
+      absentFine: payment.absentFine,
+      specialLoanFine: payment.specialLoanFine,
+      remarks: payment.remarks,
+    }));
   }
 
-  if ("bankTransactions" in data) {
+  if (data.bankTransactions) {
     meeting.bankTransactions = data.bankTransactions;
   }
 
-  if ("otherIncomes" in data) {
+  if (data.otherIncomes) {
     meeting.otherIncomes = data.otherIncomes;
   }
 
-  if ("expenses" in data) {
+  if (data.expenses) {
     meeting.expenses = data.expenses;
   }
 
   if (userId) {
-    meeting.updatedBy = userId;
+    meeting.updatedBy = new Types.ObjectId(userId);
   }
 
   await meeting.save();

@@ -10,11 +10,15 @@ import type { LoanPassbook } from "../../domain/loan-passbook";
 import { validateLoanPassbook } from "../../domain";
 
 export type BuildLoanLedgerInput = {
-  _id: unknown;
+  _id: {
+    toString(): string;
+  };
 
   loanNumber: string;
 
-  memberId: unknown;
+  memberId: {
+    toString(): string;
+  };
 
   memberName: string;
 
@@ -81,6 +85,8 @@ export async function buildLoanLedger(loan: BuildLoanLedgerInput): Promise<LoanP
       paidLoanFine: 0,
 
       paidPrincipal: 0,
+
+      remainingAmount: 0,
 
       outstandingPrincipal,
 

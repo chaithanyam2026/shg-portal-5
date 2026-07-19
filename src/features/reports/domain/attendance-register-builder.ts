@@ -1,4 +1,4 @@
-import type { AttendanceStatus } from "@/features/meetings/domain/attendance-status";
+import type { AttendanceStatus } from "./attendance-fine";
 
 export type AttendanceRegisterBuilderInput = {
   financialYearId: string;

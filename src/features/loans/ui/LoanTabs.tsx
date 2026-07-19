@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { LoanSummaryResult } from "../domain/loan-summary";
+import type { LoanSummaryResult } from "../types";
 
 import { Box, Stack, Tab, Tabs } from "@mui/material";
 
@@ -34,7 +34,7 @@ export default function LoanTabs({ loan, summary, passbook }: Props) {
       >
         <PageHeader
           title="Loans"
-          // showBack={false}
+        // showBack={false}
         />
       </Stack>
       <Tabs value={tab} onChange={(_event, value: number) => setTab(value)} variant="fullWidth">

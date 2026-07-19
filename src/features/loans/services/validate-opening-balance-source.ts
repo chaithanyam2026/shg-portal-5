@@ -20,3 +20,4 @@ export async function validateOpeningBalanceSource(
       "Opening balances can only be created from a closed financial year.",
     );
   }
+}

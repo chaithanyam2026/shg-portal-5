@@ -1,5 +1,6 @@
 import FinancialYear from "@/models/FinancialYear";
 import Meeting from "@/models/Meeting";
+import { Types } from "mongoose";
 
 import connectMongo from "@/lib/db/mongodb";
 
@@ -46,6 +47,8 @@ export async function createMeeting(
     throw new Error("A meeting already exists for this date.");
   }
 
+  const userObjectId = userId ? new Types.ObjectId(userId) : null;
+
   const meeting = await Meeting.create({
     financialYearId: financialYear._id,
 
@@ -57,9 +60,9 @@ export async function createMeeting(
 
     remarks: data.remarks,
 
-    createdBy: userId,
+    createdBy: userObjectId,
 
-    updatedBy: userId,
+    updatedBy: userObjectId,
   });
 
   return {

@@ -1,6 +1,6 @@
 import connectMongo from "@/lib/db/mongodb";
+import type { MemberLookup } from "@/features/financial-year/types";
 import Member from "@/models/Member";
-import type { MemberLookup } from "../types";
 
 export async function list(): Promise<MemberLookup[]> {
   await connectMongo();

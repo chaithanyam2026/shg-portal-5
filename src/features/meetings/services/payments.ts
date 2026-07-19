@@ -1,6 +1,7 @@
 import connectMongo from "@/lib/db/mongodb";
 
 import Meeting from "@/models/Meeting";
+import { Types } from "mongoose";
 
 import { MEETING_STATUS } from "../domain/meeting-status";
 
@@ -22,7 +23,7 @@ export async function updatePayments(meetingId: string, input: UpdatePaymentsInp
   }
 
   meeting.payments = data.payments.map((payment) => ({
-    memberId: payment.memberId,
+    memberId: new Types.ObjectId(payment.memberId),
 
     contribution: payment.contribution,
 

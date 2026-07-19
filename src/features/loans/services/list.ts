@@ -1,4 +1,5 @@
 import connectMongo from "@/lib/db/mongodb";
+import { Types } from "mongoose";
 
 import Loan from "@/models/Loan";
 
@@ -20,6 +21,10 @@ type ListLoansInput = {
   status?: LoanStatus;
 
   search?: string;
+};
+
+type StringifiableId = {
+  toString(): string;
 };
 
 export async function listLoans(filters: ListLoansInput = {}): Promise<LoanSummary[]> {
@@ -44,11 +49,22 @@ export async function listLoans(filters: ListLoansInput = {}): Promise<LoanSumma
   }
 
   const loans = await Loan.find(query)
-    .populate({
+    .populate<{
+      memberId: {
+        _id: Types.ObjectId;
+        memberCode: string;
+        name: string;
+      };
+    }>({
       path: "memberId",
       select: "memberCode name",
     })
-    .populate({
+    .populate<{
+      financialYearId: {
+        _id: Types.ObjectId;
+        name: string;
+      };
+    }>({
       path: "financialYearId",
       select: "name",
     })
@@ -63,10 +79,7 @@ export async function listLoans(filters: ListLoansInput = {}): Promise<LoanSumma
     const search = filters.search.trim().toLowerCase();
 
     filteredLoans = loans.filter((loan) => {
-      const member = loan.memberId as {
-        memberCode: string;
-        name: string;
-      };
+      const member = loan.memberId;
 
       return (
         loan.loanNumber.toLowerCase().includes(search) ||
@@ -77,16 +90,9 @@ export async function listLoans(filters: ListLoansInput = {}): Promise<LoanSumma
   }
 
   return filteredLoans.map((loan) => {
-    const member = loan.memberId as {
-      _id: unknown;
-      memberCode: string;
-      name: string;
-    };
+    const member = loan.memberId;
 
-    const financialYear = loan.financialYearId as {
-      _id: unknown;
-      name: string;
-    };
+    const financialYear = loan.financialYearId;
 
     return {
       _id: loan._id.toString(),

@@ -2,9 +2,10 @@
 
 import { Alert, Box, Card, CardContent, Grid, Stack, Typography } from "@mui/material";
 
-import type { LoanDetails } from "../../types";
+import type { LoanDetails, LoanSummaryResult } from "../../types";
 
-import type { LoanSummaryResult } from "../../domain/loan-summary";
+// import type { LoanSummaryResult } from "../../domain/loan-summary";
+
 
 type Props = {
   loan: LoanDetails;

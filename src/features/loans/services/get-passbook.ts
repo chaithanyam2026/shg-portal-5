@@ -7,6 +7,7 @@ import type { LoanPassbook } from "../domain";
 import { LoanIdInput, LoanIdSchema } from "../validation";
 
 import { buildLoanLedger } from "./internal/loan-ledger";
+import { Types } from "mongoose";
 
 /**
  * Returns the complete loan
@@ -18,7 +19,12 @@ export async function getLoanPassbook(loanId: LoanIdInput): Promise<LoanPassbook
   const id = LoanIdSchema.parse(loanId);
 
   const loan = await Loan.findById(id)
-    .populate({
+    .populate<{
+      memberId: {
+        _id: Types.ObjectId;
+        name: string;
+      };
+    }>({
       path: "memberId",
       select: "name",
     })
@@ -28,10 +34,7 @@ export async function getLoanPassbook(loanId: LoanIdInput): Promise<LoanPassbook
     throw new Error("Loan not found.");
   }
 
-  const member = loan.memberId as {
-    _id: unknown;
-    name: string;
-  };
+  const member = loan.memberId;
 
   return buildLoanLedger({
     _id: loan._id,

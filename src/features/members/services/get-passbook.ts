@@ -2,10 +2,25 @@ import connectMongo from "@/lib/db/mongodb";
 
 import FinancialYear from "@/models/FinancialYear";
 import Meeting from "@/models/Meeting";
+import type { FinancialYearDocument, FinancialYearMemberOpening } from "@/models/FinancialYear";
+import type { Types } from "mongoose";
 
 import type { MemberPassbook } from "../domain";
 
 import { buildMemberPassbook } from "./internal/member-passbook";
+
+type PopulatedFinancialYearMember = {
+  memberId: {
+    _id: Types.ObjectId;
+    memberCode: string;
+    name: string;
+  };
+  opening: FinancialYearMemberOpening;
+};
+
+type PopulatedFinancialYear = Omit<FinancialYearDocument, "members"> & {
+  members: PopulatedFinancialYearMember[];
+};
 
 /**
  * Returns the contribution passbook
@@ -22,7 +37,7 @@ export async function getMemberPassbook(memberId: string): Promise<MemberPassboo
       path: "members.memberId",
       select: "memberCode name",
     })
-    .lean();
+    .lean<PopulatedFinancialYear>();
 
   if (!financialYear) {
     throw new Error("Financial year not found.");

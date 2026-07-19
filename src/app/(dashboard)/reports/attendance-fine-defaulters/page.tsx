@@ -8,6 +8,7 @@ import {
 import { buildAttendanceFineDefaulters } from "@/features/reports/services/build-attendance-fine-defaulters";
 
 import AttendanceFineDefaultersPage from "@/features/reports/ui/AttendanceFineDefaultersPage";
+import { redirect } from "next/navigation";
 
 type Props = {
   searchParams: Promise<{
@@ -19,6 +20,9 @@ export default async function AttendanceFineDefaulters({ searchParams }: Props) 
   const params = await searchParams;
 
   const financialYear = await getSelectedFinancialYear(params.financialYear);
+  if (!financialYear) {
+    redirect("/financial-years");
+  }
 
   const options = await listFinancialYearOptions();
 

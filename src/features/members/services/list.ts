@@ -28,9 +28,9 @@ export async function listMembers(): Promise<MemberSummary[]> {
 
     address: member.address,
 
-    status: member.status,
+    status: member.active ? "ACTIVE" : "INACTIVE",
 
-    joinedDate: member.joinedDate?.toISOString(),
+    joinedDate: member.joinDate?.toISOString(),
 
     remarks: member.remarks ?? "",
   }));

@@ -34,7 +34,12 @@ export default function LoanFilters({
   onStatusChange,
 }: Props) {
   return (
-    <Stack spacing={2} mb={3}>
+    <Stack
+      spacing={2}
+      sx={{
+        mb: 3,
+      }}
+    >
       <TextField
         fullWidth
         label="Search Loans"

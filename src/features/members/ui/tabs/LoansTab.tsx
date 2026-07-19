@@ -76,7 +76,12 @@ export default function LoansTab({ member }: Props) {
 
   if (loading) {
     return (
-      <Stack alignItems="center" py={5}>
+      <Stack
+        sx={{
+          alignItems: "center",
+          py: 5,
+        }}
+      >
         <CircularProgress />
       </Stack>
     );

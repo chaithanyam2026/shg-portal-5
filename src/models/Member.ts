@@ -1,12 +1,14 @@
 import {
   HydratedDocument,
   Model,
+  Schema,
   Types,
   model,
   models,
 } from "mongoose";
 
 import { createSchema } from "@/lib/db/schema";
+import { createSchemaOptions } from "@/lib/db/schema-options";
 
 /**
  * SHG Member
@@ -39,7 +41,7 @@ export interface MemberDocument {
 export type MemberHydratedDocument =
   HydratedDocument<MemberDocument>;
 
-const memberSchema = createSchema<MemberDocument>({
+const memberSchema = new Schema<MemberDocument>({
   memberCode: {
     type: String,
     required: true,
@@ -97,7 +99,7 @@ const memberSchema = createSchema<MemberDocument>({
     required: true,
     unique: true,
   },
-});
+}, createSchemaOptions(),);
 
 /**
  * Indexes

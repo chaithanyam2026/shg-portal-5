@@ -24,7 +24,7 @@ export default function SummaryCard({ title, value }: Props) {
           {title}
         </Typography>
 
-        <Typography variant="h5" fontWeight={600}>
+        <Typography variant="h5" sx={{ fontWeight: 600 }}>
           {value}
         </Typography>
       </CardContent>

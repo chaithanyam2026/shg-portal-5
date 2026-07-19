@@ -5,9 +5,9 @@ import Meeting from "@/models/Meeting";
 import { BANK_TRANSACTION_TYPE } from "../domain/bank-transaction";
 
 import { VALIDATION_CODE, VALIDATION_SEVERITY } from "../domain/summary";
-import type { MeetingSummary, SummaryValidation } from "../types";
+import type { MeetingDashboardSummary, SummaryValidation } from "../types";
 
-export async function getSummary(meetingId: string): Promise<MeetingSummary> {
+export async function getSummary(meetingId: string): Promise<MeetingDashboardSummary> {
   await connectMongo();
 
   const meeting = await Meeting.findById(meetingId).lean();
@@ -54,21 +54,17 @@ export async function getSummary(meetingId: string): Promise<MeetingSummary> {
 
   const bankDeposits = bankTransactions
     .filter((x) =>
-      [
-        BANK_TRANSACTION_TYPE.DEPOSIT,
-        BANK_TRANSACTION_TYPE.INTEREST,
-        BANK_TRANSACTION_TYPE.INVESTMENT_MATURITY,
-      ].includes(x.type),
+      x.type === BANK_TRANSACTION_TYPE.DEPOSIT ||
+      x.type === BANK_TRANSACTION_TYPE.INTEREST ||
+      x.type === BANK_TRANSACTION_TYPE.INVESTMENT_MATURITY,
     )
     .reduce((s, x) => s + x.amount, 0);
 
   const bankWithdrawals = bankTransactions
     .filter((x) =>
-      [
-        BANK_TRANSACTION_TYPE.WITHDRAWAL,
-        BANK_TRANSACTION_TYPE.INVESTMENT,
-        BANK_TRANSACTION_TYPE.BANK_CHARGE,
-      ].includes(x.type),
+      x.type === BANK_TRANSACTION_TYPE.WITHDRAWAL ||
+      x.type === BANK_TRANSACTION_TYPE.INVESTMENT ||
+      x.type === BANK_TRANSACTION_TYPE.BANK_CHARGE,
     )
     .reduce((s, x) => s + x.amount, 0);
 
