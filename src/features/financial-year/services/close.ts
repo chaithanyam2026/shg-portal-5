@@ -9,9 +9,24 @@ import type { FinancialYearClose } from "../domain";
 import {
   buildClosingBalances,
   buildMemberClosingBalances,
-  mapFinancialYearDetails,
   validateFinancialYearClose,
 } from "./internal";
+
+type PopulatedMemberRef = {
+  _id: mongoose.Types.ObjectId;
+  memberCode: string;
+  name: string;
+};
+
+function isPopulatedMemberRef(value: unknown): value is PopulatedMemberRef {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "_id" in value &&
+    "memberCode" in value &&
+    "name" in value
+  );
+}
 
 export async function closeFinancialYear(
   financialYearId: string,
@@ -24,7 +39,12 @@ export async function closeFinancialYear(
   try {
     session.startTransaction();
 
-    const financialYear = await FinancialYear.findById(financialYearId).session(session);
+    const financialYear = await FinancialYear.findById(financialYearId)
+      .session(session)
+      .populate({
+        path: "members.memberId",
+        select: "memberCode name",
+      });
 
     if (!financialYear) {
       throw new Error("Financial year not found.");
@@ -40,14 +60,47 @@ export async function closeFinancialYear(
       throw new Error("Financial year cannot be closed.");
     }
 
-    const summary = await buildClosingBalances(financialYearId);
+    const openingBalances = financialYear.openingBalances ?? {
+      bankBalance: 0,
+      cashInHand: 0,
+      excessCorpus: 0,
+      investments: 0,
+      otherLoans: 0,
+    };
 
-    const members = await buildMemberClosingBalances(financialYearId);
+    const members = buildMemberClosingBalances(
+      financialYear.members.map((member) => {
+        if (!isPopulatedMemberRef(member.memberId)) {
+          throw new Error("Financial year members are not populated.");
+        }
+
+        return {
+          memberId: member.memberId._id,
+          memberCode: member.memberId.memberCode,
+          memberName: member.memberId.name,
+          savingsBalance: member.opening.contribution,
+          loanOutstanding: member.opening.loan,
+          specialLoanOutstanding: member.opening.specialLoan,
+          attendanceFineOutstanding: 0,
+          loanFineOutstanding: 0,
+        };
+      }),
+    );
+
+    const summary = buildClosingBalances({
+      bankBalance: openingBalances.bankBalance,
+      cashInHand: openingBalances.cashInHand,
+      excessCorpus: openingBalances.excessCorpus,
+      investments: openingBalances.investments,
+      memberBalances: members,
+    });
+
+    const closedAt = new Date();
 
     financialYear.status = "CLOSED";
 
     financialYear.closing = {
-      closedAt: new Date(),
+      closedAt,
       closedBy: new mongoose.Types.ObjectId(closedBy),
       summary,
       members,
@@ -59,29 +112,37 @@ export async function closeFinancialYear(
 
     await session.commitTransaction();
 
-    const closedAt = new Date();
-
-    financialYear.closing = {
-      closedAt,
-      closedBy: new mongoose.Types.ObjectId(closedBy),
-      summary,
-      members,
+    const responseSummary = {
+      ...summary,
+      savingsBalance: members.reduce((total, member) => total + member.savingsBalance, 0),
+      loanOutstanding: members.reduce((total, member) => total + member.loanOutstanding, 0),
+      specialLoanOutstanding: members.reduce(
+        (total, member) => total + member.specialLoanOutstanding,
+        0,
+      ),
+      attendanceFineOutstanding: members.reduce(
+        (total, member) => total + member.attendanceFineOutstanding,
+        0,
+      ),
+      loanFineOutstanding: members.reduce(
+        (total, member) => total + member.loanFineOutstanding,
+        0,
+      ),
     };
 
-    /* return {
+    return {
       financialYearId: financialYear._id.toString(),
 
       financialYearName: financialYear.name,
 
-     closedAt: closedAt.toISOString(),
+      closedAt: closedAt.toISOString(),
 
-      summary,
+      summary: responseSummary,
 
       members,
 
       validation,
-    }; */
-    return mapFinancialYearDetails(financialYear);
+    };
   } catch (error) {
     await session.abortTransaction();
     throw error;

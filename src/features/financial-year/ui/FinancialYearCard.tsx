@@ -17,9 +17,7 @@ type FinancialYearCardProps = {
   };
 };
 
-function getStatusColor(
-  status: FinancialYearSummary["status"],
-): "default" | "primary" | "success" | "warning" | "error" {
+function getStatusColor(status: FinancialYearStatus): "default" | "primary" | "success" | "warning" | "error" {
   switch (status) {
     case "IN_PROGRESS":
       return "success";
@@ -48,9 +46,11 @@ export default function FinancialYearCard({ financialYear }: FinancialYearCardPr
             <Stack spacing={2}>
               <Stack
                 direction="row"
-                justifyContent="space-between"
-                alignItems="flex-start"
                 spacing={2}
+                sx={{
+                  alignItems: "flex-start",
+                  justifyContent: "space-between",
+                }}
               >
                 <Typography variant="h6" component="h2">
                   {financialYear.name}
@@ -83,7 +83,7 @@ export default function FinancialYearCard({ financialYear }: FinancialYearCardPr
                 </Typography>
               </Stack>
 
-              <Stack direction="row" justifyContent="flex-end">
+              <Stack direction="row" sx={{ justifyContent: "flex-end" }}>
                 <ChevronRightIcon color="action" fontSize="small" />
               </Stack>
             </Stack>

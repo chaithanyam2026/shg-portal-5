@@ -234,9 +234,11 @@ export default function CloseFinancialYearDialog({
         maxWidth="sm"
         aria-labelledby={dialogTitleId}
         aria-describedby={dialogDescriptionId}
-        PaperProps={{
-          sx: {
-            cursor: loading ? "progress" : "default",
+        slotProps={{
+          paper: {
+            sx: {
+              cursor: loading ? "progress" : "default",
+            },
           },
         }}
       >
@@ -281,16 +283,16 @@ export default function CloseFinancialYearDialog({
                   display: "flex",
                   alignItems: "center",
                   textAlign: "center",
+                  py: 5,
                 }}
-                py={5}
               >
                 <CircularProgress size={42} thickness={4} />
 
-                <Typography textAlign="center">
+                <Typography sx={{ textAlign: "center" }}>
                   Validating records and closing the financial year.
                 </Typography>
 
-                <Typography variant="body2" color="text.secondary" textAlign="center">
+                <Typography variant="body2" color="text.secondary" sx={{ textAlign: "center" }}>
                   This may take a few seconds.
                 </Typography>
               </Stack>

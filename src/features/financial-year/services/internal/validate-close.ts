@@ -1,10 +1,13 @@
+import { Types, type QueryFilter } from "mongoose";
+
 import connectMongo from "@/lib/db/mongodb";
 
 import FinancialYear from "@/models/FinancialYear";
-import Loan from "@/models/Loan";
-import Meeting from "@/models/Meeting";
+import Loan, { type LoanDocument } from "@/models/Loan";
+import Meeting, { type MeetingDocument } from "@/models/Meeting";
 
 import type { ClosingValidation, ClosingValidationItem } from "../../domain";
+import type { FinancialYearClosingMember } from "@/models/FinancialYear";
 
 import { buildClosingBalances } from "./build-closing-balances";
 
@@ -19,7 +22,9 @@ export async function validateFinancialYearClose(
 
   const items: ClosingValidationItem[] = [];
 
-  const financialYear = await FinancialYear.findById(financialYearId).lean();
+  const financialYearObjectId = new Types.ObjectId(financialYearId);
+
+  const financialYear = await FinancialYear.findById(financialYearObjectId).lean();
 
   if (!financialYear) {
     throw new Error("Financial year not found.");
@@ -36,11 +41,11 @@ export async function validateFinancialYearClose(
   });
 
   const openMeetings = await Meeting.countDocuments({
-    financialYearId,
+    financialYearId: financialYearObjectId,
     status: {
       $ne: "CLOSED",
     },
-  });
+  } as unknown as QueryFilter<MeetingDocument>);
 
   items.push({
     code: "MEETINGS_CLOSED",
@@ -50,9 +55,9 @@ export async function validateFinancialYearClose(
   });
 
   const draftLoans = await Loan.countDocuments({
-    financialYearId,
+    financialYearId: financialYearObjectId,
     status: "DRAFT",
-  });
+  } as unknown as QueryFilter<LoanDocument>);
 
   items.push({
     code: "LOANS_APPROVED",
@@ -61,7 +66,44 @@ export async function validateFinancialYearClose(
     message: draftLoans === 0 ? "OK" : `${draftLoans} draft loan(s) found.`,
   });
 
-  const balances = await buildClosingBalances(financialYearId);
+  const openingBalances = financialYear.openingBalances ?? {
+    bankBalance: 0,
+    cashInHand: 0,
+    excessCorpus: 0,
+    investments: 0,
+    otherLoans: 0,
+  };
+
+  const memberBalances: FinancialYearClosingMember[] = financialYear.members.map((member) => {
+    const loanOutstanding = member.opening.loan;
+    const specialLoanOutstanding = member.opening.specialLoan;
+    const attendanceFineOutstanding = 0;
+    const loanFineOutstanding = 0;
+
+    return {
+      memberId: member.memberId,
+      memberCode: "",
+      memberName: "",
+      savingsBalance: member.opening.contribution,
+      loanOutstanding,
+      specialLoanOutstanding,
+      attendanceFineOutstanding,
+      loanFineOutstanding,
+      totalOutstanding:
+        loanOutstanding +
+        specialLoanOutstanding +
+        attendanceFineOutstanding +
+        loanFineOutstanding,
+    };
+  });
+
+  const balances = buildClosingBalances({
+    bankBalance: openingBalances.bankBalance,
+    cashInHand: openingBalances.cashInHand,
+    excessCorpus: openingBalances.excessCorpus,
+    investments: openingBalances.investments,
+    memberBalances,
+  });
 
   items.push({
     code: "CASH_VALID",

@@ -148,9 +148,23 @@ export const FinancialYearIdSchema = z.object({
 /**
  * Types
  */
-export type CreateFinancialYearInput = z.infer<typeof CreateFinancialYearSchema>;
+/**
+ * Form Types (React Hook Form)
+ */
+export type CreateFinancialYearFormInput =
+  z.input<typeof CreateFinancialYearSchema>;
 
-export type UpdateFinancialYearInput = z.infer<typeof UpdateFinancialYearSchema>;
+export type UpdateFinancialYearFormInput =
+  z.input<typeof UpdateFinancialYearSchema>;
+
+/**
+ * Domain Types (after Zod parsing)
+ */
+export type CreateFinancialYearInput =
+  z.output<typeof CreateFinancialYearSchema>;
+
+export type UpdateFinancialYearInput =
+  z.output<typeof UpdateFinancialYearSchema>;
 
 export type FinancialYearIdInput = z.infer<typeof FinancialYearIdSchema>;
 

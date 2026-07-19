@@ -12,7 +12,7 @@ type Props = {
 
 export default function ValidationItem({ label, valid, message }: Props) {
   return (
-    <Stack direction="row" spacing={2} alignItems="flex-start">
+    <Stack direction="row" spacing={2} sx={{ alignItems: "flex-start" }}>
       {valid ? (
         <CheckCircleIcon color="success" fontSize="small" sx={{ mt: 0.25 }} />
       ) : (

@@ -63,17 +63,22 @@ export default function CommitteeForm({ financialYear, members }: Props) {
 
   const [saving, setSaving] = useState(false);
 
-  const [committee, setCommittee] = useState<CommitteeState>({
-    president: financialYear.executiveCommittee?.president?._id ?? "",
+ const [committee, setCommittee] = useState<CommitteeState>({
+  president:
+    financialYear.executiveCommittee?.president?._id ?? "",
 
-    vicePresident: financialYear.executiveCommittee?.vicePresident?._id ?? "",
+  vicePresident:
+    financialYear.executiveCommittee?.vicePresident?._id ?? "",
 
-    secretary: financialYear.executiveCommittee?.secretary?._id ?? "",
+  secretary:
+    financialYear.executiveCommittee?.secretary?._id ?? "",
 
-    jointSecretary: financialYear.executiveCommittee?.jointSecretary?._id ?? "",
+  jointSecretary:
+    financialYear.executiveCommittee?.jointSecretary?._id ?? "",
 
-    treasurer: financialYear.executiveCommittee?.treasurer?._id ?? "",
-  });
+  treasurer:
+    financialYear.executiveCommittee?.treasurer?._id ?? "",
+});
 
   function handleChange(role: keyof CommitteeState, value: string) {
     setCommittee((previous) => ({
@@ -106,17 +111,18 @@ export default function CommitteeForm({ financialYear, members }: Props) {
 
             treasurer: committee.treasurer || null,
           },
-          members: financialYear.members.map((member) => ({
-            memberId: member.memberId._id,
+         members: financialYear.members.map((member) => ({
+  memberId: member.member._id,
 
-            openingContribution: member.opening.contribution ?? 0,
+  openingContribution: member.opening.contribution ?? 0,
 
-            openingLoan: member.openingLoan ?? 0,
+  openingLoan: member.opening.loan ?? 0,
 
-            openingSpecialLoan: member.openingSpecialLoan ?? 0,
+  openingSpecialLoan: member.opening.specialLoan ?? 0,
 
-            specialLoanExpiry: member.specialLoanExpiry ?? null,
-          })),
+  openingSpecialLoanExpiry:
+    member.opening.specialLoanExpiry,
+})),
         }),
       });
 
@@ -157,11 +163,14 @@ export default function CommitteeForm({ financialYear, members }: Props) {
               >
                 <MenuItem value="">None</MenuItem>
 
-                {financialYear.members.map(({ memberId }) => (
-                  <MenuItem key={memberId._id} value={memberId._id}>
-                    {memberId.memberCode} - {memberId.name}
-                  </MenuItem>
-                ))}
+                {financialYear.members.map((member) => (
+  <MenuItem
+    key={member.member._id}
+    value={member.member._id}
+  >
+    {member.member.memberCode} - {member.member.name}
+  </MenuItem>
+))}
               </Select>
             </FormControl>
           ))}

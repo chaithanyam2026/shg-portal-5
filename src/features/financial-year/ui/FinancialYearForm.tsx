@@ -6,9 +6,14 @@ import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Alert, Box, Button, CircularProgress, Stack, TextField } from "@mui/material";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, type Resolver } from "react-hook-form";
 
 import { CreateFinancialYearInput, CreateFinancialYearSchema } from "../validation";
+
+type CreateFinancialYearFormValues = Omit<CreateFinancialYearInput, "startDate" | "endDate"> & {
+  startDate: string;
+  endDate: string;
+};
 
 export default function FinancialYearForm() {
   const router = useRouter();
@@ -20,12 +25,16 @@ export default function FinancialYearForm() {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<CreateFinancialYearInput>({
-    resolver: zodResolver(CreateFinancialYearSchema),
+  } = useForm<CreateFinancialYearFormValues, unknown, CreateFinancialYearInput>({
+    resolver: zodResolver(CreateFinancialYearSchema) as unknown as Resolver<
+      CreateFinancialYearFormValues,
+      unknown,
+      CreateFinancialYearInput
+    >,
     defaultValues: {
       name: "",
-      startDate: undefined,
-      endDate: undefined,
+      startDate: "",
+      endDate: "",
       remarks: "",
     },
   });
@@ -91,10 +100,12 @@ export default function FinancialYearForm() {
               type="date"
               fullWidth
               required
-              value={field.value ? new Date(field.value).toISOString().split("T")[0] : ""}
+              value={field.value}
               onChange={(event) => field.onChange(event.target.value)}
-              InputLabelProps={{
-                shrink: true,
+              slotProps={{
+                inputLabel: {
+                  shrink: true,
+                },
               }}
               error={!!errors.startDate}
               helperText={errors.startDate?.message}
@@ -111,10 +122,12 @@ export default function FinancialYearForm() {
               type="date"
               fullWidth
               required
-              value={field.value ? new Date(field.value).toISOString().split("T")[0] : ""}
+              value={field.value}
               onChange={(event) => field.onChange(event.target.value)}
-              InputLabelProps={{
-                shrink: true,
+              slotProps={{
+                inputLabel: {
+                  shrink: true,
+                },
               }}
               error={!!errors.endDate}
               helperText={errors.endDate?.message}
@@ -138,7 +151,7 @@ export default function FinancialYearForm() {
           )}
         />
 
-        <Stack direction="row" spacing={2} justifyContent="flex-end">
+        <Stack direction="row" spacing={2} sx={{ justifyContent: "flex-end" }}>
           <Button variant="outlined" onClick={() => router.back()} disabled={isSubmitting}>
             Cancel
           </Button>

@@ -5,11 +5,17 @@
 export type MemberOpeningBalance = {
   memberId: string;
 
-  contribution: number;
+  memberCode: string;
+
+  memberName: string;
+
+  savings: number;
 
   loan: number;
 
-  specialLoan: number;
+  interest: number;
 
-  specialLoanExpiry: Date | null;
+  fine: number;
+
+  other: number;
 };

@@ -15,31 +15,7 @@ export async function activate(id: string) {
     throw new AppError("Invalid financial year id.", 400);
   }
 
-  const financialYear = await FinancialYear.findById(id)
-    .populate({
-      path: "members",
-      select: "memberCode name",
-    })
-    .populate({
-      path: "executiveCommittee.president",
-      select: "memberCode name",
-    })
-    .populate({
-      path: "executiveCommittee.vicePresident",
-      select: "memberCode name",
-    })
-    .populate({
-      path: "executiveCommittee.secretary",
-      select: "memberCode name",
-    })
-    .populate({
-      path: "executiveCommittee.jointSecretary",
-      select: "memberCode name",
-    })
-    .populate({
-      path: "executiveCommittee.treasurer",
-      select: "memberCode name",
-    });
+  const financialYear = await FinancialYear.findById(id);
 
   if (!financialYear) {
     throw new AppError("Financial year not found.", 404);
@@ -86,7 +62,7 @@ export async function activate(id: string) {
 
 
 
-  await populateFinancialYear(financialYear);
+  const populatedFinancialYear = await populateFinancialYear(financialYear);
 
-  return mapFinancialYearDetails(financialYear);
+  return mapFinancialYearDetails(populatedFinancialYear);
 }

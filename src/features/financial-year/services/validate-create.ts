@@ -38,6 +38,10 @@ export async function validateCreateFinancialYear(input: CreateFinancialYearInpu
   // Source Already Used
   //
 
+  if (!input.sourceFinancialYearId) {
+    return;
+  }
+
   const alreadyCreated = await FinancialYear.exists({
     sourceFinancialYearId: input.sourceFinancialYearId,
   });
@@ -60,7 +64,7 @@ export async function validateCreateFinancialYear(input: CreateFinancialYearInpu
     throw new Error("Source financial year must be closed.");
   }
 
-  if (!source.closingSnapshot) {
+  if (!source.closing) {
     throw new Error("Closing snapshot not found.");
   }
 }

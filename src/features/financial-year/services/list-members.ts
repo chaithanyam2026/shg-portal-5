@@ -2,10 +2,12 @@ import connectMongo from "@/lib/db/mongodb";
 
 import Member from "@/models/Member";
 
-export async function listMembers() {
+import type { MemberLookup } from "../types";
+
+export async function listMembers(): Promise<MemberLookup[]> {
   await connectMongo();
 
-  return Member.find()
+  const members = await Member.find()
     .select({
       memberCode: 1,
       name: 1,
@@ -14,4 +16,10 @@ export async function listMembers() {
       memberCode: 1,
     })
     .lean();
+
+  return members.map((member) => ({
+    _id: member._id.toString(),
+    memberCode: member.memberCode,
+    name: member.name,
+  }));
 }

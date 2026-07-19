@@ -6,7 +6,7 @@ export function mapMember(
   member: PopulatedFinancialYearMember,
 ): FinancialYearMember {
   return {
-    memberId: {
+    member: {
       _id: member.memberId._id.toString(),
 
       memberCode: member.memberId.memberCode,

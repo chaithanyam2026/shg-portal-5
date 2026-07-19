@@ -32,12 +32,20 @@ type FinancialYearWithPopulatedMembers = {
         excessCorpus: number;
         investments: number;
         otherLoans: number;
-    };
+    } | null;
 };
 
 export function mapFinancialYearDetails(
     financialYear: FinancialYearWithPopulatedMembers,
 ): FinancialYearDetails {
+    const openingBalances = financialYear.openingBalances ?? {
+        bankBalance: 0,
+        cashInHand: 0,
+        excessCorpus: 0,
+        investments: 0,
+        otherLoans: 0,
+    };
+
     return {
         _id: financialYear._id.toString(),
 
@@ -76,11 +84,11 @@ export function mapFinancialYearDetails(
         },
 
         openingBalances: {
-            bankBalance: financialYear.openingBalances.bankBalance,
-            cashInHand: financialYear.openingBalances.cashInHand,
-            excessCorpus: financialYear.openingBalances.excessCorpus,
-            investments: financialYear.openingBalances.investments,
-            otherLoans: financialYear.openingBalances.otherLoans,
+            bankBalance: openingBalances.bankBalance,
+            cashInHand: openingBalances.cashInHand,
+            excessCorpus: openingBalances.excessCorpus,
+            investments: openingBalances.investments,
+            otherLoans: openingBalances.otherLoans,
         },
     };
 }

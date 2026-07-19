@@ -16,7 +16,10 @@ import {
 } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 
-import { UpdateFinancialYearSchema, type UpdateFinancialYearInput } from "../../validation";
+import {
+  UpdateFinancialYearFormInput,
+  UpdateFinancialYearSchema,
+} from "../../validation";
 
 import type { FinancialYearDetails } from "../../types";
 
@@ -24,7 +27,9 @@ type Props = {
   financialYear: FinancialYearDetails;
 };
 
-export default function GeneralForm({ financialYear }: Props) {
+export default function GeneralForm({
+  financialYear,
+}: Props) {
   const router = useRouter();
 
   const [error, setError] = useState("");
@@ -32,35 +37,54 @@ export default function GeneralForm({ financialYear }: Props) {
   const {
     control,
     handleSubmit,
-    formState: { errors, isSubmitting, isDirty },
-  } = useForm<UpdateFinancialYearInput>({
+    formState: {
+      errors,
+      isSubmitting,
+      isDirty,
+    },
+  } = useForm<UpdateFinancialYearFormInput>({
     resolver: zodResolver(UpdateFinancialYearSchema),
 
     defaultValues: {
       name: financialYear.name,
-      startDate: new Date(financialYear.startDate),
-      endDate: new Date(financialYear.endDate),
+
+      startDate: financialYear.startDate,
+
+      endDate: financialYear.endDate,
+
       remarks: financialYear.remarks,
     },
   });
 
-  async function onSubmit(data: UpdateFinancialYearInput) {
+  async function onSubmit(
+    values: UpdateFinancialYearFormInput,
+  ) {
     setError("");
 
-    const response = await fetch(`/api/financial-years/${financialYear._id}`, {
-      method: "PATCH",
+    const data =
+      UpdateFinancialYearSchema.parse(values);
 
-      headers: {
-        "Content-Type": "application/json",
+    const response = await fetch(
+      `/api/financial-years/${financialYear._id}`,
+      {
+        method: "PATCH",
+
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+
+        body: JSON.stringify(data),
       },
-
-      body: JSON.stringify(data),
-    });
+    );
 
     const result = await response.json();
 
     if (!response.ok) {
-      setError(result.message ?? "Unable to update financial year.");
+      setError(
+        result.message ??
+          "Unable to update financial year.",
+      );
 
       return;
     }
@@ -71,9 +95,15 @@ export default function GeneralForm({ financialYear }: Props) {
   return (
     <Card variant="outlined">
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <Stack spacing={3}>
-            {error && <Alert severity="error">{error}</Alert>}
+            {error && (
+              <Alert severity="error">
+                {error}
+              </Alert>
+            )}
 
             <Controller
               name="name"
@@ -84,7 +114,9 @@ export default function GeneralForm({ financialYear }: Props) {
                   label="Name"
                   fullWidth
                   error={!!errors.name}
-                  helperText={errors.name?.message}
+                  helperText={
+                    errors.name?.message
+                  }
                 />
               )}
             />
@@ -100,10 +132,25 @@ export default function GeneralForm({ financialYear }: Props) {
                   InputLabelProps={{
                     shrink: true,
                   }}
-                  value={field.value ? new Date(field.value).toISOString().substring(0, 10) : ""}
-                  onChange={(e) => field.onChange(e.target.value)}
-                  error={!!errors.startDate}
-                  helperText={errors.startDate?.message}
+                  value={
+                    field.value
+                      ? new Date(field.value)
+                          .toISOString()
+                          .slice(0, 10)
+                      : ""
+                  }
+                  onChange={(e) =>
+                    field.onChange(
+                      e.target.value,
+                    )
+                  }
+                  error={
+                    !!errors.startDate
+                  }
+                  helperText={
+                    errors.startDate
+                      ?.message
+                  }
                 />
               )}
             />
@@ -119,10 +166,23 @@ export default function GeneralForm({ financialYear }: Props) {
                   InputLabelProps={{
                     shrink: true,
                   }}
-                  value={field.value ? new Date(field.value).toISOString().substring(0, 10) : ""}
-                  onChange={(e) => field.onChange(e.target.value)}
+                  value={
+                    field.value
+                      ? new Date(field.value)
+                          .toISOString()
+                          .slice(0, 10)
+                      : ""
+                  }
+                  onChange={(e) =>
+                    field.onChange(
+                      e.target.value,
+                    )
+                  }
                   error={!!errors.endDate}
-                  helperText={errors.endDate?.message}
+                  helperText={
+                    errors.endDate
+                      ?.message
+                  }
                 />
               )}
             />
@@ -137,8 +197,13 @@ export default function GeneralForm({ financialYear }: Props) {
                   multiline
                   minRows={4}
                   fullWidth
-                  error={!!errors.remarks}
-                  helperText={errors.remarks?.message}
+                  error={
+                    !!errors.remarks
+                  }
+                  helperText={
+                    errors.remarks
+                      ?.message
+                  }
                 />
               )}
             />
@@ -146,8 +211,18 @@ export default function GeneralForm({ financialYear }: Props) {
             <Button
               type="submit"
               variant="contained"
-              disabled={!isDirty || isSubmitting}
-              startIcon={isSubmitting ? <CircularProgress size={18} color="inherit" /> : undefined}
+              disabled={
+                !isDirty ||
+                isSubmitting
+              }
+              startIcon={
+                isSubmitting ? (
+                  <CircularProgress
+                    size={18}
+                    color="inherit"
+                  />
+                ) : undefined
+              }
             >
               Save Changes
             </Button>

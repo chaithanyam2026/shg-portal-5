@@ -8,6 +8,14 @@ import type { FinancialYearDocument } from "@/models/FinancialYear";
 import { UpdateFinancialYearInput, validateUpdateFinancialYear } from "../validation";
 import { assertFinancialYearEditable } from "./assert-editable";
 import { mapFinancialYearDetails } from "./internal";
+import { populateFinancialYear } from "./internal/populate-financial-year";
+
+type UpdateMemberInput = NonNullable<UpdateFinancialYearInput["members"]>[number];
+type ExistingMemberInput = FinancialYearDocument["members"][number];
+
+function memberIdToString(member: UpdateMemberInput | ExistingMemberInput): string {
+  return member.memberId.toString();
+}
 
 async function validateDateOverlap(
   financialYear: FinancialYearDocument,
@@ -161,15 +169,7 @@ export async function update(id: string, input: unknown) {
   await validateDateOverlap(financialYear, startDate, endDate);
   validateMembers(data.members);
   validateCommittee(
-    (data.members ?? financialYear.members).map(
-      (
-        member:
-          UpdateFinancialYearInput["members"][number] | FinancialYearDocument["members"][number],
-      ) =>
-        (member.memberId ?? member)._id
-          ? (member.memberId ?? member)._id.toString()
-          : (member.memberId ?? member).toString(),
-    ),
+    (data.members ?? financialYear.members).map(memberIdToString),
     data.executiveCommittee,
   );
   validateOpeningBalances(data.openingBalances);
@@ -207,7 +207,7 @@ export async function update(id: string, input: unknown) {
 
         specialLoan: member.openingSpecialLoan,
 
-        specialLoanExpiry: member.specialLoanExpiry,
+        specialLoanExpiry: member.specialLoanExpiry ?? null,
       },
     }));
   }
@@ -238,15 +238,22 @@ export async function update(id: string, input: unknown) {
    */
   if (data.openingBalances !== undefined) {
     financialYear.openingBalances = {
-      ...financialYear.openingBalances,
+      ...(financialYear.openingBalances ?? {
+        bankBalance: 0,
+        cashInHand: 0,
+        excessCorpus: 0,
+        investments: 0,
+        otherLoans: 0,
+      }),
       ...data.openingBalances,
     };
   }
 
-  await assertFinancialYearEditable(financialYearId);
+  await assertFinancialYearEditable(id);
 
   await financialYear.save();
 
-  //return financialYear.toObject();
-  return mapFinancialYearDetails(financialYear);
+  const populatedFinancialYear = await populateFinancialYear(financialYear);
+
+  return mapFinancialYearDetails(populatedFinancialYear);
 }

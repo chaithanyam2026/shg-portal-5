@@ -1,8 +1,9 @@
 import type {
   FinancialYearClosing,
-  FinancialYearMemberOpening,
   OpeningBalance,
 } from "@/models/FinancialYear";
+
+import type { MemberOpeningBalance } from "../../domain";
 
 import { buildMemberOpeningBalances } from "./build-member-opening-balances";
 
@@ -10,9 +11,9 @@ export interface OpeningBalanceResult {
   generatedAt: Date;
 
   summary: {
-    openingBalances: OpeningBalance;
+    opening: OpeningBalance;
 
-    members: FinancialYearMemberOpening[];
+    members: MemberOpeningBalance[];
   };
 }
 
@@ -38,7 +39,7 @@ export function buildOpeningBalances(
       generatedAt: new Date(),
 
       summary: {
-        openingBalances: createEmptyOpeningBalances(),
+        opening: createEmptyOpeningBalances(),
 
         members: [],
       },
@@ -49,7 +50,7 @@ export function buildOpeningBalances(
     generatedAt: new Date(),
 
     summary: {
-      openingBalances: {
+      opening: {
         bankBalance: closing.summary.bankBalance,
 
         cashInHand: closing.summary.cashInHand,

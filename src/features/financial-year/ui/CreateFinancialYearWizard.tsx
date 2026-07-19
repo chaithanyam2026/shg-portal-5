@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { useRouter } from "next/navigation";
+
 import {
   Alert,
   Box,
@@ -84,7 +86,7 @@ export default function CreateFinancialYearWizard({ financialYears }: Props) {
         break;
 
       case 3:
-        if (!openingBalance || openingBalance.members.length === 0) {
+        if (!openingBalance || openingBalance.summary.members.length === 0) {
           return;
         }
 
@@ -150,7 +152,7 @@ export default function CreateFinancialYearWizard({ financialYears }: Props) {
           ...financialYear,
           sourceFinancialYearId,
           openingBalances: openingBalance.summary.opening,
-          memberOpeningBalances: openingBalance.members,
+          memberOpeningBalances: openingBalance.summary.members,
         }),
       });
 
@@ -243,10 +245,10 @@ export default function CreateFinancialYearWizard({ financialYears }: Props) {
 
               {loadingOpening && (
                 <Stack
-                  py={6}
                   sx={{
                     display: "flex",
                     alignItems: "center",
+                    py: 6,
                   }}
                 >
                   <CircularProgress />
@@ -271,10 +273,10 @@ export default function CreateFinancialYearWizard({ financialYears }: Props) {
 
               {!openingBalance ? (
                 <Alert severity="warning">Opening balances have not been generated yet.</Alert>
-              ) : openingBalance.members.length === 0 ? (
+              ) : openingBalance.summary.members.length === 0 ? (
                 <Alert severity="info">No member balances are available.</Alert>
               ) : (
-                <MemberOpeningBalanceTable members={openingBalance.members} />
+                <MemberOpeningBalanceTable members={openingBalance.summary.members} />
               )}
             </Stack>
           )}
@@ -307,7 +309,7 @@ export default function CreateFinancialYearWizard({ financialYears }: Props) {
                     </Typography>
 
                     <Typography>
-                      <strong>Members:</strong> {openingBalance?.members.length ?? 0}
+                      <strong>Members:</strong> {openingBalance?.summary.members.length ?? 0}
                     </Typography>
 
                     <Typography>

@@ -1,7 +1,23 @@
+import type { FinancialYearHydratedDocument } from "@/models/FinancialYear";
+
+import type {
+    PopulatedExecutiveCommittee,
+    PopulatedFinancialYearMember,
+} from "./types";
+
+type PopulatedFinancialYearDocument = Omit<
+    FinancialYearHydratedDocument,
+    "members" | "executiveCommittee"
+> & {
+    members: PopulatedFinancialYearMember[];
+
+    executiveCommittee: PopulatedExecutiveCommittee;
+};
+
 export async function populateFinancialYear(
     financialYear: FinancialYearHydratedDocument,
-) {
-    return financialYear.populate([
+): Promise<PopulatedFinancialYearDocument> {
+    const populated = await financialYear.populate([
         {
             path: "members.memberId",
             select: "memberCode name",
@@ -27,4 +43,6 @@ export async function populateFinancialYear(
             select: "memberCode name",
         },
     ]);
+
+    return populated as unknown as PopulatedFinancialYearDocument;
 }

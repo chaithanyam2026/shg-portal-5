@@ -406,7 +406,7 @@ export default function MembersForm({ financialYear, members }: Props) {
           </Stack>
         </CardContent>
       </Card>
-      <Stack direction="row" justifyContent="flex-end">
+      <Stack direction="row" sx={{ justifyContent: "flex-end" }}>
         <Button onClick={resetMembers} disabled={!dirty || saving}>
           Reset
         </Button>

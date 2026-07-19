@@ -6,18 +6,12 @@ import { Box, Tab, Tabs } from "@mui/material";
 
 import type { IncomeExpenseReport as IncomeExpenseReportModel } from "@/features/reports/types";
 import { IncomeExpenseReport } from "@/features/reports/ui";
-import { FinancialYearDetails } from "../types";
+import type { FinancialYearDetails, MemberLookup } from "../types";
 import CommitteeTab from "./tabs/CommitteeTab";
 import GeneralTab from "./tabs/GeneralTab";
 import MembersTab from "./tabs/MembersTab";
 import OpeningAccountsTab from "./tabs/OpeningAccountsTab";
 import SummaryTab from "./tabs/SummaryTab";
-
-type MemberLookup = {
-  _id: string;
-  memberCode: string;
-  name: string;
-};
 
 type Props = {
   financialYear: FinancialYearDetails;

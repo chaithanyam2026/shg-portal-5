@@ -26,7 +26,7 @@ export async function generateOpeningBalances(
     throw new Error("Source financial year not found.");
   }
 
-  validateOpeningBalanceSource(sourceFinancialYear);
+  await validateOpeningBalanceSource(sourceFinancialYearId);
 
   return buildOpeningBalances(
     sourceFinancialYear.closing,

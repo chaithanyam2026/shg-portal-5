@@ -1,27 +1,34 @@
 import type {
   FinancialYearClosing,
   FinancialYearClosingMember,
-  FinancialYearMemberOpening,
 } from "@/models/FinancialYear";
+
+import type { MemberOpeningBalance } from "../../domain";
 
 function buildMemberOpeningBalance(
   member: FinancialYearClosingMember,
-): FinancialYearMemberOpening {
+): MemberOpeningBalance {
   return {
-    memberId: member.memberId,
+    memberId: member.memberId.toString(),
 
-    contribution: member.savingsBalance,
+    memberCode: member.memberCode,
 
-    loan: member.loanOutstanding,
+    memberName: member.memberName,
 
-    specialLoan: member.specialLoanOutstanding,
+    savings: member.savingsBalance,
 
-    specialLoanExpiry: null,
+    loan: member.loanOutstanding + member.specialLoanOutstanding,
+
+    interest: 0,
+
+    fine: member.attendanceFineOutstanding + member.loanFineOutstanding,
+
+    other: 0,
   };
 }
 
 export function buildMemberOpeningBalances(
   closing: FinancialYearClosing,
-): FinancialYearMemberOpening[] {
+): MemberOpeningBalance[] {
   return closing.members.map(buildMemberOpeningBalance);
 }

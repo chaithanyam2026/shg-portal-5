@@ -6,6 +6,7 @@ import { FINANCIAL_YEAR_STATUS } from "../domain/financial-year-status";
 import { CreateFinancialYearInput, CreateFinancialYearSchema } from "../validation";
 
 import { generateOpeningBalances } from "./generate-opening-balances";
+import { populateFinancialYear } from "./internal/populate-financial-year";
 import { validateOpeningBalanceSource } from "./internal/validate-opening-balance-source";
 import { validateCreateFinancialYear } from "./validate-create";
 import { mapFinancialYearDetails } from "./internal";
@@ -28,6 +29,12 @@ export async function createFinancialYear(input: CreateFinancialYearInput) {
     openingBalances = opening.summary.opening;
 
     memberOpeningBalances = opening.summary.members;
+  } else {
+    const opening = await generateOpeningBalances(null);
+
+    openingBalances = opening.summary.opening;
+
+    memberOpeningBalances = opening.summary.members;
   }
 
   const financialYear = await FinancialYear.create({
@@ -45,6 +52,7 @@ export async function createFinancialYear(input: CreateFinancialYearInput) {
     memberOpeningBalances,
   });
 
-  //return financialYear.toObject();
-  return mapFinancialYearDetails(financialYear);
+  const populatedFinancialYear = await populateFinancialYear(financialYear);
+
+  return mapFinancialYearDetails(populatedFinancialYear);
 }

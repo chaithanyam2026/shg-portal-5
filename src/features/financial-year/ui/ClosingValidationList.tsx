@@ -55,7 +55,7 @@ export default function ClosingValidationList({ validation }: Props) {
               </ListItemIcon>
 
               <ListItemText
-                primary={<Typography fontWeight={600}>{item.title}</Typography>}
+                primary={<Typography sx={{ fontWeight: 600 }}>{item.title}</Typography>}
                 secondary={
                   <Typography variant="body2" color="text.secondary">
                     {item.message}
