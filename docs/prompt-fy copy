@@ -1,0 +1,169 @@
+Create a simple application rather than developing a framework.
+# Technology Stack (LOCKED)
+- Next.js 16 (App Router)
+- React 19
+- TypeScript Strict
+- MongoDB
+- Mongoose 8
+- Auth.js v5
+- Material UI v7
+- Zod
+- Mobile-First Responsive Design
+
+Keep these architectural principles:
+
+- Domain-Driven Design (DDD)
+- Feature-First Architecture
+
+Avoid unnecessary:
+- DTOs
+- Mappers
+- Interfaces
+- Service classes
+- Layers
+- Repository 
+
+# Implementation Strategy 
+The project follows a **simplified vertical-slice implementation strategy**.
+
+Each feature is completed end-to-end before starting the next feature.
+Implementation order for every feature:
+
+1. Domain
+2. Service
+3. API
+4. UI
+4. Testing
+
+Every batch must leave the project in a compilable state.
+
+# Service Strategy
+- create()
+- update()
+- activate()
+- close()
+- list()
+Split services only when complexity genuinely requires it.
+
+
+# UI Strategy
+
+- Mobile-first
+- Responsive
+- Material UI
+- Clean and simple UX
+- No business logic inside UI components
+
+
+
+## API
+
+- GET /api/financial-years
+- POST /api/financial-years
+- GET /api/financial-years/:id
+- PATCH /api/financial-years/:id
+- POST /api/financial-years/:id/activate
+- POST /api/financial-years/:id/close
+
+## UI
+
+- Financial Year List
+- Create Financial Year
+- Edit Financial Year
+- Financial Year Details
+- Activate Financial Year
+- Close Financial Year Wizard
+
+# Financial Year Business Rules
+
+- Only one ACTIVE Financial Year
+- Name must be unique
+- Start Date must be before End Date
+- Closed Financial Years are read-only
+- no overlay with existing end and start date while creating a new financial year
+- Closing requires reconciliation
+- Active Financial Years must not overlap according to business rules
+
+# Financial Year phases
+1. Create a financial year with start and end date and remarks
+2. Assign members to it. Members will have existing loan, initial 
+3. Select Executive committe from the memebers
+4. Update bank balance, cash in hand, excess corpus, other investments, other loans
+5. Summary will display total contribution of memebers, total loan adding each memebr's loan, bank balance, cash balance, excess corpus etc. 
+6. Summary tab will have a start financial year button
+7. States - Draft, in progress, validate, approved, closed
+8. Each feature of financial year will be separate tabs
+
+
+# Feature Development Order
+1. Financial Year
+2. Meetings
+3. Attendance
+4. Contributions
+5. Loans
+6. Accounting
+7. Dashboard
+8. Login, ACL and authorisation
+
+# Schema:
+const memberSchema = {
+    memberCode: {
+        type: String
+    },
+
+    name: {
+        type: String
+    },
+
+    phone: {
+        type: String
+    },
+
+    address: {
+        type: String
+    },
+
+    joinDate: {
+        type: Date
+    },
+
+    active: {
+        type: Boolean
+    },
+
+    remarks: {
+        type: String
+    }
+});
+
+const userSchema = createSchema({
+    username: {
+        type: String
+    },
+
+    passwordHash: {
+        type: String
+    },
+
+    role: {
+        type: String
+    },
+
+    status: {
+        type: String
+    },
+
+    memberId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Member'
+    },
+    lastLoginAt: {
+        type: Date
+    },
+});
+
+
+Next Action:
+
+Begin Financial Year implementation using the simplified architecture defined in
+this document.

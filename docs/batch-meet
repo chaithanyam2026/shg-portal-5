@@ -1,0 +1,141 @@
+Batch 2 – Attendance
+    Batch 2 Plan
+    Batch 2 Part 1 – Domain & Model
+    Batch 2 Part 2 – Services
+    Batch 2 Part 3 – API
+    Batch 2 Part 4 – UI
+    Batch 2 Part 5 – Page
+    Batch 2 Part 6 – Integration
+Batch 3 – Member Payments
+    Batch 3 Part 1 – Domain & Model
+    Batch 3 Part 2 – Services
+    Batch 3 Part 3 – API
+    Batch 3 Part 4 – UI ---
+    Batch 3 Part 5 – Page
+    Batch 3 Part 6 – Integration
+Batch 4 – Bank Transactions
+    Batch 4 Part 1 – Domain & Model
+    Batch 4 Part 2 – Services
+    Batch 4 Part 3 – API
+    Batch 4 Part 4 – UI
+    Batch 4 Part 5 – Page
+    Batch 4 Part 6 – Integration
+Batch 5 – Other Income
+    Batch 5 Part 1 – Domain & Model
+    Batch 5 Part 2 – Services
+    Batch 5 Part 3 – API
+    Batch 5 Part 4 – UI
+    Batch 5 Part 5 – Page
+    Batch 5 Part 6 – Integration
+Batch 6 – Expenses
+    Batch 6 Part 1 – Domain & Model
+    Batch 6 Part 2 – Services
+    Batch 6 Part 3 – API
+    Batch 6 Part 4 – UI
+    Batch 6 Part 5 – Page
+    Batch 6 Part 6 – Integration
+Batch 7 – Summary
+    Batch 7 Part 1 – Summary Domain & Types
+    Batch 7  Part 2 – Summary Service
+    Batch 7 Part 3 – Summary API
+    Batch 7 Part 4 – Summary UI
+    Batch 7 Part 5 – Summary Page
+    Batch 7 Part 6 – Integration
+    Batch 7  Part 7 – Close Validation
+Batch 8 – Close Meeting
+
+Progress:
+========
+Batch 1
+✓ Meeting CRUD
+✓ Start
+✓ Close
+✓ Delete
+
+Batch 2
+Attendance
+
+Batch 3
+Member Payments
+
+Batch 4
+Bank Transactions
+
+Batch 5
+Other Income
+
+Batch 6
+Expenses
+
+Batch 7
+Summary
+
+Batch 8
+Close Validation
+
+
+BELOW ARE DONE
+==============
+Development Order
+
+Following your requested vertical-slice strategy, the implementation sequence should be:
+
+Batch 1
+    Meeting model
+    Zod validation
+    Meeting domain constants
+    create()
+    list()
+    Meeting APIs
+    Meeting list page
+    Create meeting page
+    Tests
+Batch 2
+    update()
+    Edit page
+    Details page
+    Tests
+Batch 3
+    start()
+    Start API
+    Start UI
+    Tests
+Batch 4
+    close()
+    Summary page
+    Close API
+    Close UI
+    Tests
+Batch 5
+    delete()
+    Delete confirmation
+    Tests
+
+Batch 1
+    Part 1 – Meeting model, domain, validation, and types. ---
+    Part 2 – Services (create and list). ---
+    Part 3 – API routes.
+    Part 4 – UI components (MeetingForm, MeetingTable).
+    Part 5 – Pages (/meetings, /meetings/new).
+
+    Part 6
+    Meeting Details & Update
+    GET    /api/meetings/:id
+    PATCH  /api/meetings/:id
+    /meetings/[id]
+    /meetings/[id]/edit
+
+    Part 7 -----
+    Meeting Start
+    POST /api/meetings/:id/start
+
+  Batch 1  Part 8
+    Meeting Close
+    POST /api/meetings/:id/clos
+
+    Part 9
+    Meeting Delete
+    DELETE /api/meetings/:id
+    Part 10
+
+    Testing

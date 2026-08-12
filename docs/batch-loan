@@ -1,0 +1,169 @@
+Batch 1 – Fix Opening Balance Persistence
+Ensure opening.loan, opening.specialLoan, and opening.specialLoanExpiry are correctly loaded, edited, validated, and saved.
+Batch 2 – Opening Loan Migration Service
+Implement create-opening-loans.ts to create loan records from member opening balances.
+Batch 3 – Financial Year Activation Integration
+Invoke the migration service during activation, ensure it is idempotent (doesn't create duplicates if activation is retried), and use the financial year's start date and 10% interest rate for the generated loans.
+============
+Loan Ledger Refactor Batches
+Batch 1 — Interest Cycle Foundation
+    Part 1.1 — Repayment Cycle Domain
+    Part 1.2 — Interest Engine Integration
+        Part 1.2.2 — Update Interest Input ----
+        Part 1.2.3 — Update Interest Calculation
+        Part 1.2.4 — Return Interest Result
+        Part 1.2.5 — Export Type
+    Part 1.3 — Loan Ledger Integration
+Batch 2 — Monthly Fine Improvements
+    Part 2.1 — Fine Eligibility
+    Part 2.2 — Monthly Fine
+    Part 2.3 — Loan Ledger
+        Part 2.3.1 – Ledger Foundation
+        Part 2.3.2 – Interest & Fine Processing
+        Part 2.3.3 – Payment Allocation & Ledger Completion
+Batch 3 — Payment Allocation Improvements
+    Part 3.1 — Allocation Result
+    Part 3.2 — Ledger Allocation
+    Part 3.3 — Outstanding Balance
+Batch 4 — Passbook Domain
+    Part 4.1 — LoanPassbookEntry
+    Part 4.2 — Ledger Entry Builder
+    Part 4.3 — Loan Ledger Integration
+Batch 5 — Loan Ledger Refactor
+    Part 5.1 — Meeting Loader
+    Part 5.2 — Loan Ledger Simplification
+    Part 5.3 — Summary Integration
+Batch 6 — Passbook UI
+    Part 6.1 — Passbook Table
+    Part 6.2 — Formatting
+    Part 6.3 — Responsive Improvements
+Batch 7 — Summary Synchronization
+    Part 7.1 — Summary Calculation
+    Part 7.2 — Loan Details
+    Part 7.3 — Validation
+
+
+
+
+====================================================
+Batch 1 — Loan Domain Foundation
+    Part 1.1 — Loan Domain
+        Part 1.1.1 — Loan Status
+        Part 1.1.2 — Loan Type
+        Part 1.1.3 — Loan Rules
+        Part 1.1.4 — Loan Number
+        Part 1.1.5 — Domain Barrel
+    Part 1.2 — Loan Model
+        Batch 1 Part 1.2 — Loan Model
+        Part 1.2.1 — Model Skeleton
+            Part 1.2.1 — Loan Schema
+            Part 1.2.2 — Indexes & Model Export
+        Part 1.2.2 — Indexes & Export
+
+    Part 1.3 — Validation & Types
+        Part 1.3.1 — Validation
+            Part 1.3.1.2 — Update Loan Schema
+        Part 1.3.2 — Types
+
+Batch 2 — Loan Creation 
+    Part 2.1 — Create Loan Service
+        Part 2.1.1 — Service Skeleton & Validation
+        Part 2.1.2 — Eligibility & Loan Number
+        Part 2.1.3 — Response Mapping
+        
+    Part 2.2 — Active Loan Validation
+    Part 2.3 — Loan Service Barrel
+Batch 3 — Loan Read Services
+    Part 3.1 — Get Loan
+        Part 3.1.1 — Service Skeleton & Query
+        Part 3.1.2 — Response Mapping
+
+    Part 3.2 — List Loans
+        Part 3.2.1 — Service Skeleton & Query
+        Part 3.2.2 — Response Mapping
+    Part 3.3 — Loan Summary
+        Part 3.3.1 — Service Skeleton
+        Part 3.3.2 — Summary Calculation
+    Part 3.4 — Loan Service Barrel
+Batch 4 — Loan Passbook Engine
+    Part 4.1 — Passbook Domain
+        Part 4.1.1 — Payment Allocation
+        Part 4.1.1 — Payment Allocation
+        Part 4.1.3 — Loan Passbook
+        Part 4.1.4 — Domain Barrel
+    Part 4.2 — Interest Engine
+        Part 4.2.1 — Interest Calculation
+        Part 4.2.2 — Day Calculation Helper
+        Part 4.2.3 — Domain Barrel
+    Part 4.3 — Monthly Fine Engine
+    Part 4.4 — Ledger Builder
+        Part 4.4.1 — Skeleton & Repayment Loading
+        Part 4.4.2 — Interest & Fine Processing
+        Part 4.4.3 — Payment Allocation
+        Part 4.4.4 — Passbook Entry Generation
+    Part 4.5 — Passbook Service
+        Part 4.5.1 — Service Skeleton & Loan Loading
+        Part 4.5.2 — Build Passbook & Return
+
+Batch 5 — Loan APIs
+    Part 5.1 — Collection API
+        Part 5.1.1 — POST Route Skeleton
+        Part 5.1.2 — Error Handling
+
+    Part 5.2 — Detail API
+        Part 5.2.1 — GET Route Skeleton
+        Part 5.2.2 — Error Handling
+    Part 5.3 — Summary API
+        Part 5.3.1 — GET Route Skeleton
+        Part 5.3.2 — Error Handling
+    Part 5.4 — Passbook API
+        Part 5.4.1 — GET Route Skeleton
+        Part 5.4.2 — Error Handling
+Batch 6 — Loan Create UI
+    Part 6.1 — Loan Form
+        Part 6.1.1 — Component Skeleton
+        Part 6.1.2 — Member Selection
+        Part 6.1.3 — Loan Details
+        Part 6.1.4 — Validation & Submit
+    Part 6.2 — New Loan Page
+        Part 6.2.1 — Server Page
+        Part 6.2.2 — Client Page
+    Part 6.3 — Loan Create Integration
+        Part 6.3.1 — Create Loan API
+        Part 6.3.2 — Loan List Integration
+        Part 6.3.3 — Navigation & Completion
+
+Batch 7 — Loan List
+    Part 7.1 — Loan Card
+        Part 7.1.1 — Component Skeleton
+        Part 7.1.2 — Loan Information
+        Part 7.1.3 — Status & Actions
+
+    Part 7.2 — Loan List
+        Part 7.2.1 — Component Skeleton
+        Part 7.2.2 — Search & Filters
+        Part 7.2.3 — Responsive Layout
+
+    Part 7.3 — Loan Filters
+        Part 7.3.1 — Filter Types
+        Part 7.3.2 — useLoanFilters Hook
+        Part 7.3.3 — LoanList Integration
+    Part 7.4 — Loans Page
+Batch 8 — Loan Details
+    Part 8.1 — Details Page =====
+        Part 8.1.1 — Details Page
+        Part 8.1.2 — Client Details Page
+        Part 8.1.3 — Empty & Error State
+    Part 8.2 — Tabs
+        Part 8.2.1 — Component Skeleton
+        Part 8.2.2 — General Tab Integration
+        Part 8.2.3 — Summary Tab Integration
+        Part 8.2.4 — Passbook Tab Integration
+    Part 8.3 — General Tab
+    Part 8.4 — Summary Tab
+    Part 8.5 — Passbook Tab
+Batch 9 — Close Loan
+    Part 9.1 — Close Loan Service
+    Part 9.2 — Close Loan API
+    Part 9.3 — Close Loan UI
+Batch 10 — Meeting Integration

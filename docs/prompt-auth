@@ -1,0 +1,416 @@
+# SHG Portal — Authentication Implementation Master Prompt
+
+## Role
+
+You are a senior full-stack architect and developer helping build a production-ready **Self Help Group (SHG) Portal**.
+
+Continue the existing implementation without redesigning the architecture.
+
+The application must remain:
+
+* Simple
+* Maintainable
+* Feature-first
+* Production-ready
+
+---
+
+# Locked Technology Stack
+
+* Next.js 16 (App Router)
+* React 19
+* TypeScript (Strict)
+* MongoDB
+* Mongoose 8
+* Auth.js v5
+* Material UI v7
+* Zod
+* Mobile-first Responsive UI
+
+Do not change the technology stack.
+
+---
+
+# Locked Architecture
+
+Use:
+
+* Domain-Driven Design (DDD)
+* Feature-First Architecture
+* Vertical Slice Development
+
+Avoid introducing unnecessary:
+
+* Repository pattern
+* Service layers
+* DTOs
+* Mappers
+* Factory classes
+* Generic abstractions
+
+Business logic belongs inside feature services.
+
+UI should contain no business logic.
+
+---
+
+# Project Structure
+
+Current structure follows:
+
+```text
+src/
+├── app/
+├── features/
+├── lib/
+├── models/
+├── scripts/
+└── middleware.ts (to be added)
+```
+
+---
+
+# Current Project Status
+
+The following features are already implemented.
+
+## Financial Year
+
+Completed:
+
+* CRUD
+* Details Page
+* Members
+* Executive Committee
+* Opening Balances
+* Activate
+* Close Financial Year
+* Closing Snapshot
+* Opening Balance Generator
+* Create Next Financial Year Wizard
+
+Wizard includes:
+
+* Source Financial Year
+* Financial Year Details
+* Opening Balance Preview
+* Member Opening Balance Preview
+* Confirmation
+* Create
+
+Backend includes:
+
+* Opening Balance Generator
+* Validation
+* Create Service
+* Create API
+* Business Rules
+
+---
+
+## Meetings
+
+Completed.
+
+Includes:
+
+* Attendance
+* Payments
+* Expenses
+* Bank Transactions
+* Close Meeting
+* Reports
+
+---
+
+## Reports
+
+Completed.
+
+Includes:
+
+* Income & Expense
+* Ledger Builders
+* Monthly Grouping
+* Running Balances
+
+---
+
+## Loans
+
+Currently implemented:
+
+* Loan Creation
+* Loan Listing
+* Loan Summary
+* Loan Passbook
+* Eligibility Validation
+* Opening Loans
+
+Loan Collection has NOT been implemented yet.
+
+There is currently an API route referencing:
+
+```
+recordLoanCollection()
+```
+
+This service does not exist yet.
+
+Ignore Loan Collection for now.
+
+#Existing model schema 
+import{InferSchemaType,Model,Schema,Types,model,models,}from 'mongoose';import{createSchema}from '@/lib/db/schema';import{USER_ROLES,USER_ROLE_VALUES,}from '@/lib/constants/roles';import{USER_STATUS,USER_STATUS_VALUES,}from '@/lib/constants/user-status';const userSchema=createSchema({username:{type:String,required:true,unique:true,trim:true,lowercase:true,minlength:3,maxlength:50,},passwordHash:{type:String,required:true,minlength:60,maxlength:255,},role:{type:String,enum:USER_ROLE_VALUES,default:USER_ROLES.MEMBER,required:true,},status:{type:String,enum:USER_STATUS_VALUES,default:USER_STATUS.ACTIVE,required:true,},memberId:{type:Schema.Types.ObjectId,ref:'Member',default:null,},lastLoginAt:{type:Date,default:null,},});userSchema.index({username:1,},{unique:true,},);userSchema.index({memberId:1,});userSchema.index({role:1,});userSchema.index({status:1,});export type UserDocument=InferSchemaType<typeof userSchema>&{_id:Types.ObjectId;};const User:Model<UserDocument>=(models.User as Model<UserDocument>)??model<UserDocument>('User',userSchema);export default User;export{User};
+
+import{InferSchemaType,Model,Types,model,models,}from 'mongoose';import{createSchema}from '@/lib/db/schema';const memberSchema=createSchema({memberCode:{type:String,required:true,trim:true,uppercase:true,minlength:1,maxlength:20,},name:{type:String,required:true,trim:true,minlength:2,maxlength:150,},phone:{type:String,required:true,trim:true,minlength:10,maxlength:15,},address:{type:String,default:'',trim:true,maxlength:500,},joinDate:{type:Date,required:true,default:Date.now,},active:{type:Boolean,default:true,required:true,},remarks:{type:String,default:'',trim:true,maxlength:1000,},userId:{type:Types.ObjectId,ref:'User',required:true,unique:true,},});memberSchema.index({memberCode:1,},{unique:true,},);memberSchema.index({phone:1,},{unique:true,},);memberSchema.index({active:1,});memberSchema.index({name:1,});memberSchema.index({joinDate:1,});export type MemberDocument=InferSchemaType<typeof memberSchema>&{_id:Types.ObjectId;};const Member:Model<MemberDocument>=(models.Member as Model<MemberDocument>)??model<MemberDocument>('Member',memberSchema);export default Member;export{Member};
+
+import{InferSchemaType,Model,Schema,Types,model,models,}from "mongoose";import{createSchema}from "@/lib/db/schema";import{MEETING_STATUS,MEETING_STATUS_VALUES,}from "@/features/meetings/domain/meeting-status";import{ATTENDANCE_STATUS,ATTENDANCE_STATUS_VALUES,}from "@/features/meetings/domain/attendance-status";import{WEEKLY_CONTRIBUTION,}from "@/features/meetings/domain/payment";import{BANK_TRANSACTION_TYPE,BANK_TRANSACTION_TYPE_VALUES,}from "@/features/meetings/domain/bank-transaction";import{INCOME_CATEGORY,INCOME_CATEGORY_VALUES,}from "@/features/meetings/domain/income";import{EXPENSE_CATEGORY,EXPENSE_CATEGORY_VALUES,}from "@/features/meetings/domain/expense";const incomeSchema=createSchema({transactionDate:{type:Date,required:true,},category:{type:String,enum:INCOME_CATEGORY_VALUES,required:true,default:INCOME_CATEGORY.MISCELLANEOUS,},amount:{type:Number,required:true,min:0,},remarks:{type:String,default:"",trim:true,maxlength:500,},},{_id:false,},);const expenseSchema=createSchema({transactionDate:{type:Date,required:true,},category:{type:String,enum:EXPENSE_CATEGORY_VALUES,required:true,default:EXPENSE_CATEGORY.MISCELLANEOUS,},amount:{type:Number,required:true,min:0,},remarks:{type:String,default:"",trim:true,maxlength:500,},},{_id:false,},);const meetingSchema=createSchema({financialYearId:{type:Schema.Types.ObjectId,ref:"FinancialYear",required:true,index:true,},meetingDate:{type:Date,required:true,index:true,},place:{type:String,required:true,trim:true,maxlength:150,},agenda:{type:String,default:"",trim:true,maxlength:1000,},remarks:{type:String,default:"",trim:true,maxlength:2000,},attendance:[{memberId:{type:Schema.Types.ObjectId,ref:"Member",required:true,},status:{type:String,enum:ATTENDANCE_STATUS_VALUES,default:ATTENDANCE_STATUS.PRESENT,required:true,},remarks:{type:String,default:"",trim:true,maxlength:500,},},],payments:{type:[{memberId:{type:Schema.Types.ObjectId,ref:"Member",required:true,},contribution:{type:Number,default:0,min:0,required:true,},loanRepayment:{type:Number,default:0,min:0,required:true,},absentFine:{type:Number,default:0,min:0,required:true,},specialLoanFine:{type:Number,default:0,min:0,required:true,},remarks:{type:String,default:"",trim:true,maxlength:500,},},],default:[],},bankTransactions:{type:[{transactionDate:{type:Date,required:true,},type:{type:String,enum:BANK_TRANSACTION_TYPE_VALUES,required:true,default:BANK_TRANSACTION_TYPE.DEPOSIT,},amount:{type:Number,required:true,min:0,},remarks:{type:String,default:"",trim:true,maxlength:500,},},],default:[],},otherIncomes:{type:[incomeSchema],default:[],},expenses:{type:[expenseSchema],default:[],},status:{type:String,enum:MEETING_STATUS_VALUES,default:MEETING_STATUS.DRAFT,required:true,index:true,},startedAt:{type:Date,default:null,},approvedAt:{type:Date,default:null,},closedAt:{type:Date,default:null,},createdBy:{type:Types.ObjectId,ref:"User",default:null,},updatedBy:{type:Types.ObjectId,ref:"User",default:null,},});meetingSchema.index({financialYearId:1,meetingDate:1,},{unique:true,});meetingSchema.index({status:1,meetingDate:-1,});meetingSchema.index({"attendance.memberId":1,});meetingSchema.index({"payments.memberId":1,});meetingSchema.index({"bankTransactions.transactionDate":1,});meetingSchema.index({"otherIncomes.transactionDate":1,});meetingSchema.index({"expenses.transactionDate":1,});export type MeetingDocument=InferSchemaType<typeof meetingSchema>&{_id:Types.ObjectId;};const Meeting:Model<MeetingDocument>=(models.Meeting as Model<MeetingDocument>)??model<MeetingDocument>("Meeting",meetingSchema);export default Meeting;export{Meeting};
+
+import{model,models,Schema,type InferSchemaType,}from "mongoose";const LoanSchema=new Schema({financialYearId:{type:Schema.Types.ObjectId,ref:"FinancialYear",required:true,index:true,},memberId:{type:Schema.Types.ObjectId,ref:"Member",required:true,index:true,},loanNumber:{type:String,required:true,unique:true,trim:true,},sequenceNumber:{type:Number,required:true,},loanType:{type:String,required:true,},status:{type:String,required:true,default:"ACTIVE",},sanctionedAmount:{type:Number,required:true,},disbursedAmount:{type:Number,required:true,},interestRate:{type:Number,required:true,},expectedMonthlyRepayment:{type:Number,required:true,},disbursedDate:{type:Date,required:true,},expiryDate:{type:Date,default:null,},remarks:{type:String,default:"",},},{timestamps:true,},);LoanSchema.index({financialYearId:1,sequenceNumber:1,});LoanSchema.index({memberId:1,status:1,});export type LoanDocument=InferSchemaType<typeof LoanSchema>;const Loan=models.Loan??model("Loan",LoanSchema);export default Loan;
+
+import{InferSchemaType,Model,Schema,Types,model,models,}from "mongoose";import{OpeningBalanceSchema,MemberOpeningBalanceSchema,}from "@/features/financial-year/domain";import{schemaOptions}from "@/lib/db/schema-options";const FinancialYearClosingSchema=new Schema({financialYearId:{type:Schema.Types.ObjectId,ref:"FinancialYear",required:true,unique:true,index:true,},meetingId:{type:Schema.Types.ObjectId,ref:"Meeting",required:true,},closedAt:{type:Date,required:true,},openingBalances:{type:OpeningBalanceSchema,required:true,},memberOpeningBalances:{type:[MemberOpeningBalanceSchema,],required:true,default:[],},},schemaOptions,);export type FinancialYearClosingDocument=InferSchemaType<typeof FinancialYearClosingSchema>&{_id:Types.ObjectId;};const FinancialYearClosing:Model<FinancialYearClosingDocument>=models.FinancialYearClosing??model<FinancialYearClosingDocument>("FinancialYearClosing",FinancialYearClosingSchema,);export default FinancialYearClosing;
+
+import{model,models,Schema,type InferSchemaType,}from "mongoose";const LoanSchema=new Schema({financialYearId:{type:Schema.Types.ObjectId,ref:"FinancialYear",required:true,index:true,},memberId:{type:Schema.Types.ObjectId,ref:"Member",required:true,index:true,},loanNumber:{type:String,required:true,unique:true,trim:true,},sequenceNumber:{type:Number,required:true,},loanType:{type:String,required:true,},status:{type:String,required:true,default:"ACTIVE",},sanctionedAmount:{type:Number,required:true,},disbursedAmount:{type:Number,required:true,},interestRate:{type:Number,required:true,},expectedMonthlyRepayment:{type:Number,required:true,},disbursedDate:{type:Date,required:true,},expiryDate:{type:Date,default:null,},remarks:{type:String,default:"",},},{timestamps:true,},);LoanSchema.index({financialYearId:1,sequenceNumber:1,});LoanSchema.index({memberId:1,status:1,});export type LoanDocument=InferSchemaType<typeof LoanSchema>;const Loan=models.Loan??model("Loan",LoanSchema);export default Loan;
+
+
+---
+
+# Current Build Issue
+
+The project currently fails because API routes reference:
+
+```ts
+import { auth } from "@/auth";
+```
+
+but Auth.js has never been implemented.
+
+There is no:
+
+```
+src/auth.ts
+src/auth.config.ts
+```
+
+Therefore the next feature to implement is Authentication.
+
+---
+
+# Authentication Requirements
+
+Implement Auth.js v5 completely.
+
+Use:
+
+## Authentication Method
+
+Credentials Provider
+
+NOT:
+
+* Google
+* GitHub
+* OAuth
+
+Only Credentials authentication.
+
+---
+
+# User Model
+
+Create a dedicated authentication User model.
+
+Do NOT use the Member model.
+
+A User may optionally reference a Member later.
+
+Separate authentication from business data.
+
+---
+
+# Authentication Design
+
+Users login using:
+
+* username (or email)
+* password
+
+Passwords must be securely hashed.
+
+Use sessions provided by Auth.js.
+
+---
+
+# Roles
+
+Support roles.
+
+Minimum roles:
+
+```text
+ADMIN
+
+SECRETARY
+
+TREASURER
+```
+
+Design so additional roles can be added later.
+
+---
+
+# Authentication Feature Order
+
+Implement Authentication as a separate feature.
+
+## Batch A — Auth Foundation
+
+Create:
+
+```
+src/auth.ts
+
+src/auth.config.ts
+
+src/app/api/auth/[...nextauth]/route.ts
+```
+
+Configure:
+
+* Auth.js v5
+* Credentials Provider
+* JWT Session
+* Session callback
+* Authorized callback
+
+No UI yet.
+
+---
+
+## Batch B — User Model
+
+Create:
+
+```
+src/models/User.ts
+```
+
+Fields:
+
+* username
+* passwordHash
+* role
+* active
+* memberId (optional)
+* createdAt
+* updatedAt
+
+Create password hashing utilities.
+
+---
+
+## Batch C — Login
+
+Create:
+
+```
+/login
+```
+
+Material UI login page.
+
+Credentials login.
+
+Logout.
+
+Redirect after login.
+
+---
+
+## Batch D — Route Protection
+
+Create:
+
+```
+middleware.ts
+```
+
+Protect:
+
+```
+/dashboard
+
+/api/*
+```
+
+except Auth routes.
+
+Use:
+
+```
+auth()
+```
+
+for API authorization.
+
+---
+
+## Batch E — Authorization
+
+Implement role-based authorization.
+
+Allow:
+
+* ADMIN
+* SECRETARY
+* TREASURER
+
+Provide reusable helpers.
+
+---
+
+## Batch F — User Management
+
+Admin pages for:
+
+* Users
+* Change Password
+* Reset Password
+* Activate
+* Deactivate
+
+---
+
+# Coding Standards
+
+Always:
+
+* Strict TypeScript
+* Mobile-first
+* Material UI
+* Zod validation
+* Keep services small
+* Keep UI dumb
+* No duplicated business logic
+
+---
+
+# Important Constraints
+
+Do NOT redesign existing Financial Year, Meeting, Loan, or Report features.
+
+Authentication should integrate cleanly with the existing project.
+
+Do NOT generate placeholder code.
+
+Every batch must:
+
+* Compile successfully
+* Leave the application in a working state
+* Be production-ready
+
+Generate complete file contents with exact file paths for every new or updated file.
+
+Start with:
+
+**Batch A — Auth Foundation**

@@ -1,0 +1,49 @@
+Batch 1 Domain
+Batch 2 Types
+Batch 3 Report Service
+Batch 4 Ledger Builders
+    Batch 4 Builder 1 build-payment-entries.ts
+    Batch 4 Builder 2 build-income-entries.ts
+    Batch 4 Builder 3 build-expense-entries.ts
+    Batch 4 Builder 4 build-bank-entries.ts
+    Batch 4 Builder 5 sort-ledger-entries.ts
+    Batch 4 Builder 6 calculate-running-balances.ts
+    Batch 4 Builder 7 group-monthly-ledger.ts
+
+Batch 5 Validation
+Batch 6 API
+Batch 7 UI Components === Need to start sub steps
+    Batch 7 1. IncomeExpenseReport.tsx
+    Batch 7 2. IncomeExpenseSummary.tsx
+    Batch 7 3. MonthlyLedgerSection.tsx
+    Batch 7 4. LedgerTable.tsx
+    Batch 7 5. LedgerRow.tsx
+Batch 8 Table
+Batch 9 Monthly Grouping
+Batch 10 Summary Cards
+Batch 11 Financial Year Integration
+Batch 12 Polish
+
+
+
+
+Expected Folder Structure
+features/
+└── reports/
+    ├── domain/
+    │   ├── ledger-entry.ts
+    │   └── transaction-type.ts
+    │
+    ├── services/
+    │   ├── build-income-expense-report.ts
+    │   └── helpers.ts
+    │
+    ├── ui/
+    │   ├── IncomeExpenseReportTable.tsx
+    │   ├── MonthlySection.tsx
+    │   ├── LedgerRow.tsx
+    │   └── ReportSummaryCard.tsx
+    │
+    ├── validation.ts
+    ├── types.ts
+    └── index.ts

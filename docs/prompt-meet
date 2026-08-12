@@ -1,0 +1,121 @@
+Create a simple application rather than developing a framework.
+# Technology Stack (LOCKED)
+- Next.js 16 (App Router)
+- React 19
+- TypeScript Strict
+- MongoDB
+- Mongoose 8
+- Auth.js v5
+- Material UI v7
+- Zod
+- Mobile-First Responsive Design
+
+Keep these architectural principles:
+
+- Domain-Driven Design (DDD)
+- Feature-First Architecture
+
+Avoid unnecessary:
+- DTOs
+- Mappers
+- Interfaces
+- Service classes
+- Layers
+- Repository 
+
+# Implementation Strategy 
+The project follows a **simplified vertical-slice implementation strategy**.
+
+Each feature is completed end-to-end before starting the next feature.
+Implementation order for every feature:
+
+1. Domain
+2. Service
+3. API
+4. UI
+4. Testing
+
+Every batch must leave the project in a compilable state.
+
+# Service Strategy
+- create()
+- start()
+- close()
+- update()
+- list()
+- delete()
+Split services only when complexity genuinely requires it.
+
+
+# UI Strategy
+
+- Mobile-first
+- Responsive
+- Material UI
+- Clean and simple UX
+- No business logic inside UI components
+
+
+
+## API
+
+- GET /api/meeting
+- POST /api/meeting
+- GET /api/meeting/:id
+- PATCH /api/meeting/:id
+- POST /api/meeting/:id/start
+- POST /api/meeting/:id/close
+- DELETE /api/meeting/:id/delete
+
+## UI
+
+- Meeting list with filter, sort, pagination
+- Create meeting
+- Edit meeting
+- Meeting Details
+- Meeting start
+- meeting close
+- Meeting delete
+
+# Financial Year Business Rules
+
+- Only one ACTIVE Financial Year
+- Name must be unique
+- Start Date must be before End Date
+- Closed Financial Years are read-only
+- no overlay with existing end and start date while creating a new financial year
+- Closing requires reconciliation
+- Active Financial Years must not overlap according to business rules
+
+# Financial Year phases
+1. Create a meeting with date, place, agenda and remarks
+2. Record payment transactions of each members - Contribution payment, loan repayment, Fine payment, special loan payment
+3. 200 will be collected as contribution each week, if some member has due, notify it
+4. Bank transactions tab- the bank investment and bank withdrawel will be recorded in meeting with transaction date
+5. Income / expense will be recordered in this tab
+6. SUmmary will display the bank balance, cash balance, meeting transaction summary 
+7. Close meeting, and current time will be saved as close time
+8. States - Draft, in progress, approved, closed
+
+
+# Feature Development Order
+1. Meetings
+2. Attendance
+3. Bank transactions
+4. Contributions payment
+5. Loans repayment
+6. Loan disbursal
+
+# Schema:
+import{InferSchemaType,Model,Schema,Types,model,models,}from 'mongoose';import{createSchema}from '@/lib/db/schema';import{USER_ROLES,USER_ROLE_VALUES,}from '@/lib/constants/roles';import{USER_STATUS,USER_STATUS_VALUES,}from '@/lib/constants/user-status';const userSchema=createSchema({username:{type:String,required:true,unique:true,trim:true,lowercase:true,minlength:3,maxlength:50,},passwordHash:{type:String,required:true,minlength:60,maxlength:255,},role:{type:String,enum:USER_ROLE_VALUES,default:USER_ROLES.MEMBER,required:true,},status:{type:String,enum:USER_STATUS_VALUES,default:USER_STATUS.ACTIVE,required:true,},memberId:{type:Schema.Types.ObjectId,ref:'Member',default:null,},lastLoginAt:{type:Date,default:null,},});userSchema.index({username:1,},{unique:true,},);userSchema.index({memberId:1,});userSchema.index({role:1,});userSchema.index({status:1,});export type UserDocument=InferSchemaType<typeof userSchema>&{_id:Types.ObjectId;};const User:Model<UserDocument>=(models.User as Model<UserDocument>)??model<UserDocument>('User',userSchema);export default User;export{User};
+
+
+import{InferSchemaType,Model,Types,model,models,}from 'mongoose';import{createSchema}from '@/lib/db/schema';const memberSchema=createSchema({memberCode:{type:String,required:true,trim:true,uppercase:true,minlength:1,maxlength:20,},name:{type:String,required:true,trim:true,minlength:2,maxlength:150,},phone:{type:String,required:true,trim:true,minlength:10,maxlength:15,},address:{type:String,default:'',trim:true,maxlength:500,},joinDate:{type:Date,required:true,default:Date.now,},active:{type:Boolean,default:true,required:true,},remarks:{type:String,default:'',trim:true,maxlength:1000,},userId:{type:Types.ObjectId,ref:'User',required:true,unique:true,},});memberSchema.index({memberCode:1,},{unique:true,},);memberSchema.index({phone:1,},{unique:true,},);memberSchema.index({active:1,});memberSchema.index({name:1,});memberSchema.index({joinDate:1,});export type MemberDocument=InferSchemaType<typeof memberSchema>&{_id:Types.ObjectId;};const Member:Model<MemberDocument>=(models.Member as Model<MemberDocument>)??model<MemberDocument>('Member',memberSchema);export default Member;export{Member};
+
+import{InferSchemaType,Model,Schema,Types,model,models,}from "mongoose";import{createSchema}from "@/lib/db/schema";const financialYearSchema=createSchema({name:{type:String,required:true,unique:true,trim:true,maxlength:100,},startDate:{type:Date,required:true,},endDate:{type:Date,required:true,},remarks:{type:String,default:"",trim:true,maxlength:1000,},status:{type:String,enum:["DRAFT","IN_PROGRESS","VALIDATED","APPROVED","CLOSED",],default:"DRAFT",index:true,},members:[{memberId:{type:Schema.Types.ObjectId,ref:"Member",required:true,},opening:{contribution:{type:Number,default:0,min:0,},loan:{type:Number,default:0,min:0,},specialLoan:{type:Number,default:0,min:0,},specialLoanExpiry:{type:Date,default:null,},},},],executiveCommittee:{president:{type:Schema.Types.ObjectId,ref:"Member",default:null,},vicePresident:{type:Schema.Types.ObjectId,ref:"Member",default:null,},secretary:{type:Schema.Types.ObjectId,ref:"Member",default:null,},jointSecretary:{type:Schema.Types.ObjectId,ref:"Member",default:null,},treasurer:{type:Schema.Types.ObjectId,ref:"Member",default:null,},},openingBalances:{bankBalance:{type:Number,default:0,min:0,},cashInHand:{type:Number,default:0,min:0,},excessCorpus:{type:Number,default:0,min:0,},investments:{type:Number,default:0,min:0,},otherLoans:{type:Number,default:0,min:0,},},});financialYearSchema.index({name:1},{unique:true},);financialYearSchema.index({startDate:1,endDate:1,});financialYearSchema.index({status:1,});financialYearSchema.index({status:1},{unique:true,partialFilterExpression:{status:"IN_PROGRESS",},},);export type FinancialYearDocument=InferSchemaType<typeof financialYearSchema>&{_id:Types.ObjectId;};export type FinancialYearStatus=|"DRAFT"|"IN_PROGRESS"|"VALIDATED"|"APPROVED"|"CLOSED";const FinancialYear:Model<FinancialYearDocument>=(models.FinancialYear as Model<FinancialYearDocument>)??model<FinancialYearDocument>("FinancialYear",financialYearSchema,);export default FinancialYear;export{FinancialYear};
+
+
+Next Action:
+
+Begin meeting implementation using the simplified architecture defined in
+this document.

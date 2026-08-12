@@ -1,0 +1,25 @@
+- loan fine reminder in meetings
+- COntribution due in meetings
+- Contribution listing
+- Attendance register
+- bsent fine and track paid v.s pending
+
+
+
+FY:
+Memeber form - 
+    success message  ✅
+    advance to next step
+Committee form
+    success message  
+    advance to next step
+Account form
+    success message  
+    advance to next step
+Summary
+Income Expense
+
+
+Meeting:
+========
+close should redirect to listi page

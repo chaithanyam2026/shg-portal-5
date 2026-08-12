@@ -1,58 +1,41 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { create } from "@/features/financial-year/services/create";
-import { list } from "@/features/financial-year/services/list";
-import connectMongo from "@/lib/db/mongodb";
-import { AppError } from "@/lib/errors";
+import { createFinancialYear, listFinancialYears } from "@/features/financial-year/services";
 
 export async function GET() {
   try {
-    await connectMongo();
-
-    const financialYears = await list();
+    const financialYears = await listFinancialYears();
 
     return NextResponse.json(financialYears);
   } catch (error) {
-    console.error(error);
-
-    if (error instanceof AppError) {
-      return NextResponse.json(
-        { message: error.message },
-        { status: error.status },
-      );
-    }
-
     return NextResponse.json(
-      { message: "Internal Server Error" },
-      { status: 500 },
+      {
+        message: error instanceof Error ? error.message : "Unable to load financial years.",
+      },
+      {
+        status: 500,
+      },
     );
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    await connectMongo();
-
     const body = await request.json();
 
-    const financialYear = await create(body);
+    const financialYear = await createFinancialYear(body);
 
     return NextResponse.json(financialYear, {
       status: 201,
     });
   } catch (error) {
-    console.error(error);
-
-    if (error instanceof AppError) {
-      return NextResponse.json(
-        { message: error.message },
-        { status: error.status },
-      );
-    }
-
     return NextResponse.json(
-      { message: "Internal Server Error" },
-      { status: 500 },
+      {
+        message: error instanceof Error ? error.message : "Unable to create financial year.",
+      },
+      {
+        status: 400,
+      },
     );
   }
 }

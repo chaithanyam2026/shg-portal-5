@@ -1,100 +1,62 @@
+import connectMongo from "@/lib/db/mongodb";
 import FinancialYear from "@/models/FinancialYear";
 
-import {
-  CreateFinancialYearInput,
-  validateCreateFinancialYear,
-} from "../validation";
-import { AppError } from "@/lib/errors";
+import { FINANCIAL_YEAR_STATUS } from "../domain/financial-year-status";
 
-/**
- * Create a Financial Year
- *
- * Business Rules
- * - Name must be unique
- * - Start date must be before end date (validated by Zod)
- * - Financial years must not overlap
- */
-export async function create(
-  input: unknown,
-) {
-  const data: CreateFinancialYearInput =
-    validateCreateFinancialYear(input);
+import { CreateFinancialYearInput, CreateFinancialYearSchema } from "../validation";
 
-  /**
-   * Unique name
-   */
-  const existingName = await FinancialYear.exists({
+import { generateOpeningBalances } from "./generate-opening-balances";
+import { populateFinancialYear } from "./internal/populate-financial-year";
+import { validateOpeningBalanceSource } from "./internal/validate-opening-balance-source";
+import { validateCreateFinancialYear } from "./validate-create";
+import { mapFinancialYearDetails, mapMemberOpeningBalancesForPersistence } from "./internal";
+
+export async function createFinancialYear(input: CreateFinancialYearInput) {
+  await connectMongo();
+
+  const data = CreateFinancialYearSchema.parse(input);
+
+  await validateCreateFinancialYear(data);
+
+  let openingBalances = undefined;
+  let memberOpeningBalances = undefined;
+
+  if (data.sourceFinancialYearId) {
+    await validateOpeningBalanceSource(data.sourceFinancialYearId);
+
+    const opening = await generateOpeningBalances(data.sourceFinancialYearId);
+
+    openingBalances = opening.summary.opening;
+
+    memberOpeningBalances = mapMemberOpeningBalancesForPersistence(
+      opening.summary.members,
+    );
+  } else {
+    const opening = await generateOpeningBalances(null);
+
+    openingBalances = opening.summary.opening;
+
+    memberOpeningBalances = mapMemberOpeningBalancesForPersistence(
+      opening.summary.members,
+    );
+  }
+
+  const financialYear = await FinancialYear.create({
     name: data.name,
+    startDate: data.startDate,
+    endDate: data.endDate,
+    remarks: data.remarks ?? "",
+
+    status: FINANCIAL_YEAR_STATUS.DRAFT,
+
+    sourceFinancialYearId: data.sourceFinancialYearId ?? null,
+
+    openingBalances,
+
+    memberOpeningBalances,
   });
 
-  if (existingName) {
-    throw new AppError(
-      "Financial year name already exists.",
-      409,
-    );
-  }
+  const populatedFinancialYear = await populateFinancialYear(financialYear);
 
-  /**
-   * Date overlap
-   *
-   * Existing:
-   * |-------------|
-   *
-   * New:
-   *       |-------------|
-   *
-   * Overlap condition:
-   * existing.start <= new.end
-   * AND
-   * existing.end >= new.start
-   */
-  const overlappingFinancialYear =
-    await FinancialYear.exists({
-      startDate: {
-        $lte: data.endDate,
-      },
-      endDate: {
-        $gte: data.startDate,
-      },
-    });
-
-  if (overlappingFinancialYear) {
-    throw new AppError(
-      "Financial year overlaps an existing financial year.",
-      400,
-    );
-  }
-
-  /**
-   * Create
-   */
-  const financialYear =
-    await FinancialYear.create({
-      name: data.name,
-      startDate: data.startDate,
-      endDate: data.endDate,
-      remarks: data.remarks,
-
-      status: "DRAFT",
-
-      members: [],
-
-      executiveCommittee: {
-        president: null,
-        vicePresident: null,
-        secretary: null,
-        jointSecretary: null,
-        treasurer: null,
-      },
-
-      openingBalances: {
-        bankBalance: 0,
-        cashInHand: 0,
-        excessCorpus: 0,
-        investments: 0,
-        otherLoans: 0,
-      },
-    });
-
-  return financialYear.toObject();
+  return mapFinancialYearDetails(populatedFinancialYear);
 }

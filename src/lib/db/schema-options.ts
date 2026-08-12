@@ -1,6 +1,6 @@
-import { SchemaOptions } from 'mongoose';
+import { SchemaOptions } from "mongoose";
 
-import { DATABASE } from '@/lib/constants/database';
+import { DATABASE } from "@/lib/constants/database";
 
 /**
  * Shared schema options.

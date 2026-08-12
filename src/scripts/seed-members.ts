@@ -2,10 +2,10 @@ import path from "node:path";
 
 import dotenv from "dotenv";
 
-import fs from 'node:fs/promises';
-import { hashPassword } from '@/lib/auth/password';
+import { hashPassword } from "@/lib/auth/password";
+import fs from "node:fs/promises";
 
-import { USER_ROLES } from '@/lib/constants/roles';
+import { USER_ROLES } from "@/lib/constants/roles";
 
 // -----------------------------------------------------------------------------
 // Load .env.local BEFORE importing anything that reads process.env
@@ -42,24 +42,13 @@ type MemberSeed = {
 // Seed Data
 // -----------------------------------------------------------------------------
 
-
 async function loadMembers(): Promise<MemberSeed[]> {
-  const file = path.join(
-    process.cwd(),
-    'src',
-    'scripts',
-    'data',
-    'members.json',
-  );
+  const file = path.join(process.cwd(), "src", "scripts", "data", "members.json");
 
-  const json = await fs.readFile(file, 'utf8');
+  const json = await fs.readFile(file, "utf8");
 
   return JSON.parse(json) as MemberSeed[];
 }
-
-
-
-
 
 // -----------------------------------------------------------------------------
 // Seed
@@ -72,12 +61,7 @@ async function seedMembers() {
 
   const members = await loadMembers();
 
-  console.log(
-    "MongoDB URI:",
-    process.env.MONGODB_URI
-      ? "Loaded"
-      : "NOT FOUND",
-  );
+  console.log("MongoDB URI:", process.env.MONGODB_URI ? "Loaded" : "NOT FOUND");
 
   await connectMongo();
 
@@ -87,17 +71,14 @@ async function seedMembers() {
   let skipped = 0;
 
   for (const member of members) {
-    const existing =
-      await MemberModel.findOne({
-        memberCode: member.memberCode,
-      });
+    const existing = await MemberModel.findOne({
+      memberCode: member.memberCode,
+    });
 
     if (existing) {
       skipped++;
 
-      console.log(
-        `Skipped ${member.memberCode}`,
-      );
+      console.log(`Skipped ${member.memberCode}`);
 
       continue;
     }
@@ -106,27 +87,23 @@ async function seedMembers() {
     const user = await UserModel.create({
       username: member.username.toLowerCase(),
       passwordHash,
-      role: member.role
-        ? member.role.toUpperCase()
-        : USER_ROLES.MEMBER,
+      role: member.role ? member.role.toUpperCase() : USER_ROLES.MEMBER,
     });
 
     await MemberModel.create({
       memberCode: member.memberCode.toUpperCase(),
       name: member.name,
       phone: member.phone,
-      address: member.address ?? '',
+      address: member.address ?? "",
       joinDate: member.joinDate ? new Date(member.joinDate) : new Date(),
-      remarks: member.remarks ?? '',
+      remarks: member.remarks ?? "",
       active: true,
       userId: user._id,
     });
 
     created++;
 
-    console.log(
-      `Created ${member.memberCode}`,
-    );
+    console.log(`Created ${member.memberCode}`);
   }
 
   console.log("");
@@ -151,4 +128,4 @@ seedMembers().catch((error) => {
   console.error(error);
 
   process.exit(1);
-}); 
+});

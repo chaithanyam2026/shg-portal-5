@@ -5,20 +5,15 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Alert,
-  Box,
-  Button,
-  CircularProgress,
-  Stack,
-  TextField,
-} from "@mui/material";
-import { Controller, useForm } from "react-hook-form";
+import { Alert, Box, Button, CircularProgress, Stack, TextField } from "@mui/material";
+import { Controller, useForm, type Resolver } from "react-hook-form";
 
-import {
-  CreateFinancialYearInput,
-  CreateFinancialYearSchema,
-} from "../validation";
+import { CreateFinancialYearInput, CreateFinancialYearSchema } from "../validation";
+
+type CreateFinancialYearFormValues = Omit<CreateFinancialYearInput, "startDate" | "endDate"> & {
+  startDate: string;
+  endDate: string;
+};
 
 export default function FinancialYearForm() {
   const router = useRouter();
@@ -30,12 +25,16 @@ export default function FinancialYearForm() {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<CreateFinancialYearInput>({
-    resolver: zodResolver(CreateFinancialYearSchema),
+  } = useForm<CreateFinancialYearFormValues, unknown, CreateFinancialYearInput>({
+    resolver: zodResolver(CreateFinancialYearSchema) as unknown as Resolver<
+      CreateFinancialYearFormValues,
+      unknown,
+      CreateFinancialYearInput
+    >,
     defaultValues: {
       name: "",
-      startDate: undefined,
-      endDate: undefined,
+      startDate: "",
+      endDate: "",
       remarks: "",
     },
   });
@@ -73,17 +72,9 @@ export default function FinancialYearForm() {
   }
 
   return (
-    <Box
-      component="form"
-      onSubmit={handleSubmit(onSubmit)}
-      noValidate
-    >
+    <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
       <Stack spacing={3}>
-        {serverError && (
-          <Alert severity="error">
-            {serverError}
-          </Alert>
-        )}
+        {serverError && <Alert severity="error">{serverError}</Alert>}
 
         <Controller
           name="name"
@@ -109,18 +100,12 @@ export default function FinancialYearForm() {
               type="date"
               fullWidth
               required
-              value={
-                field.value
-                  ? new Date(field.value)
-                      .toISOString()
-                      .split("T")[0]
-                  : ""
-              }
-              onChange={(event) =>
-                field.onChange(event.target.value)
-              }
-              InputLabelProps={{
-                shrink: true,
+              value={field.value}
+              onChange={(event) => field.onChange(event.target.value)}
+              slotProps={{
+                inputLabel: {
+                  shrink: true,
+                },
               }}
               error={!!errors.startDate}
               helperText={errors.startDate?.message}
@@ -137,18 +122,12 @@ export default function FinancialYearForm() {
               type="date"
               fullWidth
               required
-              value={
-                field.value
-                  ? new Date(field.value)
-                      .toISOString()
-                      .split("T")[0]
-                  : ""
-              }
-              onChange={(event) =>
-                field.onChange(event.target.value)
-              }
-              InputLabelProps={{
-                shrink: true,
+              value={field.value}
+              onChange={(event) => field.onChange(event.target.value)}
+              slotProps={{
+                inputLabel: {
+                  shrink: true,
+                },
               }}
               error={!!errors.endDate}
               helperText={errors.endDate?.message}
@@ -172,16 +151,8 @@ export default function FinancialYearForm() {
           )}
         />
 
-        <Stack
-          direction="row"
-          spacing={2}
-          justifyContent="flex-end"
-        >
-          <Button
-            variant="outlined"
-            onClick={() => router.back()}
-            disabled={isSubmitting}
-          >
+        <Stack direction="row" spacing={2} sx={{ justifyContent: "flex-end" }}>
+          <Button variant="outlined" onClick={() => router.back()} disabled={isSubmitting}>
             Cancel
           </Button>
 
@@ -189,18 +160,9 @@ export default function FinancialYearForm() {
             type="submit"
             variant="contained"
             disabled={isSubmitting}
-            startIcon={
-              isSubmitting ? (
-                <CircularProgress
-                  size={18}
-                  color="inherit"
-                />
-              ) : undefined
-            }
+            startIcon={isSubmitting ? <CircularProgress size={18} color="inherit" /> : undefined}
           >
-            {isSubmitting
-              ? "Creating..."
-              : "Create Financial Year"}
+            {isSubmitting ? "Creating..." : "Create Financial Year"}
           </Button>
         </Stack>
       </Stack>

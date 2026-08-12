@@ -1,12 +1,14 @@
 import {
-    InferSchemaType,
-    Model,
-    Types,
-    model,
-    models,
-} from 'mongoose';
+  HydratedDocument,
+  Model,
+  Schema,
+  Types,
+  model,
+  models,
+} from "mongoose";
 
-import { createSchema } from '@/lib/db/schema';
+import { createSchema } from "@/lib/db/schema";
+import { createSchemaOptions } from "@/lib/db/schema-options";
 
 /**
  * SHG Member
@@ -15,108 +17,123 @@ import { createSchema } from '@/lib/db/schema';
  *
  * Authentication information is stored in the User collection.
  */
-const memberSchema = createSchema({
-    memberCode: {
-        type: String,
-        required: true,
-        unique: true,
-        trim: true,
-        uppercase: true,
-        minlength: 1,
-        maxlength: 20,
-    },
 
-    name: {
-        type: String,
-        required: true,
-        trim: true,
-        minlength: 2,
-        maxlength: 150,
-    },
+export interface MemberDocument {
+  _id: Types.ObjectId;
 
-    phone: {
-        type: String,
-        required: true,
-        trim: true,
-        minlength: 10,
-        maxlength: 15,
-    },
+  memberCode: string;
+  name: string;
+  phone: string;
+  address: string;
 
-    address: {
-        type: String,
-        default: '',
-        trim: true,
-        maxlength: 500,
-    },
+  joinDate: Date;
 
-    joinDate: {
-        type: Date,
-        required: true,
-        default: Date.now,
-    },
+  active: boolean;
 
-    active: {
-        type: Boolean,
-        default: true,
-        required: true,
-    },
+  remarks: string;
 
-    remarks: {
-        type: String,
-        default: '',
-        trim: true,
-        maxlength: 1000,
-    },
+  userId: Types.ObjectId;
 
-    userId: {
-        type: Types.ObjectId,
-        ref: 'User',
-        required: true,
-        unique: true,
-    },
-});
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export type MemberHydratedDocument =
+  HydratedDocument<MemberDocument>;
+
+const memberSchema = new Schema<MemberDocument>({
+  memberCode: {
+    type: String,
+    required: true,
+    trim: true,
+    uppercase: true,
+    minlength: 1,
+    maxlength: 20,
+  },
+
+  name: {
+    type: String,
+    required: true,
+    trim: true,
+    minlength: 2,
+    maxlength: 150,
+  },
+
+  phone: {
+    type: String,
+    required: true,
+    trim: true,
+    minlength: 10,
+    maxlength: 15,
+  },
+
+  address: {
+    type: String,
+    default: "",
+    trim: true,
+    maxlength: 500,
+  },
+
+  joinDate: {
+    type: Date,
+    required: true,
+    default: Date.now,
+  },
+
+  active: {
+    type: Boolean,
+    default: true,
+    required: true,
+  },
+
+  remarks: {
+    type: String,
+    default: "",
+    trim: true,
+    maxlength: 1000,
+  },
+
+  userId: {
+    type: Types.ObjectId,
+    ref: "User",
+    required: true,
+    unique: true,
+  },
+}, createSchemaOptions(),);
 
 /**
  * Indexes
  */
+
 memberSchema.index(
-    {
-        memberCode: 1,
-    },
-    {
-        unique: true,
-    },
+  {
+    memberCode: 1,
+  },
+  {
+    unique: true,
+  },
 );
 
 memberSchema.index(
-    {
-        phone: 1,
-    },
-    {
-        unique: true,
-    },
+  {
+    phone: 1,
+  },
+  {
+    unique: true,
+  },
 );
 
 memberSchema.index({
-    active: 1,
+  active: 1,
 });
 
 memberSchema.index({
-    name: 1,
+  name: 1,
 });
 
 memberSchema.index({
-    joinDate: 1,
+  joinDate: 1,
 });
-
-/**
- * Mongoose document type
- */
-export type MemberDocument = InferSchemaType<
-    typeof memberSchema
-> & {
-    _id: Types.ObjectId;
-};
 
 /**
  * Member model
@@ -124,9 +141,13 @@ export type MemberDocument = InferSchemaType<
  * Uses the existing model if already compiled to support
  * Next.js Fast Refresh.
  */
+
 const Member: Model<MemberDocument> =
-    (models.Member as Model<MemberDocument>) ??
-    model<MemberDocument>('Member', memberSchema);
+  (models.Member as Model<MemberDocument>) ??
+  model<MemberDocument>(
+    "Member",
+    memberSchema,
+  );
 
 export default Member;
 

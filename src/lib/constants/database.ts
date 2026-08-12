@@ -9,6 +9,5 @@ export const DATABASE = {
 
   CONNECTION_TIMEOUT_MS: 5000,
 
-  AUTO_INDEX:
-    process.env.NODE_ENV !== 'production',
+  AUTO_INDEX: process.env.NODE_ENV !== "production",
 } as const;

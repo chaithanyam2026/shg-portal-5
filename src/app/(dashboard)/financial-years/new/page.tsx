@@ -1,63 +1,35 @@
-import Link from "next/link";
+import { Stack, Typography } from "@mui/material";
 
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import {
-  Button,
-  Container,
-  Stack,
-  Typography,
-} from "@mui/material";
+import PageHeader from "@/components/layout/PageHeader";
 
-import FinancialYearForm from "@/features/financial-year/ui/FinancialYearForm";
+import { listClosedFinancialYears } from "@/features/financial-year/services/list-closed";
+
+import CreateFinancialYearWizard from "@/features/financial-year/ui/CreateFinancialYearWizard";
+import { listFinancialYears } from "@/features/financial-year/services";
 
 export const metadata = {
-  title: "Create Financial Year",
+  title: "Create Next Financial Year",
 };
 
-export default function NewFinancialYearPage() {
+export default async function NewFinancialYearPage() {
+  const allFinancialYears = await listFinancialYears();
+  const closedFinancialYears = await listClosedFinancialYears();
+
+  const isFirstFinancialYear = allFinancialYears.length === 0;
+
   return (
-    <Container
-      maxWidth="sm"
-      sx={{
-        py: 2,
-      }}
-    >
-      <Stack spacing={3}>
-        <Link
-href="/financial-years"
-  style={{ textDecoration: "none" }}
->
-        <Button
-         
-          
-          startIcon={<ArrowBackIcon />}
-          sx={{
-            alignSelf: "flex-start",
-          }}
-        >
-          Back
-        </Button>
-        </Link>
+    <Stack spacing={3}>
+      <PageHeader title="Create Next Financial Year" backHref="/financial-years" />
 
-        <Stack spacing={1}>
-          <Typography
-            variant="h5"
-            component="h1"
-            fontWeight={700}
-          >
-            Create Financial Year
-          </Typography>
+      <Typography variant="body2" color="text.secondary">
+        Create the next financial year by selecting a previously closed financial year. Opening
+        balances and member balances will be carried forward automatically.
+      </Typography>
 
-          <Typography
-            variant="body2"
-            color="text.secondary"
-          >
-            Create a new financial year for your SHG.
-          </Typography>
-        </Stack>
-
-        <FinancialYearForm />
-      </Stack>
-    </Container>
+      <CreateFinancialYearWizard
+        financialYears={closedFinancialYears}
+        isFirstFinancialYear={isFirstFinancialYear}
+      />
+    </Stack>
   );
 }

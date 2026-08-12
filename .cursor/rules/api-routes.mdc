@@ -1,0 +1,47 @@
+---
+description: API route handler patterns for SHG Portal
+globs: src/app/api/**/*
+alwaysApply: false
+---
+
+# API Route Patterns
+
+Routes are thin wrappers — all logic belongs in `@/features/*/services`.
+
+```typescript
+import { NextRequest, NextResponse } from "next/server";
+import { createThing, listThings } from "@/features/things/services";
+
+export async function GET() {
+  try {
+    const items = await listThings();
+    return NextResponse.json(items);
+  } catch (error) {
+    return NextResponse.json(
+      { message: error instanceof Error ? error.message : "Unable to load things." },
+      { status: 500 },
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const item = await createThing(body);
+    return NextResponse.json(item, { status: 201 });
+  } catch (error) {
+    return NextResponse.json(
+      { message: error instanceof Error ? error.message : "Unable to create thing." },
+      { status: 400 },
+    );
+  }
+}
+```
+
+## Conventions
+
+- Import services from feature barrels (`@/features/{feature}/services`)
+- Return `{ message: string }` on errors; use `error instanceof Error`
+- Use 201 for creates, 400 for validation/business errors, 500 for unexpected failures
+- Respect `AppError.status` when catching domain errors
+- REST naming: `GET/POST` collection, `GET/PATCH` resource, action routes as `POST .../activate`, `POST .../close`
