@@ -41,20 +41,11 @@ export default function MemberList({ members }: Props) {
 
   return (
     <Stack spacing={3}>
-      <Stack
-        direction="row"
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <PageHeader title="Members" showBack={false} />
-
+      <PageHeader title="Members" showBack={false}>
         <Button component={Link} href="/members/new" variant="contained">
           New Member
         </Button>
-      </Stack>
+      </PageHeader>
 
       <TableContainer component={Card}>
         <Table>

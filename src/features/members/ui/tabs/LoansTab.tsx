@@ -42,10 +42,12 @@ type LoanSummary = {
 };
 
 type Props = {
+  financialYearId: string;
+
   member: MemberDetails;
 };
 
-export default function LoansTab({ member }: Props) {
+export default function LoansTab({ member, financialYearId }: Props) {
   const [loans, setLoans] = useState<LoanSummary[]>([]);
 
   const [loading, setLoading] = useState(true);
@@ -54,8 +56,21 @@ export default function LoansTab({ member }: Props) {
 
   useEffect(() => {
     async function load() {
+      if (!financialYearId) {
+        setLoans([]);
+        setLoading(false);
+        return;
+      }
+
       try {
-        const response = await fetch(`/api/members/${member._id}/loans`);
+        setLoading(true);
+        setError("");
+
+        const params = new URLSearchParams({
+          financialYearId,
+        });
+
+        const response = await fetch(`/api/members/${member._id}/loans?${params.toString()}`);
 
         const result = await response.json();
 
@@ -66,13 +81,18 @@ export default function LoansTab({ member }: Props) {
         setLoans(result);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Unable to load loans.");
+        setLoans([]);
       } finally {
         setLoading(false);
       }
     }
 
     load();
-  }, [member._id]);
+  }, [member._id, financialYearId]);
+
+  if (!financialYearId) {
+    return <Alert severity="info">Select a financial year to view loans.</Alert>;
+  }
 
   if (loading) {
     return (

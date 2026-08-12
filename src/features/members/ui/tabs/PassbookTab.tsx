@@ -28,10 +28,12 @@ import SummaryCard from "./SummaryCard";
 import { formatCurrency, formatDate } from "@/lib/utils/format";
 
 type Props = {
+  financialYearId: string;
+
   member: MemberDetails;
 };
 
-export default function PassbookTab({ member }: Props) {
+export default function PassbookTab({ member, financialYearId }: Props) {
   const [passbook, setPassbook] = useState<MemberPassbook | null>(null);
 
   const [loading, setLoading] = useState(true);
@@ -40,10 +42,21 @@ export default function PassbookTab({ member }: Props) {
 
   useEffect(() => {
     async function load() {
+      if (!financialYearId) {
+        setPassbook(null);
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
+        setError("");
 
-        const response = await fetch(`/api/members/${member._id}/passbook`);
+        const params = new URLSearchParams({
+          financialYearId,
+        });
+
+        const response = await fetch(`/api/members/${member._id}/passbook?${params.toString()}`);
 
         const data = await response.json();
 
@@ -54,13 +67,18 @@ export default function PassbookTab({ member }: Props) {
         setPassbook(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Unable to load passbook.");
+        setPassbook(null);
       } finally {
         setLoading(false);
       }
     }
 
     load();
-  }, [member._id]);
+  }, [member._id, financialYearId]);
+
+  if (!financialYearId) {
+    return <Alert severity="info">Select a financial year to view the passbook.</Alert>;
+  }
 
   if (loading) {
     return (

@@ -1,0 +1,49 @@
+---
+description: Feature module structure for domain, services, validation, and UI
+globs: src/features/**/*
+alwaysApply: false
+---
+
+# Feature Module Patterns
+
+## Adding or changing a feature
+
+Follow this order; each step must compile:
+
+1. `domain/` — types, enums, pure functions
+2. `validation.ts` — Zod schemas (`ObjectIdSchema` for Mongo IDs)
+3. `src/models/` — Mongoose schema (import sub-schemas from domain when possible)
+4. `services/` — one file per action (`create.ts`, `update.ts`, `list.ts`)
+5. `services/index.ts` — re-export public services only
+6. `src/app/api/...` — thin route handlers
+7. `ui/` — components; pages in `src/app/(dashboard)/`
+
+## Service conventions
+
+```typescript
+// ✅ Service pattern
+export async function createThing(input: unknown) {
+  await connectMongo();
+  const data = CreateThingSchema.parse(input);
+  // validate business rules, then persist
+  return mapThingDetails(doc);
+}
+```
+
+- Call `connectMongo()` at the start of async services
+- Parse input with Zod in the service (not only in the route)
+- Map Mongoose documents to plain objects before returning to API/UI
+- Put multi-step builders in `services/internal/`
+
+## UI conventions
+
+- `"use client"` only when hooks or browser APIs are needed
+- Forms: react-hook-form + `@hookform/resolvers/zod`
+- Fetch via API routes from client components; server pages call services directly
+- Keep wizard/stepper state in the page or top-level component, not in domain
+
+## Avoid
+
+- Business logic in UI components or API route files
+- Exporting `services/internal/` helpers from the feature barrel
+- Duplicating Zod schemas between validation.ts and inline in components

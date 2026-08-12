@@ -1,3 +1,7 @@
+export * from "./activate";
+
+export * from "./approve";
+
 export * from "./create";
 export * from "./get";
 export * from "./list";
@@ -12,9 +16,7 @@ export * from "./list-options";
 
 export * from "./close";
 
-export * from "./activate";
-
-export * from "./close";
+export * from "./mark-validated";
 
 // export * from "./delete";
 

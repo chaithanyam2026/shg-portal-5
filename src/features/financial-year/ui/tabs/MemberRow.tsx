@@ -10,7 +10,7 @@ export type MemberRowData = {
   openingContribution: number;
   openingLoan: number;
   openingSpecialLoan: number;
-  specialLoanExpiry: string;
+  openingSpecialLoanExpiry: string;
 };
 
 type Props = {
@@ -35,6 +35,7 @@ export default function MemberRow({
   onChange,
   onRemove,
 }: Props) {
+  console.log('members==', row)
   return (
     <TableRow hover>
       <TableCell sx={{ minWidth: 240 }}>
@@ -125,7 +126,7 @@ export default function MemberRow({
 
             onChange({
               openingSpecialLoan: value,
-              specialLoanExpiry: value > 0 ? row.specialLoanExpiry : "",
+              openingSpecialLoanExpiry: value > 0 ? row.openingSpecialLoanExpiry : "",
             });
           }}
         />
@@ -136,7 +137,7 @@ export default function MemberRow({
           fullWidth
           size="small"
           type="date"
-          value={row.specialLoanExpiry}
+          value={row.openingSpecialLoanExpiry ?? ""}
           disabled={disabled || row.openingSpecialLoan <= 0}
           slotProps={{
             inputLabel: {
@@ -145,7 +146,7 @@ export default function MemberRow({
           }}
           onChange={(event) =>
             onChange({
-              specialLoanExpiry: event.target.value,
+              openingSpecialLoanExpiry: event.target.value,
             })
           }
         />

@@ -8,6 +8,7 @@ import Meeting from "@/models/Meeting";
 
 import { buildBankEntries } from "./helpers/build-bank-entries";
 import { buildExpenseEntries } from "./helpers/build-expense-entries";
+import { buildFinancialYearOpeningEntries } from "./helpers/build-financial-year-opening-entries";
 import { buildIncomeEntries } from "./helpers/build-income-entries";
 import { buildPaymentEntries } from "./helpers/build-payment-entries";
 import { calculateRunningBalances } from "./helpers/calculate-running-balances";
@@ -29,9 +30,13 @@ export async function buildIncomeExpenseReport(
     .lean()
     .exec();
 
-  const ledgerEntries: LedgerEntry[] = [];
-
-  console.log("meetings", JSON.stringify(meetings[0], null, 2));
+  const ledgerEntries: LedgerEntry[] = [
+    ...buildFinancialYearOpeningEntries({
+      financialYearId: financialYear._id,
+      startDate: financialYear.startDate,
+      members: financialYear.members,
+    }),
+  ];
 
   for (const meeting of meetings) {
     ledgerEntries.push(

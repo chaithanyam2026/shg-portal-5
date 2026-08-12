@@ -3,19 +3,9 @@ import type {
   OpeningBalance,
 } from "@/models/FinancialYear";
 
-import type { MemberOpeningBalance } from "../../domain";
+import type { OpeningBalanceResult } from "../../domain";
 
 import { buildMemberOpeningBalances } from "./build-member-opening-balances";
-
-export interface OpeningBalanceResult {
-  generatedAt: Date;
-
-  summary: {
-    opening: OpeningBalance;
-
-    members: MemberOpeningBalance[];
-  };
-}
 
 function createEmptyOpeningBalances(): OpeningBalance {
   return {

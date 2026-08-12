@@ -1,3 +1,4 @@
+export * from "./member-contribution-payments";
 export * from "./member-passbook";
 
 export * from "./passbook-entry-type";

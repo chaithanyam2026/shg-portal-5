@@ -1,7 +1,10 @@
 import { notFound } from "next/navigation";
 
-import { getMember } from "@/features/members/services";
-
+import {
+  getDefaultMemberFinancialYearId,
+  getMember,
+  listMemberFinancialYearOptions,
+} from "@/features/members/services";
 import MemberTabs from "@/features/members/ui/MemberTabs";
 
 type Props = {
@@ -14,17 +17,21 @@ export default async function Page({ params }: Props) {
   const { id } = await params;
 
   try {
-    const [member, attendanceFine] = await Promise.all([
+    const [member, financialYearOptions] = await Promise.all([
       getMember(id),
-      getAttendanceFineSummary(id),
+      listMemberFinancialYearOptions(id),
     ]);
 
-    return <MemberTabs member={member} attendanceFine={attendanceFine} />;
+    const initialFinancialYearId = getDefaultMemberFinancialYearId(financialYearOptions) ?? "";
+
+    return (
+      <MemberTabs
+        member={member}
+        financialYearOptions={financialYearOptions}
+        initialFinancialYearId={initialFinancialYearId}
+      />
+    );
   } catch {
     notFound();
   }
-}
-
-function getAttendanceFineSummary(id: string): any {
-  throw new Error("Function not implemented.");
 }

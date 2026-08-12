@@ -3,52 +3,68 @@ import connectMongo from "@/lib/db/mongodb";
 import FinancialYear from "@/models/FinancialYear";
 
 import { getActiveFinancialYear } from "./get-active";
-import { mapFinancialYearSummary } from "./internal";
 
 export type SelectedFinancialYear = {
   _id: string;
   name: string;
 };
 
+function mapSelectedFinancialYear(financialYear: {
+  _id: { toString(): string };
+  name: string;
+}): SelectedFinancialYear {
+  return {
+    _id: financialYear._id.toString(),
+    name: String(financialYear.name),
+  };
+}
+
 /**
  * Returns the selected financial year.
  *
- * If no id is supplied, the current
- * IN_PROGRESS financial year is returned.
+ * Priority when no id is supplied:
+ * 1. IN_PROGRESS financial year
+ * 2. Most recent financial year by start date
  */
 export async function getSelectedFinancialYear(
   financialYearId?: string,
 ): Promise<SelectedFinancialYear | null> {
-  if (!financialYearId) {
-    const financialYear = await getActiveFinancialYear();
+  if (financialYearId) {
+    await connectMongo();
+
+    const financialYear = await FinancialYear.findById(financialYearId)
+      .select({
+        name: 1,
+      })
+      .lean();
 
     if (!financialYear) {
-      return null;
+      throw new Error("Financial year not found.");
     }
 
-    return {
-      _id: financialYear._id.toString(),
+    return mapSelectedFinancialYear(financialYear);
+  }
 
-      name: String(financialYear.name),
-    };
+  const activeFinancialYear = await getActiveFinancialYear();
+
+  if (activeFinancialYear) {
+    return mapSelectedFinancialYear(activeFinancialYear);
   }
 
   await connectMongo();
 
-  const financialYear = await FinancialYear.findById(financialYearId)
+  const latestFinancialYear = await FinancialYear.findOne()
+    .sort({
+      startDate: -1,
+    })
     .select({
       name: 1,
     })
     .lean();
 
-  if (!financialYear) {
-    throw new Error("Financial year not found.");
+  if (!latestFinancialYear) {
+    return null;
   }
 
-  /* return {
-    _id: financialYear._id.toString(),
-
-    name: String(financialYear.name),
-  }; */
-  return mapFinancialYearSummary(financialYear)
+  return mapSelectedFinancialYear(latestFinancialYear);
 }

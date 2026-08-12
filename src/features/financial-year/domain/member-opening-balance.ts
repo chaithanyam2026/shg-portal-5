@@ -4,18 +4,12 @@
  */
 export type MemberOpeningBalance = {
   memberId: string;
-
   memberCode: string;
-
   memberName: string;
 
   savings: number;
-
-  loan: number;
-
-  interest: number;
-
-  fine: number;
-
-  other: number;
+  loanOutstanding: number;
+  fineOutstanding: number;
+  shareCapital: number;
+  interestReceivable: number;
 };

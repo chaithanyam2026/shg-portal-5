@@ -84,12 +84,21 @@ import Loan from "@/models/Loan";
 
 import { getLoanPassbook } from "@/features/loans/services";
 
-export async function getMemberLoans(memberId: string) {
+export async function getMemberLoans(memberId: string, financialYearId?: string) {
   await connectMongo();
 
-  const loans = await Loan.find({
+  const loanQuery: {
+    memberId: string;
+    financialYearId?: string;
+  } = {
     memberId,
-  })
+  };
+
+  if (financialYearId) {
+    loanQuery.financialYearId = financialYearId;
+  }
+
+  const loans = await Loan.find(loanQuery)
     .sort({
       disbursedDate: -1,
     })

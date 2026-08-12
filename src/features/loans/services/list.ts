@@ -3,6 +3,8 @@ import { Types } from "mongoose";
 
 import Loan from "@/models/Loan";
 
+import { calculateLoanSummary } from "../domain";
+
 import type { LoanSummary } from "../types";
 
 import type { LoanStatus } from "../domain/loan-status";
@@ -10,6 +12,9 @@ import type { LoanStatus } from "../domain/loan-status";
 import type { LoanType } from "../domain/loan-type";
 
 import { ObjectIdSchema } from "../validation";
+
+import { buildLoanLedger } from "./internal/loan-ledger";
+import { loadRepaymentsForMembers } from "./internal/meeting-loader";
 
 type ListLoansInput = {
   financialYearId?: string;
@@ -21,10 +26,6 @@ type ListLoansInput = {
   status?: LoanStatus;
 
   search?: string;
-};
-
-type StringifiableId = {
-  toString(): string;
 };
 
 export async function listLoans(filters: ListLoansInput = {}): Promise<LoanSummary[]> {
@@ -89,50 +90,70 @@ export async function listLoans(filters: ListLoansInput = {}): Promise<LoanSumma
     });
   }
 
-  return filteredLoans.map((loan) => {
-    const member = loan.memberId;
+  const memberIds = filteredLoans.map((loan) => loan.memberId._id.toString());
 
-    const financialYear = loan.financialYearId;
-
-    return {
-      _id: loan._id.toString(),
-
-      loanNumber: loan.loanNumber,
-
-      loanType: loan.loanType,
-
-      status: loan.status,
-
-      financialYearId: financialYear._id.toString(),
-
-      financialYearName: financialYear.name,
-
-      memberId: member._id.toString(),
-
-      memberCode: member.memberCode,
-
-      memberName: member.name,
-
-      sanctionedAmount: loan.sanctionedAmount,
-
-      disbursedAmount: loan.disbursedAmount,
-
-      interestRate: loan.interestRate,
-
-      expectedMonthlyRepayment: loan.expectedMonthlyRepayment,
-
-      disbursedDate: loan.disbursedDate.toISOString(),
-
-      /**
-       * These values are calculated by
-       * the Loan Ledger service.
-       *
-       * They are placeholders until the
-       * summary engine is integrated.
-       */
-      outstandingPrincipal: loan.disbursedAmount,
-
-      totalPayable: loan.disbursedAmount,
-    };
+  const repaymentsByMember = await loadRepaymentsForMembers({
+    memberIds,
   });
+
+  return Promise.all(
+    filteredLoans.map(async (loan) => {
+      const member = loan.memberId;
+
+      const financialYear = loan.financialYearId;
+
+      const memberId = member._id.toString();
+
+      const passbook = await buildLoanLedger(
+        {
+          _id: loan._id,
+          loanNumber: loan.loanNumber,
+          memberId: member._id,
+          memberName: member.name,
+          loanType: loan.loanType,
+          disbursedAmount: loan.disbursedAmount,
+          interestRate: loan.interestRate,
+          expectedMonthlyRepayment: loan.expectedMonthlyRepayment,
+          disbursedDate: loan.disbursedDate,
+        },
+        repaymentsByMember.get(memberId) ?? [],
+      );
+
+      const summary = calculateLoanSummary(passbook);
+
+      return {
+        _id: loan._id.toString(),
+
+        loanNumber: loan.loanNumber,
+
+        loanType: loan.loanType,
+
+        status: loan.status,
+
+        financialYearId: financialYear._id.toString(),
+
+        financialYearName: financialYear.name,
+
+        memberId,
+
+        memberCode: member.memberCode,
+
+        memberName: member.name,
+
+        sanctionedAmount: loan.sanctionedAmount,
+
+        disbursedAmount: loan.disbursedAmount,
+
+        interestRate: loan.interestRate,
+
+        expectedMonthlyRepayment: loan.expectedMonthlyRepayment,
+
+        disbursedDate: loan.disbursedDate.toISOString(),
+
+        outstandingPrincipal: summary.outstandingPrincipal,
+
+        totalPayable: summary.totalPayable,
+      };
+    }),
+  );
 }

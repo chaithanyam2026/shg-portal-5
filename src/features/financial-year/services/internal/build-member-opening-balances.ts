@@ -8,22 +8,27 @@ import type { MemberOpeningBalance } from "../../domain";
 function buildMemberOpeningBalance(
   member: FinancialYearClosingMember,
 ): MemberOpeningBalance {
+  const loanOutstanding = member.loanOutstanding ?? 0;
+  const specialLoanOutstanding = member.specialLoanOutstanding ?? 0;
+  const attendanceFineOutstanding = member.attendanceFineOutstanding ?? 0;
+  const loanFineOutstanding = member.loanFineOutstanding ?? 0;
+
   return {
     memberId: member.memberId.toString(),
 
-    memberCode: member.memberCode,
+    memberCode: member.memberCode ?? "",
 
-    memberName: member.memberName,
+    memberName: member.memberName ?? "",
 
-    savings: member.savingsBalance,
+    savings: member.savingsBalance ?? 0,
 
-    loan: member.loanOutstanding + member.specialLoanOutstanding,
+    loanOutstanding: loanOutstanding + specialLoanOutstanding,
 
-    interest: 0,
+    interestReceivable: 0,
 
-    fine: member.attendanceFineOutstanding + member.loanFineOutstanding,
+    fineOutstanding: attendanceFineOutstanding + loanFineOutstanding,
 
-    other: 0,
+    shareCapital: 0,
   };
 }
 

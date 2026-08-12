@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 
 import { useRouter } from "next/navigation";
 
-import { Alert, Button, CircularProgress, Container, Stack, Typography } from "@mui/material";
+import { Alert, Button, CircularProgress, Container, Stack } from "@mui/material";
 
+import PageHeader from "@/components/layout/PageHeader";
 import MeetingForm from "@/features/meetings/ui/MeetingForm";
 
 import type { CreateMeetingInput } from "@/features/meetings/validation";
@@ -97,7 +98,7 @@ export default function EditMeetingPage({ params }: Props) {
 
   if (loading) {
     return (
-      <Container maxWidth="sm" sx={{ py: 4 }}>
+      <Container maxWidth="sm" disableGutters>
         <Stack
           sx={{
             display: "flex",
@@ -106,8 +107,6 @@ export default function EditMeetingPage({ params }: Props) {
           spacing={2}
         >
           <CircularProgress />
-
-          <Typography>Loading meeting...</Typography>
         </Stack>
       </Container>
     );
@@ -115,16 +114,16 @@ export default function EditMeetingPage({ params }: Props) {
 
   if (!meeting) {
     return (
-      <Container maxWidth="sm" sx={{ py: 4 }}>
+      <Container maxWidth="sm" disableGutters>
         <Alert severity="error">Meeting not found.</Alert>
       </Container>
     );
   }
 
   return (
-    <Container maxWidth="sm" sx={{ py: 4 }}>
+    <Container maxWidth="sm" disableGutters>
       <Stack spacing={3}>
-        <Typography variant="h4">Edit Meeting</Typography>
+        <PageHeader title="Edit Meeting" backHref={`/meetings/${meetingId}`} />
 
         {error && <Alert severity="error">{error}</Alert>}
 

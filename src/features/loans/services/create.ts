@@ -4,6 +4,8 @@ import FinancialYear from "@/models/FinancialYear";
 import Loan from "@/models/Loan";
 import Member from "@/models/Member";
 
+import { getMinimumMonthlyRepayment } from "../domain/minimum-monthly-repayment";
+
 import type { LoanDetails } from "../types";
 
 import { CreateLoanInput, CreateLoanSchema } from "../validation";
@@ -38,6 +40,8 @@ export async function createLoan(input: CreateLoanInput): Promise<LoanDetails> {
 
   const { loanNumber, sequenceNumber } = await generateNextLoanNumber(data.financialYearId);
 
+  const expectedMonthlyRepayment = getMinimumMonthlyRepayment(data.disbursedAmount);
+
   const loan = await Loan.create({
     loanNumber,
 
@@ -57,7 +61,7 @@ export async function createLoan(input: CreateLoanInput): Promise<LoanDetails> {
 
     interestRate: data.interestRate,
 
-    expectedMonthlyRepayment: data.expectedMonthlyRepayment,
+    expectedMonthlyRepayment,
 
     disbursedDate: data.disbursedDate,
 

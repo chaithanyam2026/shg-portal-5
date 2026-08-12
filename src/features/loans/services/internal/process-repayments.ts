@@ -1,9 +1,12 @@
 import {
   allocateLoanPayment,
   calculateInterest,
-  calculateMonthlyFine,
   createLedgerEntry,
+  evaluateMonthlyLoanFine,
+  getMinimumMonthlyRepayment,
   getRepaymentCycle,
+  getFineEligibility,
+  MONTHLY_LOAN_FINE,
   updateOutstandingBalance,
 } from "../../domain";
 
@@ -35,6 +38,21 @@ export type ProcessRepaymentsResult = {
   pendingLoanFine: number;
 };
 
+function getEvaluationKey(repaymentDate: Date): string {
+  const evaluationDate = new Date(repaymentDate.getFullYear(), repaymentDate.getMonth() - 1, 1);
+
+  return `${evaluationDate.getFullYear()}-${evaluationDate.getMonth()}`;
+}
+
+function formatEvaluationMonth(repaymentDate: Date): string {
+  const evaluationDate = new Date(repaymentDate.getFullYear(), repaymentDate.getMonth() - 1, 1);
+
+  return evaluationDate.toLocaleDateString("en-IN", {
+    month: "long",
+    year: "numeric",
+  });
+}
+
 export function processRepayments({
   loan,
   repayments,
@@ -45,6 +63,12 @@ export function processRepayments({
 }: ProcessRepaymentsInput): ProcessRepaymentsResult {
   let previousRepaymentDate: Date | undefined;
 
+  const minimumMonthlyRepayment = getMinimumMonthlyRepayment(loan.disbursedAmount);
+
+  const monthlyPrincipalPaid = new Map<string, number>();
+
+  const monthlyFineEvaluated = new Set<string>();
+
   for (const repayment of repayments) {
     const repaymentCycle = getRepaymentCycle({
       disbursedDate: loan.disbursedDate,
@@ -53,6 +77,8 @@ export function processRepayments({
 
       previousRepaymentDate,
     });
+
+    const evaluationKey = getEvaluationKey(repayment.meetingDate);
 
     const interest = calculateInterest({
       outstandingPrincipal,
@@ -64,19 +90,7 @@ export function processRepayments({
 
     pendingInterest += interest.interestAmount;
 
-    const monthlyFine = calculateMonthlyFine({
-      disbursedDate: loan.disbursedDate,
-
-      repaymentCycle,
-
-      expectedMonthlyRepayment: loan.expectedMonthlyRepayment,
-
-      principalPaidThisMonth: 0,
-    });
-
-    if (monthlyFine.isApplicable) {
-      pendingLoanFine += monthlyFine.fineAmount;
-    }
+    const pendingFineBefore = pendingLoanFine;
 
     const allocation = allocateLoanPayment({
       payment: repayment.amountPaid,
@@ -89,6 +103,11 @@ export function processRepayments({
     });
 
     const { paidPrincipal, paidInterest, paidLoanFine } = allocation;
+
+    const totalPrincipalForMonth =
+      (monthlyPrincipalPaid.get(evaluationKey) ?? 0) + paidPrincipal;
+
+    monthlyPrincipalPaid.set(evaluationKey, totalPrincipalForMonth);
 
     const balances = updateOutstandingBalance({
       outstandingPrincipal,
@@ -110,15 +129,49 @@ export function processRepayments({
 
     pendingLoanFine = balances.pendingLoanFine;
 
-    const recalculatedFine = calculateMonthlyFine({
+    const eligibility = getFineEligibility({
       disbursedDate: loan.disbursedDate,
 
       repaymentCycle,
-
-      expectedMonthlyRepayment: loan.expectedMonthlyRepayment,
-
-      principalPaidThisMonth: paidPrincipal,
     });
+
+    let loanFineCharged = 0;
+
+    let description = "Loan repayment";
+
+    if (
+      eligibility.isEligible &&
+      minimumMonthlyRepayment > 0 &&
+      !monthlyFineEvaluated.has(evaluationKey)
+    ) {
+      const fineEvaluation = evaluateMonthlyLoanFine({
+        minimumMonthlyRepayment,
+
+        principalPaidThisMonth: totalPrincipalForMonth,
+
+        pendingFineBefore,
+
+        paidLoanFine,
+      });
+
+      monthlyFineEvaluated.add(evaluationKey);
+
+      loanFineCharged = fineEvaluation.fineAmount;
+
+      if (fineEvaluation.shouldApplyFine) {
+        pendingLoanFine += MONTHLY_LOAN_FINE;
+
+        loanFineCharged = MONTHLY_LOAN_FINE;
+
+        description = `Loan repayment — monthly fine for ${formatEvaluationMonth(
+          repayment.meetingDate,
+        )} (₹${MONTHLY_LOAN_FINE})`;
+      } else {
+        description = `Loan repayment — monthly fine waived for ${formatEvaluationMonth(
+          repayment.meetingDate,
+        )}`;
+      }
+    }
 
     entries.push(
       createLedgerEntry({
@@ -126,13 +179,15 @@ export function processRepayments({
 
         meetingId: repayment.meetingId,
 
+        description,
+
         amountPaid: repayment.amountPaid,
 
         interestDays: interest.interestDays,
 
         interestCharged: interest.interestAmount,
 
-        loanFineCharged: recalculatedFine.fineAmount,
+        loanFineCharged,
 
         paidPrincipal,
 

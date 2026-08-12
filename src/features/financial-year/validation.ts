@@ -95,7 +95,10 @@ export const UpdateFinancialYearSchema = z
 
           openingSpecialLoan: z.coerce.number().min(0),
 
-          specialLoanExpiry: z.union([z.coerce.date(), z.null()]).optional(),
+          openingSpecialLoanExpiry: z.union([
+            z.coerce.date(),
+            z.null(),
+          ]).optional(),
         }),
       )
       .optional(),

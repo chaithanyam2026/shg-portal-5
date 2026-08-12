@@ -9,7 +9,7 @@ import { generateOpeningBalances } from "./generate-opening-balances";
 import { populateFinancialYear } from "./internal/populate-financial-year";
 import { validateOpeningBalanceSource } from "./internal/validate-opening-balance-source";
 import { validateCreateFinancialYear } from "./validate-create";
-import { mapFinancialYearDetails } from "./internal";
+import { mapFinancialYearDetails, mapMemberOpeningBalancesForPersistence } from "./internal";
 
 export async function createFinancialYear(input: CreateFinancialYearInput) {
   await connectMongo();
@@ -28,13 +28,17 @@ export async function createFinancialYear(input: CreateFinancialYearInput) {
 
     openingBalances = opening.summary.opening;
 
-    memberOpeningBalances = opening.summary.members;
+    memberOpeningBalances = mapMemberOpeningBalancesForPersistence(
+      opening.summary.members,
+    );
   } else {
     const opening = await generateOpeningBalances(null);
 
     openingBalances = opening.summary.opening;
 
-    memberOpeningBalances = opening.summary.members;
+    memberOpeningBalances = mapMemberOpeningBalancesForPersistence(
+      opening.summary.members,
+    );
   }
 
   const financialYear = await FinancialYear.create({

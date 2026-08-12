@@ -30,7 +30,7 @@ export default async function AttendanceFineRegister({ searchParams }: Props) {
 
   return (
     <>
-      <PageHeader title="Attendance Fine Register" />
+      <PageHeader title="Attendance Fine Register" backHref="/reports" />
 
       <AttendanceFineRegisterPage
         financialYearId={financialYear._id.toString()}

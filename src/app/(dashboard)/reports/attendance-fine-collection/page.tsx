@@ -31,7 +31,7 @@ export default async function AttendanceFineCollection({ searchParams }: Props) 
 
   return (
     <>
-      <PageHeader title="Attendance Fine Collection" />
+      <PageHeader title="Attendance Fine Collection" backHref="/reports" />
 
       <AttendanceFineCollectionPage
         financialYearId={financialYear._id.toString()}

@@ -49,7 +49,7 @@ export default function CreateMeetingPage() {
   }
 
   return (
-    <Container maxWidth="sm" sx={{ py: 3 }}>
+    <Container maxWidth="sm" disableGutters>
       <Stack spacing={3}>
         <PageHeader title="New Meeting" backHref="/meetings" />
 

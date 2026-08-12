@@ -1,6 +1,6 @@
 "use client";
 
-import { Alert, Stack, Typography } from "@mui/material";
+import { Alert, Stack } from "@mui/material";
 
 import Link from "next/link";
 import { useState } from "react";
@@ -96,9 +96,11 @@ export default function LoanList({ loans, financialYears }: Props) {
   const { filters, filteredLoans, setSearch, setFinancialYear, setLoanType, setStatus } =
     useLoanFilters(loans);
 
-  if (filteredLoans.length === 0) {
-    return <Alert severity="info">No loans found.</Alert>;
-  }
+  const hasActiveFilters =
+    filters.search !== "" ||
+    filters.financialYearId !== "" ||
+    filters.loanType !== "" ||
+    filters.status !== "";
 
   return (
     <Box
@@ -108,8 +110,6 @@ export default function LoanList({ loans, financialYears }: Props) {
       }}
     >
       <Stack spacing={3}>
-        <Typography variant="h5">Loans</Typography>
-
         <TextField
           fullWidth
           label="Search"
@@ -185,7 +185,13 @@ export default function LoanList({ loans, financialYears }: Props) {
         </Stack>
 
         {filteredLoans.length === 0 ? (
-          <Alert severity="info">No loans found.</Alert>
+          <Alert severity="info">
+            {loans.length === 0
+              ? "No loans have been created yet."
+              : hasActiveFilters
+                ? "No loans match the current filters. Try adjusting your search or filters."
+                : "No loans found."}
+          </Alert>
         ) : (
           <Stack spacing={2}>
             {filteredLoans.map((loan) => (

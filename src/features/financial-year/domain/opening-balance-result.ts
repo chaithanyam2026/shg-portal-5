@@ -1,10 +1,13 @@
-import type { OpeningBalanceSummary } from "./opening-balance-summary";
+import type { MemberOpeningBalance } from "./member-opening-balance";
+import type { OpeningBalance } from "./opening-balance";
 
 /**
- * Result returned by the
- * opening balance generator.
+ * Result returned by the opening balance generator.
  */
 export type OpeningBalanceResult = {
   generatedAt: Date;
-  summary: OpeningBalanceSummary;
+  summary: {
+    opening: OpeningBalance;
+    members: MemberOpeningBalance[];
+  };
 };

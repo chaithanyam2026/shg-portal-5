@@ -11,3 +11,5 @@ export * from "./calculate-attendance-fine";
 export * from "./calculate-consecutive-absence";
 
 export * from "./process-attendance";
+
+export * from "./member-financial-summary";

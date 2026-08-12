@@ -1,8 +1,6 @@
-import { Container, Stack, Typography } from "@mui/material";
-
 import { getBankTransactions } from "@/features/meetings/services/get-bank-transactions";
 import BankTransactionForm from "@/features/meetings/ui/BankTransactionForm";
-import MeetingTabs from "@/features/meetings/ui/MeetingTabs";
+import MeetingWorkflowLayout from "@/features/meetings/ui/MeetingWorkflowLayout";
 
 type Props = {
   params: Promise<{
@@ -16,19 +14,8 @@ export default async function BankTransactionsPage({ params }: Props) {
   const summary = await getBankTransactions(id);
 
   return (
-    <Container
-      maxWidth="xl"
-      sx={{
-        py: 3,
-      }}
-    >
-      <Stack spacing={3}>
-        <Typography variant="h4">Bank Transactions</Typography>
-
-        <MeetingTabs meetingId={id} status={summary.status} />
-
-        <BankTransactionForm meetingId={id} initialSummary={summary} />
-      </Stack>
-    </Container>
+    <MeetingWorkflowLayout meetingId={id} status={summary.status} title="Bank Transactions">
+      <BankTransactionForm meetingId={id} initialSummary={summary} />
+    </MeetingWorkflowLayout>
   );
 }

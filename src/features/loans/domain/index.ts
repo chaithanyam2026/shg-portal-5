@@ -12,6 +12,9 @@ export * from "./passbook-entry-type";
 export * from "./payment-allocation";
 
 export * from "./fine-eligibility";
+export * from "./calendar";
+export * from "./minimum-monthly-repayment";
+
 export * from "./repayment-cycle";
 
 export * from "./ledger-entry";

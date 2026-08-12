@@ -18,8 +18,8 @@ type Props = {
   members: MemberOpeningBalance[];
 };
 
-function formatAmount(value: number) {
-  return value.toLocaleString("en-IN", {
+function formatAmount(value: number | undefined) {
+  return (value ?? 0).toLocaleString("en-IN", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
@@ -55,7 +55,7 @@ export default function MemberOpeningBalanceTable({ members }: Props) {
 
             <TableCell align="right">Fine</TableCell>
 
-            <TableCell align="right">Other</TableCell>
+            <TableCell align="right">Share Capital</TableCell>
 
             <TableCell align="right">Total</TableCell>
           </TableRow>
@@ -64,7 +64,11 @@ export default function MemberOpeningBalanceTable({ members }: Props) {
         <TableBody>
           {members.map((member) => {
             const total =
-              member.savings + member.loan + member.interest + member.fine + member.other;
+              (member.savings ?? 0) +
+              (member.loanOutstanding ?? 0) +
+              (member.interestReceivable ?? 0) +
+              (member.fineOutstanding ?? 0) +
+              (member.shareCapital ?? 0);
 
             return (
               <TableRow hover key={member.memberId}>
@@ -74,13 +78,13 @@ export default function MemberOpeningBalanceTable({ members }: Props) {
 
                 <TableCell align="right">₹{formatAmount(member.savings)}</TableCell>
 
-                <TableCell align="right">₹{formatAmount(member.loan)}</TableCell>
+                <TableCell align="right">₹{formatAmount(member.loanOutstanding)}</TableCell>
 
-                <TableCell align="right">₹{formatAmount(member.interest)}</TableCell>
+                <TableCell align="right">₹{formatAmount(member.interestReceivable)}</TableCell>
 
-                <TableCell align="right">₹{formatAmount(member.fine)}</TableCell>
+                <TableCell align="right">₹{formatAmount(member.fineOutstanding)}</TableCell>
 
-                <TableCell align="right">₹{formatAmount(member.other)}</TableCell>
+                <TableCell align="right">₹{formatAmount(member.shareCapital)}</TableCell>
 
                 <TableCell
                   align="right"

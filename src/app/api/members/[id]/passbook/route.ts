@@ -8,11 +8,13 @@ type RouteContext = {
   }>;
 };
 
-export async function GET(_request: NextRequest, context: RouteContext) {
+export async function GET(request: NextRequest, context: RouteContext) {
   try {
     const { id } = await context.params;
 
-    const passbook = await getMemberPassbook(id);
+    const financialYearId = request.nextUrl.searchParams.get("financialYearId") ?? undefined;
+
+    const passbook = await getMemberPassbook(id, financialYearId);
 
     return NextResponse.json(passbook);
   } catch (error) {

@@ -87,7 +87,10 @@ function validateMembers(members?: UpdateFinancialYearInput["members"]) {
       throw new AppError("Opening special loan cannot be negative.", 400);
     }
 
-    if (member.openingSpecialLoan > 0 && !member.specialLoanExpiry) {
+    if (
+      member.openingSpecialLoan > 0 &&
+      !member.openingSpecialLoanExpiry
+    ) {
       throw new AppError("Special loan expiry is required.", 400);
     }
   }
@@ -207,7 +210,8 @@ export async function update(id: string, input: unknown) {
 
         specialLoan: member.openingSpecialLoan,
 
-        specialLoanExpiry: member.specialLoanExpiry ?? null,
+        specialLoanExpiry:
+          member.openingSpecialLoanExpiry ?? null,
       },
     }));
   }

@@ -1,5 +1,5 @@
 // import Meeting from "@/models/Meeting";
-import { loadLoanRepayments } from "./meeting-loader";
+import { loadLoanRepayments, type LoanRepayment } from "./meeting-loader";
 
 import { LOAN_DISBURSED_ENTRY } from "../../domain/passbook-entry-type";
 
@@ -33,24 +33,21 @@ export type BuildLoanLedgerInput = {
   disbursedDate: Date;
 };
 
-type LoanRepayment = {
-  meetingId: string;
-
-  meetingDate: Date;
-
-  amountPaid: number;
-};
-
 /**
  * Builds the complete loan ledger.
  */
-export async function buildLoanLedger(loan: BuildLoanLedgerInput): Promise<LoanPassbook> {
+export async function buildLoanLedger(
+  loan: BuildLoanLedgerInput,
+  repayments?: LoanRepayment[],
+): Promise<LoanPassbook> {
   /**
    * Load meetings for the member.
    */
-  const repayments = await loadLoanRepayments({
-    memberId: loan.memberId,
-  });
+  const loanRepayments =
+    repayments ??
+    (await loadLoanRepayments({
+      memberId: loan.memberId,
+    }));
 
   /**
    * Running balances.
@@ -290,7 +287,7 @@ export async function buildLoanLedger(loan: BuildLoanLedgerInput): Promise<LoanP
   const balances = processRepayments({
     loan,
 
-    repayments,
+    repayments: loanRepayments,
 
     entries,
 

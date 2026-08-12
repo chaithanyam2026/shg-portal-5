@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Alert,
   Paper,
   Stack,
   Table,
@@ -12,6 +13,8 @@ import {
   Typography,
 } from "@mui/material";
 import { formatCurrency, formatDate, formatNumber } from "../format";
+
+import { getMinimumMonthlyRepaymentDescription } from "../../domain/minimum-monthly-repayment";
 
 import type { LoanPassbook } from "../../domain";
 
@@ -47,7 +50,15 @@ export default function PassbookTab({ passbook }: Props) {
   }
 
   return (
-    <TableContainer
+    <Stack spacing={2}>
+      <Alert severity="info">
+        {getMinimumMonthlyRepaymentDescription(passbook.disbursedAmount)}. To avoid a monthly
+        loan fine of ₹100, pay the minimum monthly principal plus any pending loan fines each
+        month. The disbursement month is exempt if the loan was disbursed after the first Sunday
+        of that month. Each evaluated month shows a fine entry in the passbook (₹0 when waived).
+      </Alert>
+
+      <TableContainer
       component={Paper}
       sx={{
         overflowX: "auto",
@@ -144,5 +155,6 @@ export default function PassbookTab({ passbook }: Props) {
         </TableBody>
       </Table>
     </TableContainer>
+    </Stack>
   );
 }

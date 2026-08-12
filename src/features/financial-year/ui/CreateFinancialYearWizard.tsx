@@ -25,6 +25,7 @@ import type { OpeningBalanceResult } from "../domain";
 import OpeningBalancePreview from "./OpeningBalancePreview";
 
 import MemberOpeningBalanceTable from "./MemberOpeningBalanceTable";
+import { createEmptyOpeningBalance } from "../domain/create-empty-opening-balance";
 
 import type { ClosedFinancialYearLookup, CreateFinancialYearDraft } from "../types";
 
@@ -33,13 +34,16 @@ import FinancialYearSourceSelector from "./FinancialYearSourceSelector";
 
 type Props = {
   financialYears: ClosedFinancialYearLookup[];
+  isFirstFinancialYear: boolean;
 };
 
 const STEPS = ["Source", "Details", "Opening Balance", "Members", "Confirmation"] as const;
 
-export default function CreateFinancialYearWizard({ financialYears }: Props) {
+export default function CreateFinancialYearWizard({ financialYears, isFirstFinancialYear }: Props) {
   const router = useRouter();
-  const [activeStep, setActiveStep] = useState(0);
+  const [activeStep, setActiveStep] = useState(
+    isFirstFinancialYear ? 1 : 0,
+  );
   const [creating, setCreating] = useState(false);
 
   const [sourceFinancialYearId, setSourceFinancialYearId] = useState("");
@@ -65,9 +69,13 @@ export default function CreateFinancialYearWizard({ financialYears }: Props) {
   );
 
   function handleNext() {
+    console.log('handleNext', { activeStep, isFirstFinancialYear, sourceFinancialYearId, })
     switch (activeStep) {
       case 0:
-        if (!sourceFinancialYearId) {
+        if (
+          !isFirstFinancialYear &&
+          !sourceFinancialYearId
+        ) {
           return;
         }
         break;
@@ -86,6 +94,7 @@ export default function CreateFinancialYearWizard({ financialYears }: Props) {
         break;
 
       case 3:
+        console.log('Case 3', { openingBalance })
         if (!openingBalance || openingBalance.summary.members.length === 0) {
           return;
         }
@@ -104,18 +113,15 @@ export default function CreateFinancialYearWizard({ financialYears }: Props) {
   }
 
   async function loadOpeningBalance() {
-    if (!sourceFinancialYearId) {
-      return;
-    }
-
     setLoadingOpening(true);
-
     setOpeningError("");
 
     try {
-      const response = await fetch(
-        `/api/financial-years/opening-balances?financialYearId=${sourceFinancialYearId}`,
-      );
+      const url = isFirstFinancialYear
+        ? "/api/financial-years/opening-balances"
+        : `/api/financial-years/opening-balances?financialYearId=${sourceFinancialYearId}`;
+
+      const response = await fetch(url);
 
       const result = await response.json();
 
@@ -125,18 +131,64 @@ export default function CreateFinancialYearWizard({ financialYears }: Props) {
 
       setOpeningBalance(result);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Unable to load opening balances.";
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Unable to load opening balances.";
 
       setOpeningError(message);
-
       setSnackbarOpen(true);
     } finally {
       setLoadingOpening(false);
     }
   }
+  /*   async function loadOpeningBalance() {
+      console.log('loadOpeningBalance', { isFirstFinancialYear })
+      if (isFirstFinancialYear) {
+        const empty = createEmptyOpeningBalance();
+  
+        console.log('createEmptyOpeningBalance data', empty.summary.members);
+        setOpeningBalance(createEmptyOpeningBalance());
+        // console.log('setOpeningBalance', result.summary.members);
+        return;
+      }
+      if (!sourceFinancialYearId) {
+        return;
+      }
+  
+      setLoadingOpening(true);
+  
+      setOpeningError("");
+  
+      try {
+        const response = await fetch(
+          `/api/financial-years/opening-balances?financialYearId=${sourceFinancialYearId}`,
+        );
+  
+        const result = await response.json();
+  
+        if (!response.ok) {
+          throw new Error(result.message);
+        }
+  
+        setOpeningBalance(result);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Unable to load opening balances.";
+  
+        setOpeningError(message);
+  
+        setSnackbarOpen(true);
+      } finally {
+        setLoadingOpening(false);
+      }
+    } */
 
   async function createFinancialYear() {
-    if (creating || !sourceFinancialYearId || !openingBalance) {
+    if (
+      creating ||
+      (!isFirstFinancialYear && !sourceFinancialYearId) ||
+      !openingBalance
+    ) {
       return;
     }
 
@@ -150,10 +202,12 @@ export default function CreateFinancialYearWizard({ financialYears }: Props) {
         },
         body: JSON.stringify({
           ...financialYear,
-          sourceFinancialYearId,
+          sourceFinancialYearId: isFirstFinancialYear
+            ? undefined
+            : sourceFinancialYearId,
           openingBalances: openingBalance.summary.opening,
           memberOpeningBalances: openingBalance.summary.members,
-        }),
+        })
       });
 
       const result = await response.json();
@@ -239,9 +293,18 @@ export default function CreateFinancialYearWizard({ financialYears }: Props) {
             <Stack spacing={3}>
               <Typography variant="h6">Opening Balance Preview</Typography>
 
-              <Typography variant="body2" color="text.secondary">
-                These balances will become the opening balances of the new financial year.
-              </Typography>
+              <Stack spacing={2}>
+                <Typography variant="body2" color="text.secondary">
+                  These balances will become the opening balances of the new financial year.
+                </Typography>
+
+                {isFirstFinancialYear && (
+                  <Alert severity="info">
+                    This is the first financial year. All opening balances start at zero and
+                    can be updated later.
+                  </Alert>
+                )}
+              </Stack>
 
               {loadingOpening && (
                 <Stack
@@ -271,12 +334,21 @@ export default function CreateFinancialYearWizard({ financialYears }: Props) {
                 These balances will be carried forward for each member into the new financial year.
               </Typography>
 
-              {!openingBalance ? (
+              {/* {!openingBalance ? (
                 <Alert severity="warning">Opening balances have not been generated yet.</Alert>
               ) : openingBalance.summary.members.length === 0 ? (
                 <Alert severity="info">No member balances are available.</Alert>
               ) : (
                 <MemberOpeningBalanceTable members={openingBalance.summary.members} />
+              )} */}
+              {!openingBalance ? (
+                <Alert severity="warning">
+                  Opening balances have not been generated yet.
+                </Alert>
+              ) : (
+                <MemberOpeningBalanceTable
+                  members={openingBalance.summary.members}
+                />
               )}
             </Stack>
           )}
@@ -293,7 +365,10 @@ export default function CreateFinancialYearWizard({ financialYears }: Props) {
                 <CardContent>
                   <Stack spacing={2}>
                     <Typography>
-                      <strong>Source Financial Year:</strong> {selectedFinancialYear?.name}
+                      <strong>Source Financial Year:</strong>{" "}
+                      {isFirstFinancialYear
+                        ? "Initial Financial Year"
+                        : selectedFinancialYear?.name}
                     </Typography>
 
                     <Typography>

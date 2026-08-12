@@ -158,7 +158,6 @@ const financialYearSchema =
         type: String,
         enum: ["DRAFT", "IN_PROGRESS", "VALIDATED", "APPROVED", "CLOSED"],
         default: "DRAFT",
-        index: true,
       },
 
       sourceFinancialYearId: {
@@ -225,10 +224,22 @@ const financialYearSchema =
                 required: true,
               },
 
-              /* savings: {
+              memberCode: {
+                type: String,
+                required: true,
+                trim: true,
+              },
+
+              memberName: {
+                type: String,
+                required: true,
+                trim: true,
+              },
+
+              savingsBalance: {
                 type: Number,
                 default: 0,
-              }, */
+              },
 
               loanOutstanding: {
                 type: Number,
@@ -240,20 +251,15 @@ const financialYearSchema =
                 default: 0,
               },
 
-              /* specialLoanExpiry: {
-                type: Date,
-                default: null,
-              }, */
-
-              /* attendanceFine: {
+              attendanceFineOutstanding: {
                 type: Number,
                 default: 0,
-              }, */
+              },
 
-              /*  loanFine: {
-                 type: Number,
-                 default: 0,
-               }, */
+              loanFineOutstanding: {
+                type: Number,
+                default: 0,
+              },
 
               totalOutstanding: {
                 type: Number,
@@ -349,15 +355,11 @@ const financialYearSchema =
  * Indexes
  */
 
-financialYearSchema.index({ name: 1 }, { unique: true });
+// financialYearSchema.index({ name: 1 }, { unique: true });
 
 financialYearSchema.index({
   startDate: 1,
   endDate: 1,
-});
-
-financialYearSchema.index({
-  status: 1,
 });
 
 financialYearSchema.index(

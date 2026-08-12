@@ -92,6 +92,19 @@ export default function ReportsHome({ financialYearId, options, onFinancialYearC
             }}
           >
             <ReportCard
+              title="Member Financial Summary"
+              description="Contribution, loan, interest, and fine balances per member."
+              href="/reports/member-summary"
+            />
+          </Grid>
+
+          <Grid
+            size={{
+              xs: 12,
+              md: 6,
+            }}
+          >
+            <ReportCard
               title="Income & Expense"
               description="Income and expense statement."
               href="/reports/income-expense"

@@ -1,13 +1,3 @@
-import PageHeader from "@/components/layout/PageHeader";
-
-import {
-  getSelectedFinancialYear,
-  listFinancialYearOptions,
-} from "@/features/financial-year/services";
-
-import AttendanceReportPage from "@/features/reports/ui/AttendanceReportPage";
-
-import { buildAttendanceRegister } from "@/features/reports/services/build-attendance-register";
 import { redirect } from "next/navigation";
 
 type Props = {
@@ -16,30 +6,12 @@ type Props = {
   }>;
 };
 
-const AttendancePage = async ({ searchParams }: Props) => {
+export default async function Page({ searchParams }: Props) {
   const params = await searchParams;
 
-  const financialYear = await getSelectedFinancialYear(params.financialYear);
-  if (!financialYear) {
-    redirect("/financial-years");
-  }
+  const query = params.financialYear
+    ? `?financialYear=${encodeURIComponent(params.financialYear)}`
+    : "";
 
-  const options = await listFinancialYearOptions();
-
-  const register = await buildAttendanceRegister(financialYear._id.toString());
-
-  return (
-    <>
-      <PageHeader title="Attendance Register" />
-
-      <AttendanceReportPage
-        financialYearId={financialYear._id.toString()}
-        financialYearName={financialYear.name}
-        options={options}
-        register={register}
-      />
-    </>
-  );
-};
-
-export default AttendancePage;
+  redirect(`/attendance${query}`);
+}

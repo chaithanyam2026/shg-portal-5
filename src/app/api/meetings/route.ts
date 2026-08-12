@@ -15,6 +15,8 @@ export async function GET(request: NextRequest) {
 
     const status = searchParams.get("status") ?? undefined;
 
+    const financialYearId = searchParams.get("financialYearId") ?? undefined;
+
     const sort = searchParams.get("sort") ?? "meetingDate";
 
     const result = await listMeetings({
@@ -22,6 +24,7 @@ export async function GET(request: NextRequest) {
       pageSize,
       search,
       status: status as "DRAFT" | "IN_PROGRESS" | "APPROVED" | "CLOSED" | undefined,
+      financialYearId,
       sort: sort === "-meetingDate" ? "-meetingDate" : "meetingDate",
     });
 

@@ -1,3 +1,5 @@
+import { isAfterFirstSundayOfMonth } from "./calendar";
+
 import type { RepaymentCycle } from "./repayment-cycle";
 
 /**
@@ -52,38 +54,21 @@ export type FineEligibility = {
  * Business Rules
  * --------------
  *
- * Loan started on 15-Jan
+ * Each meeting evaluates the immediately
+ * preceding calendar month.
  *
- * 01-Feb Meeting
- *   → Evaluate January
- *   → Skip (partial starting month)
- *
- * 01-Mar Meeting
- *   → Evaluate February
- *   → Apply fine if minimum repayment
- *     not satisfied.
- *
- * 01-Apr Meeting
- *   → Evaluate March
- *   → Apply fine if minimum repayment
- *     not satisfied.
- *
- * Only the loan's starting month
- * receives the partial-month exemption.
- *
- * Every subsequent completed month
- * participates in monthly fine
- * evaluation.
+ * Disbursement month
+ * ------------------
+ * • Disbursed on or before the first Sunday
+ *   → minimum repayment and fine apply for
+ *     that month.
+ * • Disbursed after the first Sunday
+ *   → that month is exempt from fine.
  */
 export function getFineEligibility({
   disbursedDate,
   repaymentCycle,
 }: FineEligibilityInput): FineEligibility {
-  /**
-   * Every meeting evaluates the
-   * immediately preceding calendar
-   * month.
-   */
   const evaluationDate = new Date(
     repaymentCycle.toDate.getFullYear(),
     repaymentCycle.toDate.getMonth() - 1,
@@ -94,17 +79,10 @@ export function getFineEligibility({
 
   const evaluationYear = evaluationDate.getFullYear();
 
-  /**
-   * Is this the month in which the
-   * loan was originally disbursed?
-   */
   const isStartingMonth =
     disbursedDate.getFullYear() === evaluationYear && disbursedDate.getMonth() === evaluationMonth;
 
-  /**
-   * Partial starting month is exempt.
-   */
-  if (isStartingMonth && disbursedDate.getDate() > 1) {
+  if (isStartingMonth && isAfterFirstSundayOfMonth(disbursedDate)) {
     return {
       isEligible: false,
 
@@ -112,7 +90,7 @@ export function getFineEligibility({
 
       evaluationYear,
 
-      reason: "Partial starting month is exempt from loan fine.",
+      reason: "Loan disbursed after the first Sunday of the starting month.",
     };
   }
 

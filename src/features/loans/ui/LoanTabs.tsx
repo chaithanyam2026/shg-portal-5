@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { LoanSummaryResult } from "../types";
 
-import { Box, Stack, Tab, Tabs } from "@mui/material";
+import { Box, Tab, Tabs } from "@mui/material";
 
 import type { LoanDetails } from "../types";
 
@@ -24,19 +24,12 @@ export default function LoanTabs({ loan, summary, passbook }: Props) {
 
   return (
     <Box>
-      <Stack
-        spacing={3}
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          textAlign: "center",
-        }}
-      >
-        <PageHeader
-          title="Loans"
-        // showBack={false}
-        />
-      </Stack>
+      <PageHeader
+        title={loan.loanNumber}
+        subtitle={`${loan.memberName} · ${loan.loanType}`}
+        backHref="/loans"
+      />
+
       <Tabs value={tab} onChange={(_event, value: number) => setTab(value)} variant="fullWidth">
         <Tab label="General" />
 

@@ -27,7 +27,7 @@ export default async function AttendanceRegisterPrintPage({ params }: Props) {
       <PageHeader
         title="Attendance Register"
         subtitle="Print Preview"
-        backHref={`/reports/attendance/${financialYearId}`}
+        backHref="/attendance"
       />
 
       <AttendanceRegisterPrint financialYearId={financialYearId} register={register} />

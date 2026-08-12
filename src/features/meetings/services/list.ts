@@ -1,6 +1,7 @@
 import Meeting from "@/models/Meeting";
 
 import connectMongo from "@/lib/db/mongodb";
+import { Types } from "mongoose";
 
 import type { MeetingStatus } from "../domain/meeting-status";
 import type { MeetingListFilter, MeetingListResult } from "../types";
@@ -24,6 +25,10 @@ export async function listMeetings(filter: MeetingListFilter): Promise<MeetingLi
 
   if (filter.status) {
     query.status = filter.status;
+  }
+
+  if (filter.financialYearId && Types.ObjectId.isValid(filter.financialYearId)) {
+    query.financialYearId = new Types.ObjectId(filter.financialYearId);
   }
 
   if (filter.search?.trim()) {

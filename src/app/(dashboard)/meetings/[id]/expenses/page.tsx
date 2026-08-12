@@ -1,9 +1,7 @@
-import { Container, Stack, Typography } from "@mui/material";
-
 import { getExpenses } from "@/features/meetings/services/get-expenses";
 
 import ExpenseForm from "@/features/meetings/ui/ExpenseForm";
-import MeetingTabs from "@/features/meetings/ui/MeetingTabs";
+import MeetingWorkflowLayout from "@/features/meetings/ui/MeetingWorkflowLayout";
 
 type Props = {
   params: Promise<{
@@ -17,19 +15,8 @@ export default async function ExpensesPage({ params }: Props) {
   const summary = await getExpenses(id);
 
   return (
-    <Container
-      maxWidth="xl"
-      sx={{
-        py: 3,
-      }}
-    >
-      <Stack spacing={3}>
-        <Typography variant="h4">Expenses</Typography>
-
-        <MeetingTabs meetingId={id} status={summary.status} />
-
-        <ExpenseForm meetingId={id} initialSummary={summary} />
-      </Stack>
-    </Container>
+    <MeetingWorkflowLayout meetingId={id} status={summary.status} title="Expenses">
+      <ExpenseForm meetingId={id} initialSummary={summary} />
+    </MeetingWorkflowLayout>
   );
 }

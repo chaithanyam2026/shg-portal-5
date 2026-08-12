@@ -13,6 +13,7 @@ type Props = {
 };
 
 export default function FinancialYearSourceSelector({ financialYears, value, onChange }: Props) {
+  console.log('financialYears', { financialYears })
   return (
     <Stack spacing={2}>
       {financialYears.map((financialYear) => (
@@ -20,7 +21,10 @@ export default function FinancialYearSourceSelector({ financialYears, value, onC
           key={financialYear._id}
           variant={value === financialYear._id ? "outlined" : undefined}
         >
-          <CardActionArea onClick={() => onChange(financialYear._id)}>
+          <CardActionArea onClick={() => {
+            console.log("Selected:", financialYear._id);
+            onChange(financialYear._id);
+          }}>
             <CardContent>
               <Stack spacing={1}>
                 <Stack

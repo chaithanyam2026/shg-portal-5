@@ -30,7 +30,7 @@ export default async function AttendanceFineDefaulters({ searchParams }: Props) 
 
   return (
     <>
-      <PageHeader title="Attendance Fine Defaulters" />
+      <PageHeader title="Attendance Fine Defaulters" backHref="/reports" />
 
       <AttendanceFineDefaultersPage
         financialYearId={financialYear._id.toString()}

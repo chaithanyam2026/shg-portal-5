@@ -6,7 +6,6 @@ import {
   Button,
   Card,
   CardContent,
-  Container,
   Divider,
   Stack,
   Typography,
@@ -44,30 +43,17 @@ export default async function MeetingDetailsPage({ params }: Props) {
   }
 
   return (
-    <Container maxWidth="md" sx={{ py: 3 }}>
-      <Stack spacing={3}>
-        <Stack
-          direction="row"
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <PageHeader title="Meeting" backHref="/meetings" />
-        </Stack>
+    <Stack spacing={3}>
+      <PageHeader
+        title="Meeting"
+        subtitle={formatDate(meeting.meetingDate)}
+        backHref="/meetings"
+      >
+        <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", gap: 1 }}>
+          <Button component={Link} href={`/meetings/${meeting.id}/edit`} variant="outlined">
+            Edit
+          </Button>
 
-        <Stack
-          direction="row"
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Link href={`/meetings/${meeting.id}/edit`}>
-            <Button>Edit</Button>
-          </Link>
           <MeetingActionButton
             meetingId={meeting.id}
             action="start"
@@ -94,135 +80,127 @@ export default async function MeetingDetailsPage({ params }: Props) {
             disabled={meeting.status !== "IN_PROGRESS"}
           />
         </Stack>
-        <Stack
-          direction="row"
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <MeetingTabs meetingId={meeting.id} status={meeting.status} />
-        </Stack>
+      </PageHeader>
 
-        {meeting.status === "CLOSED" && (
-          <Alert severity="info">This meeting is closed and cannot be edited.</Alert>
-        )}
+      <MeetingTabs meetingId={meeting.id} status={meeting.status} />
 
-        <Card>
-          <CardContent>
-            <Stack spacing={2}>
-              <Stack
-                direction="row"
+      {meeting.status === "CLOSED" && (
+        <Alert severity="info">This meeting is closed and cannot be edited.</Alert>
+      )}
+
+      <Card>
+        <CardContent>
+          <Stack spacing={2}>
+            <Stack
+              direction="row"
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <Typography
                 sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
+                  fontWeight: 600,
                 }}
               >
-                <Typography
-                  sx={{
-                    fontWeight: 600,
-                  }}
-                >
-                  Status
-                </Typography>
+                Status
+              </Typography>
 
-                <MeetingStatusChip status={meeting.status} />
-              </Stack>
-
-              <Divider />
-
-              <Stack spacing={1}>
-                <Typography variant="body2" color="text.secondary">
-                  Meeting Date
-                </Typography>
-
-                <Typography>{formatDate(meeting.meetingDate)}</Typography>
-              </Stack>
-
-              <Stack spacing={1}>
-                <Typography variant="body2" color="text.secondary">
-                  Place
-                </Typography>
-
-                <Typography>{meeting.place}</Typography>
-              </Stack>
-
-              <Stack spacing={1}>
-                <Typography variant="body2" color="text.secondary">
-                  Agenda
-                </Typography>
-
-                <Typography
-                  sx={{
-                    whiteSpace: "pre-wrap",
-                  }}
-                >
-                  {meeting.agenda || "-"}
-                </Typography>
-              </Stack>
-
-              <Stack spacing={1}>
-                <Typography variant="body2" color="text.secondary">
-                  Remarks
-                </Typography>
-
-                <Typography
-                  sx={{
-                    whiteSpace: "pre-wrap",
-                  }}
-                >
-                  {meeting.remarks || "-"}
-                </Typography>
-              </Stack>
-
-              <Divider />
-
-              <Stack spacing={1}>
-                <Typography variant="body2" color="text.secondary">
-                  Started At
-                </Typography>
-
-                <Typography>{formatDate(meeting.startedAt)}</Typography>
-              </Stack>
-
-              <Stack spacing={1}>
-                <Typography variant="body2" color="text.secondary">
-                  Approved At
-                </Typography>
-
-                <Typography>{formatDate(meeting.approvedAt)}</Typography>
-              </Stack>
-
-              <Stack spacing={1}>
-                <Typography variant="body2" color="text.secondary">
-                  Closed At
-                </Typography>
-
-                <Typography>{formatDate(meeting.closedAt)}</Typography>
-              </Stack>
-
-              <Divider />
-
-              <Stack spacing={1}>
-                <Typography variant="body2" color="text.secondary">
-                  Created
-                </Typography>
-
-                <Typography>{formatDate(meeting.createdAt)}</Typography>
-              </Stack>
-
-              <Stack spacing={1}>
-                <Typography variant="body2" color="text.secondary">
-                  Last Updated
-                </Typography>
-
-                <Typography>{formatDate(meeting.updatedAt)}</Typography>
-              </Stack>
+              <MeetingStatusChip status={meeting.status} />
             </Stack>
-          </CardContent>
-        </Card>
-      </Stack>
-    </Container>
+
+            <Divider />
+
+            <Stack spacing={1}>
+              <Typography variant="body2" color="text.secondary">
+                Meeting Date
+              </Typography>
+
+              <Typography>{formatDate(meeting.meetingDate)}</Typography>
+            </Stack>
+
+            <Stack spacing={1}>
+              <Typography variant="body2" color="text.secondary">
+                Place
+              </Typography>
+
+              <Typography>{meeting.place}</Typography>
+            </Stack>
+
+            <Stack spacing={1}>
+              <Typography variant="body2" color="text.secondary">
+                Agenda
+              </Typography>
+
+              <Typography
+                sx={{
+                  whiteSpace: "pre-wrap",
+                }}
+              >
+                {meeting.agenda || "-"}
+              </Typography>
+            </Stack>
+
+            <Stack spacing={1}>
+              <Typography variant="body2" color="text.secondary">
+                Remarks
+              </Typography>
+
+              <Typography
+                sx={{
+                  whiteSpace: "pre-wrap",
+                }}
+              >
+                {meeting.remarks || "-"}
+              </Typography>
+            </Stack>
+
+            <Divider />
+
+            <Stack spacing={1}>
+              <Typography variant="body2" color="text.secondary">
+                Started At
+              </Typography>
+
+              <Typography>{formatDate(meeting.startedAt)}</Typography>
+            </Stack>
+
+            <Stack spacing={1}>
+              <Typography variant="body2" color="text.secondary">
+                Approved At
+              </Typography>
+
+              <Typography>{formatDate(meeting.approvedAt)}</Typography>
+            </Stack>
+
+            <Stack spacing={1}>
+              <Typography variant="body2" color="text.secondary">
+                Closed At
+              </Typography>
+
+              <Typography>{formatDate(meeting.closedAt)}</Typography>
+            </Stack>
+
+            <Divider />
+
+            <Stack spacing={1}>
+              <Typography variant="body2" color="text.secondary">
+                Created
+              </Typography>
+
+              <Typography>{formatDate(meeting.createdAt)}</Typography>
+            </Stack>
+
+            <Stack spacing={1}>
+              <Typography variant="body2" color="text.secondary">
+                Last Updated
+              </Typography>
+
+              <Typography>{formatDate(meeting.updatedAt)}</Typography>
+            </Stack>
+          </Stack>
+        </CardContent>
+      </Card>
+    </Stack>
   );
 }

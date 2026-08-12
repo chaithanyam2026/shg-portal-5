@@ -1,44 +1,12 @@
 export const MONTHLY_LOAN_FINE = 100;
+
 import { LoanType, NORMAL_LOAN_TYPE, SPECIAL_LOAN_TYPE } from "./loan-type";
 
-export const MINIMUM_MONTHLY_REPAYMENTS = [
-  {
-    minLoanAmount: 1000,
-    maxLoanAmount: 25000,
-    minimumRepayment: 800,
-  },
-  {
-    minLoanAmount: 25001,
-    maxLoanAmount: 50000,
-    minimumRepayment: 1600,
-  },
-  {
-    minLoanAmount: 50001,
-    maxLoanAmount: 75000,
-    minimumRepayment: 2400,
-  },
-  {
-    minLoanAmount: 75001,
-    maxLoanAmount: 100000,
-    minimumRepayment: 3200,
-  },
-] as const;
+export const MINIMUM_LOAN_THRESHOLD = 1000;
 
-export function getMinimumMonthlyRepayment(loanAmount: number): number {
-  if (loanAmount <= 10000) {
-    return 500;
-  }
+export const MINIMUM_REPAYMENT_TIER = 25000;
 
-  if (loanAmount <= 20000) {
-    return 800;
-  }
-
-  if (loanAmount <= 30000) {
-    return 1200;
-  }
-
-  return Math.ceil(loanAmount * 0.05);
-}
+export const MINIMUM_REPAYMENT_STEP = 800;
 
 /**
  * Loan number configuration.

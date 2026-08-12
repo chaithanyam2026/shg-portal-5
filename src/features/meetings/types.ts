@@ -48,6 +48,7 @@ export type MeetingListFilter = {
   search?: string;
   status?: MeetingStatus;
   sort?: "meetingDate" | "-meetingDate";
+  financialYearId?: string;
 };
 
 export type MeetingListResult = {

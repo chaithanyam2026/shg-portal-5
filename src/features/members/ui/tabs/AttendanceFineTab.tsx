@@ -1,10 +1,13 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import {
   Alert,
   Card,
   CardContent,
   Chip,
+  CircularProgress,
   Grid,
   Paper,
   Stack,
@@ -19,15 +22,19 @@ import {
 
 import type { AttendanceFineSummary } from "@/features/reports/domain";
 
+import type { MemberDetails } from "../../types";
+
 type Props = {
-  attendanceFine?: AttendanceFineSummary;
+  financialYearId: string;
+
+  member: MemberDetails;
 };
 
 function formatCurrency(value: number) {
-  return `₹ ${value.toLocaleString("en-IN")}`;
+  return `₹ ${(value ?? 0).toLocaleString("en-IN")}`;
 }
 
-function formatDate(date: Date) {
+function formatDate(date: Date | string) {
   return new Date(date).toLocaleDateString("en-IN");
 }
 
@@ -57,11 +64,7 @@ function getStatusLabel(status: "PRESENT" | "ABSENT" | "LEAVE") {
   }
 }
 
-export default function AttendanceFineTab({ attendanceFine }: Props) {
-  if (!attendanceFine) {
-    return <Alert severity="info">Attendance fine information is not available.</Alert>;
-  }
-
+function AttendanceFineContent({ attendanceFine }: { attendanceFine: AttendanceFineSummary }) {
   return (
     <Stack spacing={3}>
       <Grid container spacing={2}>
@@ -288,4 +291,77 @@ export default function AttendanceFineTab({ attendanceFine }: Props) {
       </TableContainer>
     </Stack>
   );
+}
+
+export default function AttendanceFineTab({ member, financialYearId }: Props) {
+  const [attendanceFine, setAttendanceFine] = useState<AttendanceFineSummary | null>(null);
+
+  const [loading, setLoading] = useState(true);
+
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function load() {
+      if (!financialYearId) {
+        setAttendanceFine(null);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        setError("");
+
+        const params = new URLSearchParams({
+          financialYearId,
+        });
+
+        const response = await fetch(
+          `/api/members/${member._id}/attendance-fine?${params.toString()}`,
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message ?? "Unable to load attendance fine.");
+        }
+
+        setAttendanceFine(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Unable to load attendance fine.");
+        setAttendanceFine(null);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    load();
+  }, [member._id, financialYearId]);
+
+  if (!financialYearId) {
+    return <Alert severity="info">Select a financial year to view attendance fines.</Alert>;
+  }
+
+  if (loading) {
+    return (
+      <Stack
+        sx={{
+          alignItems: "center",
+          py: 4,
+        }}
+      >
+        <CircularProgress />
+      </Stack>
+    );
+  }
+
+  if (error) {
+    return <Alert severity="error">{error}</Alert>;
+  }
+
+  if (!attendanceFine) {
+    return <Alert severity="info">Attendance fine information is not available.</Alert>;
+  }
+
+  return <AttendanceFineContent attendanceFine={attendanceFine} />;
 }

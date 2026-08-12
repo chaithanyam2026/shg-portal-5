@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { useRouter } from "next/navigation";
 
@@ -38,7 +38,10 @@ export default function MembersForm({ financialYear, members }: Props) {
         openingContribution: member.opening.contribution ?? 0,
         openingLoan: member.opening.loan ?? 0,
         openingSpecialLoan: member.opening.specialLoan ?? 0,
-        specialLoanExpiry: formatDateInputValue(member.opening.specialLoanExpiry),
+        openingSpecialLoanExpiry:
+          member.opening.specialLoan > 0
+            ? formatDateInputValue(member.opening.specialLoanExpiry)
+            : "",
       })),
     [financialYear.members],
   );
@@ -46,6 +49,10 @@ export default function MembersForm({ financialYear, members }: Props) {
   const [success, setSuccess] = useState(false);
 
   const [rows, setRows] = useState<MemberRowData[]>(initialRows);
+
+  useEffect(() => {
+    setRows(initialRows);
+  }, [initialRows]);
 
   function addMember() {
     setRows((previous) => [
@@ -59,7 +66,7 @@ export default function MembersForm({ financialYear, members }: Props) {
 
         openingSpecialLoan: 0,
 
-        specialLoanExpiry: "",
+        openingSpecialLoanExpiry: "",
       },
     ]);
   }
@@ -77,9 +84,9 @@ export default function MembersForm({ financialYear, members }: Props) {
       previous.map((row, currentIndex) =>
         currentIndex === index
           ? {
-              ...row,
-              ...changes,
-            }
+            ...row,
+            ...changes,
+          }
           : row,
       ),
     );
@@ -114,7 +121,7 @@ export default function MembersForm({ financialYear, members }: Props) {
         return `Opening special loan cannot be negative (row ${index + 1}).`;
       }
 
-      if (row.openingSpecialLoan > 0 && !row.specialLoanExpiry) {
+      if (row.openingSpecialLoan > 0 && !row.openingSpecialLoanExpiry) {
         return `Special loan expiry is required (row ${index + 1}).`;
       }
     }
@@ -132,7 +139,7 @@ export default function MembersForm({ financialYear, members }: Props) {
 
         openingSpecialLoan: row.openingSpecialLoan,
 
-        specialLoanExpiry: row.specialLoanExpiry || null,
+        openingSpecialLoanExpiry: row.openingSpecialLoanExpiry || null,
       })),
     };
   }

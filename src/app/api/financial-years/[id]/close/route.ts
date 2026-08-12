@@ -2,7 +2,10 @@ import { NextRequest } from "next/server";
 
 import { auth } from "@/auth";
 
-import { closeFinancialYear } from "@/features/financial-year/services";
+import {
+  closeFinancialYear,
+  FinancialYearCloseError,
+} from "@/features/financial-year/services/close";
 
 type Context = {
   params: Promise<{
@@ -31,6 +34,18 @@ export async function PATCH(_request: NextRequest, { params }: Context) {
 
     return Response.json(result);
   } catch (error) {
+    if (error instanceof FinancialYearCloseError) {
+      return Response.json(
+        {
+          message: error.message,
+          validation: error.validation,
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
     return Response.json(
       {
         message: error instanceof Error ? error.message : "Unable to close financial year.",

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-import { Alert, Box, Chip, Container, Stack, Typography } from "@mui/material";
+import { Alert, Chip, Stack } from "@mui/material";
 
 import PageHeader from "@/components/layout/PageHeader";
 import type { FinancialYearStatus } from "@/features/financial-year/domain/financial-year-status";
@@ -50,53 +50,19 @@ export default async function FinancialYearDetailsPage({ params }: PageProps) {
     const financialYear = await get(id);
 
     const [members, report] = await Promise.all([listMembers(), buildIncomeExpenseReport(id)]);
+
     return (
-      <>
-        <Container
-          maxWidth="md"
-          sx={{
-            py: 2,
-          }}
+      <Stack spacing={3}>
+        <PageHeader
+          title={financialYear.name}
+          subtitle="Financial year details"
+          backHref="/financial-years"
         >
-          <Stack spacing={3}>
-            {/* <Link
-            href="/financial-years"
-            style={{
-              textDecoration: "none",
-            }}
-          >
-            <Button
-              startIcon={<ArrowBackIcon />}
-              sx={{
-                alignSelf: "flex-start",
-              }}
-            >
-              Back
-            </Button>
-          </Link> */}
-            <Stack
-              direction="row"
-              spacing={2}
-              sx={{
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Box>
-                <PageHeader title="Financial Year" backHref="/financial-years" />
+          <Chip label={financialYear.status} color={getStatusColor(financialYear.status)} />
+        </PageHeader>
 
-                <Typography variant="body2" color="text.secondary">
-                  Financial Year Details
-                </Typography>
-              </Box>
-
-              <Chip label={financialYear.status} color={getStatusColor(financialYear.status)} />
-            </Stack>
-
-            <FinancialYearTabs financialYear={financialYear} members={members} report={report} />
-          </Stack>
-        </Container>
-      </>
+        <FinancialYearTabs financialYear={financialYear} members={members} report={report} />
+      </Stack>
     );
   } catch (error) {
     if (error instanceof AppError && error.status === 404) {
@@ -105,15 +71,6 @@ export default async function FinancialYearDetailsPage({ params }: PageProps) {
 
     console.error(error);
 
-    return (
-      <Container
-        maxWidth="md"
-        sx={{
-          py: 2,
-        }}
-      >
-        <Alert severity="error">Failed to load financial year.</Alert>
-      </Container>
-    );
+    return <Alert severity="error">Failed to load financial year.</Alert>;
   }
 }

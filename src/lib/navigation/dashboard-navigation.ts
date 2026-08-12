@@ -33,7 +33,7 @@ export const dashboardNavigation: NavigationItem[] = [
 
   {
     title: "Attendance",
-    href: "/reports/attendance",
+    href: "/attendance",
     icon: AssessmentOutlinedIcon,
   },
   {
@@ -51,6 +51,12 @@ export const dashboardNavigation: NavigationItem[] = [
   {
     title: "Reports",
     href: "/reports",
+    icon: AssessmentOutlinedIcon,
+  },
+
+  {
+    title: "Member Summary",
+    href: "/reports/member-summary",
     icon: AssessmentOutlinedIcon,
   },
 ];

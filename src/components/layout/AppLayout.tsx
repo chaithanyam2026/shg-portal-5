@@ -66,8 +66,6 @@ export default function AppLayout({ children }: Props) {
         sx={{
           flexGrow: 1,
 
-          p: 3,
-
           width: mobile ? "100%" : `calc(100% - ${DRAWER_WIDTH}px)`,
         }}
       >

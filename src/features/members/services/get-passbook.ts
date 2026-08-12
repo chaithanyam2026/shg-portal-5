@@ -26,18 +26,35 @@ type PopulatedFinancialYear = Omit<FinancialYearDocument, "members"> & {
  * Returns the contribution passbook
  * for a member.
  */
-export async function getMemberPassbook(memberId: string): Promise<MemberPassbook> {
+export async function getMemberPassbook(
+  memberId: string,
+  financialYearId?: string,
+): Promise<MemberPassbook> {
   await connectMongo();
 
-  const financialYear = await FinancialYear.findOne({
-    "members.memberId": memberId,
-    status: "IN_PROGRESS",
-  })
-    .populate({
-      path: "members.memberId",
-      select: "memberCode name",
+  let financialYear: PopulatedFinancialYear | null;
+
+  if (financialYearId) {
+    financialYear = await FinancialYear.findOne({
+      _id: financialYearId,
+      "members.memberId": memberId,
     })
-    .lean<PopulatedFinancialYear>();
+      .populate({
+        path: "members.memberId",
+        select: "memberCode name",
+      })
+      .lean<PopulatedFinancialYear>();
+  } else {
+    financialYear = await FinancialYear.findOne({
+      "members.memberId": memberId,
+      status: "IN_PROGRESS",
+    })
+      .populate({
+        path: "members.memberId",
+        select: "memberCode name",
+      })
+      .lean<PopulatedFinancialYear>();
+  }
 
   if (!financialYear) {
     throw new Error("Financial year not found.");

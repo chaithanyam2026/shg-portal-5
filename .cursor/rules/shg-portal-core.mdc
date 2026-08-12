@@ -1,0 +1,42 @@
+---
+description: SHG Portal core stack, architecture, and coding standards
+alwaysApply: true
+---
+
+# SHG Portal — Core Conventions
+
+Self Help Group management portal. Keep changes simple, vertical-slice, and compilable after every batch.
+
+## Stack (locked)
+
+- Next.js 16 App Router, React 19, TypeScript strict
+- MongoDB + Mongoose, Auth.js v5 (NextAuth), MUI v9, Zod, react-hook-form
+- Read `node_modules/next/dist/docs/` before using Next.js APIs — this version has breaking changes
+
+## Architecture
+
+Feature-first layout under `src/features/{feature}/`:
+
+| Layer | Path | Responsibility |
+|-------|------|----------------|
+| Domain | `domain/` | Pure types, constants, business rules — no DB or React |
+| Services | `services/` | DB access, orchestration; export via `services/index.ts` |
+| Internal | `services/internal/` | Private helpers — not exported from feature barrel |
+| UI | `ui/` | MUI components — no business logic |
+| Validation | `validation.ts` | Zod schemas shared by services and forms |
+
+Models live in `src/models/`. Shared utilities in `src/lib/`. Use `@/` path alias.
+
+## Principles
+
+- **Simple over abstract** — no DTO layers, repository classes, or extra mapper interfaces
+- **Functions over classes** — `create()`, `update()`, `list()`, `close()`, `activate()`
+- **Throw `AppError`** from `@/lib/errors` for expected failures; API routes catch and return JSON
+- **Mobile-first** MUI UI; currency/date formatting via `@/lib/utils`
+- **Prettier**: double quotes, 100 print width, organize imports on save
+
+## Domain modules
+
+Financial Years → Meetings → Members → Loans → Reports → Auth/ACL
+
+Each module has business rules (e.g. one active FY, closed FY is read-only). Check `docs/` and existing feature code before changing rules.

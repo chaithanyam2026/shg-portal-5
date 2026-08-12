@@ -1,15 +1,17 @@
 "use client";
 
-import type { AttendanceFineSummary } from "@/features/reports/domain";
+import type { FinancialYearOption } from "@/features/financial-year/domain/financial-year-option";
 
 import type { MemberDetails as MemberDetailsType } from "../types";
 
 import MemberTabs from "./MemberTabs";
 
 type Props = {
-  member: MemberDetailsType;
+  financialYearOptions: FinancialYearOption[];
 
-  attendanceFine: AttendanceFineSummary;
+  initialFinancialYearId: string;
+
+  member: MemberDetailsType;
 };
 
 /**
@@ -18,6 +20,16 @@ type Props = {
  * Displays the member information
  * using a tabbed interface.
  */
-export default function MemberDetails({ member, attendanceFine }: Props) {
-  return <MemberTabs member={member} attendanceFine={attendanceFine} />;
+export default function MemberDetails({
+  member,
+  financialYearOptions,
+  initialFinancialYearId,
+}: Props) {
+  return (
+    <MemberTabs
+      member={member}
+      financialYearOptions={financialYearOptions}
+      initialFinancialYearId={initialFinancialYearId}
+    />
+  );
 }

@@ -15,7 +15,7 @@ type Props = {
 
   backHref?: string;
 
-  actions?: ReactNode;
+  children?: ReactNode;
 };
 
 export default function PageHeader({
@@ -23,7 +23,7 @@ export default function PageHeader({
   subtitle,
   showBack = true,
   backHref = "/",
-  actions,
+  children,
 }: Props) {
   return (
     <Box
@@ -31,30 +31,34 @@ export default function PageHeader({
         mb: 3,
       }}
     >
-     <Stack
-  direction={{
-    xs: "column",
-    md: "row",
-  }}
-  spacing={2}
-  sx={{
-    justifyContent: "space-between",
-    alignItems: {
-      xs: "stretch",
-      md: "center",
-    },
-  }}
->
-        <Stack spacing={1}>
-          {showBack && <BackButton fallbackHref={backHref} />}
+      <Stack
+        direction={{
+          xs: "column",
+          md: "row",
+        }}
+        spacing={2}
+        sx={{
+          justifyContent: "space-between",
+          alignItems: {
+            xs: "stretch",
+            md: "flex-start",
+          },
+        }}
+      >
+        <Stack spacing={1} sx={{ flex: 1, minWidth: 0 }}>
+          {showBack && (
+            <Box sx={{ alignSelf: "flex-start" }}>
+              <BackButton fallbackHref={backHref} />
+            </Box>
+          )}
 
           <Typography
-  variant="h4"
-  component="h1"
-  sx={{
-    fontWeight: 600,
-  }}
->
+            variant="h4"
+            component="h1"
+            sx={{
+              fontWeight: 600,
+            }}
+          >
             {title}
           </Typography>
 
@@ -65,23 +69,24 @@ export default function PageHeader({
           )}
         </Stack>
 
-        {actions && (
+        {children && (
           <Box
             sx={{
-              width: {
-                xs: "100%",
-                md: "auto",
-              },
               display: "flex",
+              flexWrap: "wrap",
+              gap: 1,
+              alignItems: "center",
               justifyContent: {
                 xs: "flex-start",
                 md: "flex-end",
               },
-              gap: 1,
-              flexWrap: "wrap",
+              width: {
+                xs: "100%",
+                md: "auto",
+              },
             }}
           >
-            {actions}
+            {children}
           </Box>
         )}
       </Stack>
