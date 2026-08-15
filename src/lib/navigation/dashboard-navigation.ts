@@ -2,6 +2,8 @@ import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 
+import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
+
 import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
 
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
@@ -62,6 +64,12 @@ export const dashboardNavigation: NavigationItem[] = [
     href: "/reports",
     icon: BarChartOutlinedIcon,
     // roles: ["ADMIN", "TREASURER"],
+  },
+
+  {
+    title: "My Profile",
+    href: "/account/profile",
+    icon: PersonOutlinedIcon,
   },
 
   {

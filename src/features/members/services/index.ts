@@ -1,3 +1,5 @@
+export * from "./get-account-profile";
+export * from "./update-account-profile";
 export * from "./create";
 export * from "./get";
 export * from "./get-attendance-fine-summary";

@@ -76,6 +76,14 @@ async function seedMembers() {
     });
 
     if (existing) {
+      const linkedUser = await UserModel.findById(existing.userId).select("memberId");
+
+      if (linkedUser && !linkedUser.memberId) {
+        linkedUser.memberId = existing._id;
+        await linkedUser.save();
+        console.log(`Repaired link for ${member.memberCode}`);
+      }
+
       skipped++;
 
       console.log(`Skipped ${member.memberCode}`);
@@ -90,7 +98,7 @@ async function seedMembers() {
       role: member.role ? member.role.toUpperCase() : USER_ROLES.MEMBER,
     });
 
-    await MemberModel.create({
+    const createdMember = await MemberModel.create({
       memberCode: member.memberCode.toUpperCase(),
       name: member.name,
       phone: member.phone,
@@ -100,6 +108,9 @@ async function seedMembers() {
       active: true,
       userId: user._id,
     });
+
+    user.memberId = createdMember._id;
+    await user.save();
 
     created++;
 

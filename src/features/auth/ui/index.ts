@@ -1,3 +1,7 @@
+export { default as AccountProfileForm } from "./AccountProfileForm";
+
+export { default as AccountProfileUnavailable } from "./AccountProfileUnavailable";
+
 export { default as ChangePasswordForm } from "./ChangePasswordForm";
 
 export { default as LoginContainer } from "./LoginContainer";

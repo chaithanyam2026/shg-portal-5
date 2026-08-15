@@ -10,3 +10,11 @@ export type MemberSummary = {
 };
 
 export type MemberDetails = MemberSummary;
+
+export type AccountProfile = {
+  memberId: string;
+  memberCode: string;
+  name: string;
+  phone: string;
+  address: string;
+};

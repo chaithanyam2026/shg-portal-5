@@ -11,7 +11,7 @@ export const ObjectIdSchema = z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid id.
 export const CreateMeetingSchema = z.object({
   meetingDate: z.coerce.date(),
 
-  place: z.string().trim().min(2).max(150),
+  place: z.string().trim().max(150).optional().default(""),
 
   agenda: z.string().trim().max(1000).optional().default(""),
 

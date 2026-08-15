@@ -45,3 +45,21 @@ export const CreateMemberSchema = z.object({
 });
 
 export type CreateMemberInput = z.infer<typeof CreateMemberSchema>;
+
+export const UpdateMemberProfileSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(2, "Name must be at least 2 characters.")
+    .max(150, "Name cannot exceed 150 characters."),
+
+  phone: z
+    .string()
+    .trim()
+    .min(10, "Phone must be at least 10 digits.")
+    .max(15, "Phone cannot exceed 15 digits."),
+
+  address: z.string().trim().max(500, "Address cannot exceed 500 characters.").optional().default(""),
+});
+
+export type UpdateMemberProfileInput = z.infer<typeof UpdateMemberProfileSchema>;
