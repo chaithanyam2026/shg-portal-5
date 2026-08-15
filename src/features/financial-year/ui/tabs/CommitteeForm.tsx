@@ -60,27 +60,37 @@ export default function CommitteeForm({ financialYear, members }: Props) {
   const router = useRouter();
 
   const [error, setError] = useState("");
-
+  const [success, setSuccess] = useState(false);
   const [saving, setSaving] = useState(false);
 
- const [committee, setCommittee] = useState<CommitteeState>({
-  president:
-    financialYear.executiveCommittee?.president?._id ?? "",
+  const [committee, setCommittee] = useState<CommitteeState>({
+    president: financialYear.executiveCommittee?.president?._id ?? "",
+    vicePresident: financialYear.executiveCommittee?.vicePresident?._id ?? "",
+    secretary: financialYear.executiveCommittee?.secretary?._id ?? "",
+    jointSecretary: financialYear.executiveCommittee?.jointSecretary?._id ?? "",
+    treasurer: financialYear.executiveCommittee?.treasurer?._id ?? "",
+  });
 
-  vicePresident:
-    financialYear.executiveCommittee?.vicePresident?._id ?? "",
+  function getSelectedMemberIds(excludeRole: keyof CommitteeState) {
+    const selected = new Set<string>();
 
-  secretary:
-    financialYear.executiveCommittee?.secretary?._id ?? "",
+    for (const role of ROLES) {
+      if (role.key === excludeRole) {
+        continue;
+      }
 
-  jointSecretary:
-    financialYear.executiveCommittee?.jointSecretary?._id ?? "",
+      const memberId = committee[role.key];
 
-  treasurer:
-    financialYear.executiveCommittee?.treasurer?._id ?? "",
-});
+      if (memberId) {
+        selected.add(memberId);
+      }
+    }
+
+    return selected;
+  }
 
   function handleChange(role: keyof CommitteeState, value: string) {
+    setSuccess(false);
     setCommittee((previous) => ({
       ...previous,
       [role]: value,
@@ -91,6 +101,7 @@ export default function CommitteeForm({ financialYear, members }: Props) {
     try {
       setSaving(true);
       setError("");
+      setSuccess(false);
 
       const response = await fetch(`/api/financial-years/${financialYear._id}`, {
         method: "PATCH",
@@ -132,6 +143,7 @@ export default function CommitteeForm({ financialYear, members }: Props) {
         throw new Error(result.message ?? "Failed to save committee.");
       }
 
+      setSuccess(true);
       router.refresh();
     } catch (err) {
       if (err instanceof Error) {
@@ -143,7 +155,6 @@ export default function CommitteeForm({ financialYear, members }: Props) {
       setSaving(false);
     }
   }
-  console.log("financialYear.members", financialYear.members);
   return (
     <Card variant="outlined">
       <CardContent>
@@ -152,28 +163,35 @@ export default function CommitteeForm({ financialYear, members }: Props) {
 
           {error && <Alert severity="error">{error}</Alert>}
 
-          {ROLES.map((role) => (
-            <FormControl fullWidth key={role.key}>
-              <InputLabel>{role.label}</InputLabel>
+          {success && <Alert severity="success">Executive committee saved successfully.</Alert>}
 
-              <Select
-                value={committee[role.key]}
-                label={role.label}
-                onChange={(event) => handleChange(role.key, event.target.value)}
-              >
-                <MenuItem value="">None</MenuItem>
+          {ROLES.map((role) => {
+            const selectedElsewhere = getSelectedMemberIds(role.key);
 
-                {financialYear.members.map((member) => (
-  <MenuItem
-    key={member.member._id}
-    value={member.member._id}
-  >
-    {member.member.memberCode} - {member.member.name}
-  </MenuItem>
-))}
-              </Select>
-            </FormControl>
-          ))}
+            return (
+              <FormControl fullWidth key={role.key}>
+                <InputLabel>{role.label}</InputLabel>
+
+                <Select
+                  value={committee[role.key]}
+                  label={role.label}
+                  onChange={(event) => handleChange(role.key, event.target.value)}
+                >
+                  <MenuItem value="">None</MenuItem>
+
+                  {financialYear.members.map((member) => (
+                    <MenuItem
+                      key={member.member._id}
+                      value={member.member._id}
+                      disabled={selectedElsewhere.has(member.member._id)}
+                    >
+                      {member.member.memberCode} - {member.member.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            );
+          })}
 
           <Button
             variant="contained"

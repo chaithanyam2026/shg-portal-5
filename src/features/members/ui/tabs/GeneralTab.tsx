@@ -85,6 +85,18 @@ export default function GeneralTab({ member }: Props) {
               sm: 6,
             }}
           >
+            <DetailItem
+              label="Deactivated Date"
+              value={member.deactivatedDate ? formatDate(member.deactivatedDate) : "-"}
+            />
+          </Grid>
+
+          <Grid
+            size={{
+              xs: 12,
+              sm: 6,
+            }}
+          >
             <DetailItem label="Address" value={member.address} />
           </Grid>
 

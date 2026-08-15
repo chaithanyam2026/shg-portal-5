@@ -1,89 +1,67 @@
-"use client";
-
-import { SyntheticEvent } from "react";
-
-import { usePathname, useRouter } from "next/navigation";
+import type { SyntheticEvent } from "react";
 
 import { Tab, Tabs } from "@mui/material";
 
 import type { MeetingStatus } from "../domain/meeting-status";
 
-type Props = {
-  meetingId: string;
-  status: MeetingStatus;
-};
+export const MEETING_TAB_SLUGS = [
+  "general",
+  "attendance",
+  "payments",
+  "loan",
+  "bank",
+  "income",
+  "expenses",
+  "members",
+  "summary",
+] as const;
 
-export default function MeetingTabs({ meetingId, status }: Props) {
-  const router = useRouter();
+export type MeetingTabSlug = (typeof MEETING_TAB_SLUGS)[number];
 
-  const pathname = usePathname();
+const TABS: {
+  label: string;
+  slug: MeetingTabSlug;
+  disabledWhenDraft: boolean;
+}[] = [
+  { label: "General", slug: "general", disabledWhenDraft: false },
+  { label: "Attendance", slug: "attendance", disabledWhenDraft: true },
+  { label: "Payments", slug: "payments", disabledWhenDraft: true },
+  { label: "Loans", slug: "loan", disabledWhenDraft: true },
+  { label: "Bank", slug: "bank", disabledWhenDraft: true },
+  { label: "Income", slug: "income", disabledWhenDraft: true },
+  { label: "Expenses", slug: "expenses", disabledWhenDraft: true },
+  { label: "Members", slug: "members", disabledWhenDraft: true },
+  { label: "Summary", slug: "summary", disabledWhenDraft: true },
+];
 
-  const tabs = [
-    {
-      label: "General",
-      href: "",
-      disabled: false,
-    },
-    {
-      label: "Attendance",
-      href: "/attendance",
-      disabled: status === "DRAFT",
-    },
-    {
-      label: "Payments",
-      href: "/payments",
-      disabled: status === "DRAFT",
-    },
-    {
-      label: "Loans",
-      href: "/loan",
-      disabled: status === "DRAFT",
-    },
-    {
-      label: "Bank",
-      href: "/bank",
-      disabled: status === "DRAFT",
-    },
-    {
-      label: "Income",
-      href: "/income",
-      disabled: status === "DRAFT",
-    },
-    {
-      label: "Expenses",
-      href: "/expenses",
-      disabled: status === "DRAFT",
-    },
-    {
-      label: "Members",
-      href: "/members",
-      disabled: status === "DRAFT",
-    },
-    {
-      label: "Summary",
-      href: "/summary",
-      disabled: status === "DRAFT",
-    },
-  ];
-
-  const value = tabs.findIndex((tab) => {
-    const path = `/meetings/${meetingId}${tab.href}`;
-    return pathname === path;
-  });
-
-  function handleChange(_event: SyntheticEvent, index: number) {
-    router.push(`/meetings/${meetingId}${tabs[index].href}`);
+export function resolveMeetingTabIndex(tab?: string | null): number {
+  if (!tab) {
+    return 0;
   }
 
+  const normalized = tab.toLowerCase();
+
+  const index = MEETING_TAB_SLUGS.indexOf(normalized as MeetingTabSlug);
+
+  return index >= 0 ? index : 0;
+}
+
+type Props = {
+  value: number;
+  status: MeetingStatus;
+  onChange: (event: SyntheticEvent, value: number) => void;
+};
+
+export default function MeetingTabs({ value, status, onChange }: Props) {
   return (
-    <Tabs
-      value={value < 0 ? 0 : value}
-      onChange={handleChange}
-      variant="scrollable"
-      scrollButtons="auto"
-    >
-      {tabs.map((tab) => (
-        <Tab key={tab.label} label={tab.label} disabled={tab.disabled} />
+    <Tabs value={value} onChange={onChange} variant="scrollable" scrollButtons="auto">
+      {TABS.map((tab, index) => (
+        <Tab
+          key={tab.slug}
+          label={tab.label}
+          disabled={tab.disabledWhenDraft && status === "DRAFT"}
+          value={index}
+        />
       ))}
     </Tabs>
   );

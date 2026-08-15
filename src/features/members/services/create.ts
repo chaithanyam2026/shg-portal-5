@@ -66,6 +66,7 @@ export async function createMember(input: CreateMemberInput): Promise<MemberDeta
     address: member.address ?? "",
     status: "ACTIVE",
     joinedDate: member.joinDate.toISOString(),
+    deactivatedDate: member.deactivatedDate?.toISOString(),
     remarks: member.remarks ?? "",
   };
 }

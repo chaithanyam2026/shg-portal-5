@@ -6,6 +6,7 @@ import { hashPassword } from "@/lib/auth/password";
 import fs from "node:fs/promises";
 
 import { USER_ROLES } from "@/lib/constants/roles";
+import { USER_STATUS } from "@/lib/constants/user-status";
 
 // -----------------------------------------------------------------------------
 // Load .env.local BEFORE importing anything that reads process.env
@@ -35,6 +36,8 @@ type MemberSeed = {
   password: string;
   role?: string;
   joinDate?: string;
+  active?: boolean;
+  deactivatedDate?: string;
   remarks?: string;
 };
 
@@ -71,12 +74,17 @@ async function seedMembers() {
   let skipped = 0;
 
   for (const member of members) {
+    const active = member.active ?? true;
+    const joinDate = member.joinDate ? new Date(member.joinDate) : new Date();
+    const deactivatedDate =
+      !active && member.deactivatedDate ? new Date(member.deactivatedDate) : null;
+
     const existing = await MemberModel.findOne({
       memberCode: member.memberCode,
     });
 
     if (existing) {
-      const linkedUser = await UserModel.findById(existing.userId).select("memberId");
+      const linkedUser = await UserModel.findById(existing.userId).select("memberId status");
 
       if (linkedUser && !linkedUser.memberId) {
         linkedUser.memberId = existing._id;
@@ -84,9 +92,19 @@ async function seedMembers() {
         console.log(`Repaired link for ${member.memberCode}`);
       }
 
+      existing.joinDate = joinDate;
+      existing.active = active;
+      existing.deactivatedDate = deactivatedDate;
+      await existing.save();
+
+      if (linkedUser) {
+        linkedUser.status = active ? USER_STATUS.ACTIVE : USER_STATUS.INACTIVE;
+        await linkedUser.save();
+      }
+
       skipped++;
 
-      console.log(`Skipped ${member.memberCode}`);
+      console.log(`Updated ${member.memberCode}`);
 
       continue;
     }
@@ -96,6 +114,7 @@ async function seedMembers() {
       username: member.username.toLowerCase(),
       passwordHash,
       role: member.role ? member.role.toUpperCase() : USER_ROLES.MEMBER,
+      status: active ? USER_STATUS.ACTIVE : USER_STATUS.INACTIVE,
     });
 
     const createdMember = await MemberModel.create({
@@ -103,9 +122,10 @@ async function seedMembers() {
       name: member.name,
       phone: member.phone,
       address: member.address ?? "",
-      joinDate: member.joinDate ? new Date(member.joinDate) : new Date(),
+      joinDate,
       remarks: member.remarks ?? "",
-      active: true,
+      active,
+      deactivatedDate,
       userId: user._id,
     });
 
@@ -122,7 +142,7 @@ async function seedMembers() {
   console.log("Completed");
   console.log("------------------------------------");
   console.log(`Created : ${created}`);
-  console.log(`Skipped : ${skipped}`);
+  console.log(`Updated : ${skipped}`);
 
   process.exit(0);
 }

@@ -39,6 +39,8 @@ export async function getMember(id: string): Promise<MemberDetails> {
 
     joinedDate: member.joinDate?.toISOString(),
 
+    deactivatedDate: member.deactivatedDate?.toISOString(),
+
     remarks: member.remarks ?? "",
   };
 }

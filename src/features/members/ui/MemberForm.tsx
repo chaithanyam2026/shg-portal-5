@@ -90,7 +90,7 @@ export default function MemberForm({ loading = false, onSubmit }: Props) {
             />
 
             <TextField
-              label="Join Date"
+              label="Joined Date"
               type="date"
               required
               fullWidth

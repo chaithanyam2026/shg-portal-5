@@ -16,6 +16,7 @@ import AttendanceFineTab from "./tabs/AttendanceFineTab";
 import ContributionsTabLoader from "./tabs/ContributionsTabLoader";
 import GeneralTab from "./tabs/GeneralTab";
 import LoansTab from "./tabs/LoansTab";
+import MemberDeactivateButton from "./MemberDeactivateButton";
 import PassbookTab from "./tabs/PassbookTab";
 
 type Props = {
@@ -42,6 +43,8 @@ export default function MemberTabs({
   return (
     <Stack spacing={3}>
       <PageHeader title={member.name} subtitle={member.memberCode} backHref="/members">
+        <MemberDeactivateButton member={member} />
+
         <Button component={Link} href="/members/new" variant="contained">
           New Member
         </Button>

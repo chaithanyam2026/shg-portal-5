@@ -1,4 +1,6 @@
-import type { ReactNode } from "react";
+"use client";
+
+import type { ReactNode, SyntheticEvent } from "react";
 
 import { Stack } from "@mui/material";
 
@@ -10,20 +12,26 @@ import MeetingTabs from "./MeetingTabs";
 
 type Props = {
   children: ReactNode;
-
   meetingId: string;
-
   status: MeetingStatus;
-
   title: string;
+  tab: number;
+  onTabChange: (event: SyntheticEvent, value: number) => void;
 };
 
-export default function MeetingWorkflowLayout({ meetingId, status, title, children }: Props) {
+export default function MeetingWorkflowLayout({
+  meetingId,
+  status,
+  title,
+  children,
+  tab,
+  onTabChange,
+}: Props) {
   return (
     <Stack spacing={3}>
       <PageHeader title={title} backHref={`/meetings/${meetingId}`} />
 
-      <MeetingTabs meetingId={meetingId} status={status} />
+      <MeetingTabs value={tab} status={status} onChange={onTabChange} />
 
       {children}
     </Stack>
