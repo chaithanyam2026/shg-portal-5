@@ -70,7 +70,6 @@ export default function MeetingForm({
 
       <TextField
         label="Place"
-        required
         fullWidth
         value={values.place}
         onChange={(event) => update("place", event.target.value)}

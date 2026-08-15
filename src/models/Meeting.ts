@@ -105,7 +105,7 @@ const meetingSchema =
 
     place: {
       type: String,
-      required: true,
+      default: "",
       trim: true,
       maxlength: 150,
     },

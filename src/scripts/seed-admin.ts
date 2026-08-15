@@ -45,7 +45,11 @@ async function seedAdmins() {
   for (const admin of admins) {
     const username = admin.username.toLowerCase();
 
+    console.log("Checking if admin exists:", username);
+
     const existing = await User.findOne({ username }).select("_id").lean();
+
+    console.log("Admin exists:", existing ? "Yes" : "No");
 
     if (existing) {
       skipped++;

@@ -84,9 +84,18 @@ export default function AppLayout({ children, username, userRole = "MEMBER" }: P
 
             <Button
               component={Link}
-              href="/account/change-password"
+              href="/account/profile"
               color="inherit"
               sx={{ display: { xs: "none", md: "inline-flex" } }}
+            >
+              My Profile
+            </Button>
+
+            <Button
+              component={Link}
+              href="/account/change-password"
+              color="inherit"
+              sx={{ display: { xs: "none", lg: "inline-flex" } }}
             >
               Change Password
             </Button>
