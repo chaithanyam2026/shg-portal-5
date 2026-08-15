@@ -14,9 +14,14 @@ import { useMeetingDataRefresh } from "./MeetingDataRefresh";
 type Props = {
   meetingId: string;
   initialSummary: BankTransactionSummary;
+  readOnly?: boolean;
 };
 
-export default function BankTransactionForm({ meetingId, initialSummary }: Props) {
+export default function BankTransactionForm({
+  meetingId,
+  initialSummary,
+  readOnly = false,
+}: Props) {
   const router = useRouter();
   const { refreshMeetingData } = useMeetingDataRefresh();
 
@@ -94,7 +99,7 @@ export default function BankTransactionForm({ meetingId, initialSummary }: Props
 
       {success && <Alert severity="success">{success}</Alert>}
 
-      <BankTransactionTable records={records} disabled={saving} onChange={setRecords} />
+      <BankTransactionTable records={records} disabled={readOnly || saving} onChange={setRecords} />
 
       <Card>
         <CardContent>
@@ -108,9 +113,11 @@ export default function BankTransactionForm({ meetingId, initialSummary }: Props
         </CardContent>
       </Card>
 
-      <Button variant="contained" disabled={saving} onClick={save}>
-        Save Bank Transactions
-      </Button>
+      {!readOnly && (
+        <Button variant="contained" disabled={saving} onClick={save}>
+          Save Bank Transactions
+        </Button>
+      )}
     </Stack>
   );
 }

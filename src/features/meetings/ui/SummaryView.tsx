@@ -14,9 +14,10 @@ import ValidationItem from "./ValidationItem";
 type Props = {
   meetingId: string;
   summary: MeetingDashboardSummary;
+  readOnly?: boolean;
 };
 
-export default function SummaryView({ meetingId, summary }: Props) {
+export default function SummaryView({ meetingId, summary, readOnly = false }: Props) {
   return (
     <Stack spacing={3}>
       <SummaryCard title="Meeting">
@@ -149,7 +150,7 @@ export default function SummaryView({ meetingId, summary }: Props) {
             action="close"
             label="Close Meeting"
             color="warning"
-            disabled={summary.status !== "IN_PROGRESS"}
+            disabled={readOnly || summary.status !== "IN_PROGRESS"}
           />
         </Stack>
       </SummaryCard>

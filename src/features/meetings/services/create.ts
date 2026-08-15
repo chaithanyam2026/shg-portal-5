@@ -73,6 +73,8 @@ export async function createMeeting(
 
     financialYearId: meeting.financialYearId.toString(),
 
+    financialYearStatus: financialYear.status,
+
     meetingDate: meeting.meetingDate.toISOString(),
 
     place: meeting.place,

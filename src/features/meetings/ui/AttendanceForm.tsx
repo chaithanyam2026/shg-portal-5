@@ -15,9 +15,15 @@ type Props = {
   meetingId: string;
 
   initialRecords: AttendanceRecord[];
+
+  readOnly?: boolean;
 };
 
-export default function AttendanceForm({ meetingId, initialRecords }: Props) {
+export default function AttendanceForm({
+  meetingId,
+  initialRecords,
+  readOnly = false,
+}: Props) {
   const router = useRouter();
   const { refreshMeetingData } = useMeetingDataRefresh();
 
@@ -71,11 +77,13 @@ export default function AttendanceForm({ meetingId, initialRecords }: Props) {
 
       {message && <Alert severity="success">{message}</Alert>}
 
-      <AttendanceTable records={records} disabled={saving} onChange={setRecords} />
+      <AttendanceTable records={records} disabled={readOnly || saving} onChange={setRecords} />
 
-      <Button variant="contained" onClick={save} disabled={saving}>
-        Save Attendance
-      </Button>
+      {!readOnly && (
+        <Button variant="contained" onClick={save} disabled={saving}>
+          Save Attendance
+        </Button>
+      )}
     </Stack>
   );
 }

@@ -14,9 +14,10 @@ import PaymentTable from "./PaymentTable";
 type Props = {
   meetingId: string;
   initialRecords: PaymentRecord[];
+  readOnly?: boolean;
 };
 
-export default function PaymentForm({ meetingId, initialRecords }: Props) {
+export default function PaymentForm({ meetingId, initialRecords, readOnly = false }: Props) {
   const router = useRouter();
   const { refreshMeetingData } = useMeetingDataRefresh();
 
@@ -85,7 +86,7 @@ export default function PaymentForm({ meetingId, initialRecords }: Props) {
 
       {success && <Alert severity="success">{success}</Alert>}
 
-      <PaymentTable records={records} disabled={saving} onChange={setRecords} />
+      <PaymentTable records={records} disabled={readOnly || saving} onChange={setRecords} />
 
       <Card>
         <CardContent>
@@ -103,9 +104,11 @@ export default function PaymentForm({ meetingId, initialRecords }: Props) {
         </CardContent>
       </Card>
 
-      <Button variant="contained" disabled={saving} onClick={save}>
-        Save Payments
-      </Button>
+      {!readOnly && (
+        <Button variant="contained" disabled={saving} onClick={save}>
+          Save Payments
+        </Button>
+      )}
     </Stack>
   );
 }

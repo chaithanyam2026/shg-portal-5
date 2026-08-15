@@ -10,6 +10,7 @@ import PageHeader from "@/components/layout/PageHeader";
 import { formatDate } from "@/lib/utils/date";
 
 import type { MeetingDetails } from "../types";
+import { isEditable } from "../domain/meeting-rules";
 
 import MeetingActionButton from "./MeetingActionButton";
 import { MeetingDataRefreshProvider, useMeetingDataRefresh } from "./MeetingDataRefresh";
@@ -68,6 +69,8 @@ function MeetingWorkspaceContent({ meeting, initialTab }: Props) {
     [tab],
   );
 
+  const readOnly = !isEditable(meeting.status, meeting.financialYearStatus);
+
   return (
     <Stack spacing={3}>
       <PageHeader
@@ -78,7 +81,9 @@ function MeetingWorkspaceContent({ meeting, initialTab }: Props) {
       >
         <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", gap: 1 }}>
           <Link href={`/meetings/${meeting.id}/edit`} style={{ textDecoration: "none" }}>
-            <Button variant="outlined">Edit</Button>
+            <Button variant="outlined" disabled={readOnly}>
+              Edit
+            </Button>
           </Link>
 
           <MeetingActionButton
@@ -86,7 +91,7 @@ function MeetingWorkspaceContent({ meeting, initialTab }: Props) {
             action="start"
             label="Start Meeting"
             color="success"
-            disabled={meeting.status !== "DRAFT"}
+            disabled={meeting.status !== "DRAFT" || readOnly}
           />
 
           <MeetingActionButton
@@ -96,7 +101,7 @@ function MeetingWorkspaceContent({ meeting, initialTab }: Props) {
             color="error"
             variant="outlined"
             confirm
-            disabled={meeting.status !== "DRAFT"}
+            disabled={meeting.status !== "DRAFT" || readOnly}
           />
 
           <MeetingActionButton
@@ -104,7 +109,7 @@ function MeetingWorkspaceContent({ meeting, initialTab }: Props) {
             action="close"
             label="Close Meeting"
             color="warning"
-            disabled={meeting.status !== "IN_PROGRESS"}
+            disabled={meeting.status !== "IN_PROGRESS" || readOnly}
           />
         </Stack>
       </PageHeader>
@@ -117,37 +122,37 @@ function MeetingWorkspaceContent({ meeting, initialTab }: Props) {
 
       {visitedTabs.has(1) && (
         <Box sx={panelSx(1)}>
-          <AttendanceTabPanel meetingId={meeting.id} />
+          <AttendanceTabPanel meetingId={meeting.id} readOnly={readOnly} />
         </Box>
       )}
 
       {visitedTabs.has(2) && (
         <Box sx={panelSx(2)}>
-          <PaymentsTabPanel meetingId={meeting.id} />
+          <PaymentsTabPanel meetingId={meeting.id} readOnly={readOnly} />
         </Box>
       )}
 
       {visitedTabs.has(3) && (
         <Box sx={panelSx(3)}>
-          <LoansTabPanel meetingId={meeting.id} />
+          <LoansTabPanel meetingId={meeting.id} readOnly={readOnly} />
         </Box>
       )}
 
       {visitedTabs.has(4) && (
         <Box sx={panelSx(4)}>
-          <BankTabPanel meetingId={meeting.id} />
+          <BankTabPanel meetingId={meeting.id} readOnly={readOnly} />
         </Box>
       )}
 
       {visitedTabs.has(5) && (
         <Box sx={panelSx(5)}>
-          <IncomeTabPanel meetingId={meeting.id} />
+          <IncomeTabPanel meetingId={meeting.id} readOnly={readOnly} />
         </Box>
       )}
 
       {visitedTabs.has(6) && (
         <Box sx={panelSx(6)}>
-          <ExpensesTabPanel meetingId={meeting.id} />
+          <ExpensesTabPanel meetingId={meeting.id} readOnly={readOnly} />
         </Box>
       )}
 
@@ -159,7 +164,7 @@ function MeetingWorkspaceContent({ meeting, initialTab }: Props) {
 
       {visitedTabs.has(8) && (
         <Box sx={panelSx(8)}>
-          <SummaryTabPanel meetingId={meeting.id} refreshKey={refreshKey} />
+          <SummaryTabPanel meetingId={meeting.id} refreshKey={refreshKey} readOnly={readOnly} />
         </Box>
       )}
     </Stack>

@@ -14,9 +14,10 @@ import { useMeetingDataRefresh } from "./MeetingDataRefresh";
 type Props = {
   meetingId: string;
   initialSummary: IncomeSummary;
+  readOnly?: boolean;
 };
 
-export default function IncomeForm({ meetingId, initialSummary }: Props) {
+export default function IncomeForm({ meetingId, initialSummary, readOnly = false }: Props) {
   const router = useRouter();
   const { refreshMeetingData } = useMeetingDataRefresh();
 
@@ -72,7 +73,7 @@ export default function IncomeForm({ meetingId, initialSummary }: Props) {
 
       {success && <Alert severity="success">{success}</Alert>}
 
-      <IncomeTable records={records} disabled={saving} onChange={setRecords} />
+      <IncomeTable records={records} disabled={readOnly || saving} onChange={setRecords} />
 
       <Card>
         <CardContent>
@@ -80,9 +81,11 @@ export default function IncomeForm({ meetingId, initialSummary }: Props) {
         </CardContent>
       </Card>
 
-      <Button variant="contained" disabled={saving} onClick={save}>
-        Save Income
-      </Button>
+      {!readOnly && (
+        <Button variant="contained" disabled={saving} onClick={save}>
+          Save Income
+        </Button>
+      )}
     </Stack>
   );
 }

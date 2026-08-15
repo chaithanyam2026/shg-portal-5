@@ -30,9 +30,10 @@ import { useMeetingDataRefresh } from "./MeetingDataRefresh";
 
 type Props = {
   initialSummary: MeetingLoansSummary;
+  readOnly?: boolean;
 };
 
-export default function MeetingLoanForm({ initialSummary }: Props) {
+export default function MeetingLoanForm({ initialSummary, readOnly = false }: Props) {
   const router = useRouter();
   const { refreshMeetingData } = useMeetingDataRefresh();
 
@@ -40,7 +41,7 @@ export default function MeetingLoanForm({ initialSummary }: Props) {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const isClosed = initialSummary.status === "CLOSED";
+  const isClosed = readOnly || initialSummary.status === "CLOSED";
   const meetingDate = initialSummary.meetingDate.split("T")[0];
 
   async function handleSubmit(values: CreateLoanInput) {
@@ -148,7 +149,7 @@ export default function MeetingLoanForm({ initialSummary }: Props) {
           onSubmit={handleSubmit}
         />
       ) : (
-        <Alert severity="info">This meeting is closed. New loans cannot be added.</Alert>
+        <Alert severity="info">This meeting cannot be edited. New loans cannot be added.</Alert>
       )}
     </Stack>
   );

@@ -1,11 +1,23 @@
 import connectMongo from "@/lib/db/mongodb";
 
+import type { FinancialYearStatus } from "@/features/financial-year/domain/financial-year-status";
+import FinancialYear from "@/models/FinancialYear";
 import Meeting from "@/models/Meeting";
 import { Types } from "mongoose";
 
 import { MEETING_STATUS } from "../domain/meeting-status";
 
 import type { MeetingDetails } from "../types";
+
+async function loadFinancialYearStatus(financialYearId: unknown): Promise<FinancialYearStatus> {
+  const financialYear = await FinancialYear.findById(financialYearId).select("status").lean();
+
+  if (!financialYear) {
+    throw new Error("Financial year not found.");
+  }
+
+  return financialYear.status as FinancialYearStatus;
+}
 
 export async function startMeeting(id: string, userId?: string | null): Promise<MeetingDetails> {
   await connectMongo();
@@ -33,6 +45,8 @@ export async function startMeeting(id: string, userId?: string | null): Promise<
     id: meeting._id.toString(),
 
     financialYearId: meeting.financialYearId.toString(),
+
+    financialYearStatus: await loadFinancialYearStatus(meeting.financialYearId),
 
     meetingDate: meeting.meetingDate.toISOString(),
 
