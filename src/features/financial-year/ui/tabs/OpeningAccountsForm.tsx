@@ -33,8 +33,8 @@ export default function OpeningAccountsForm({ financialYear }: Props) {
   const router = useRouter();
 
   const [saving, setSaving] = useState(false);
-
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
   const [balances, setBalances] = useState<OpeningBalances>({
     bankBalance: financialYear.openingBalances.bankBalance,
@@ -49,6 +49,7 @@ export default function OpeningAccountsForm({ financialYear }: Props) {
   });
 
   function updateField(field: keyof OpeningBalances, value: string) {
+    setSuccess(false);
     setBalances((previous) => ({
       ...previous,
       [field]: value === "" ? 0 : Number(value),
@@ -59,6 +60,7 @@ export default function OpeningAccountsForm({ financialYear }: Props) {
     try {
       setSaving(true);
       setError("");
+      setSuccess(false);
 
       const response = await fetch(`/api/financial-years/${financialYear._id}`, {
         method: "PATCH",
@@ -78,6 +80,7 @@ export default function OpeningAccountsForm({ financialYear }: Props) {
         throw new Error(result.message ?? "Unable to save opening balances.");
       }
 
+      setSuccess(true);
       router.refresh();
     } catch (err) {
       if (err instanceof Error) {
@@ -97,6 +100,8 @@ export default function OpeningAccountsForm({ financialYear }: Props) {
           <Typography variant="h6">Opening Accounts</Typography>
 
           {error && <Alert severity="error">{error}</Alert>}
+
+          {success && <Alert severity="success">Opening accounts saved successfully.</Alert>}
 
           <TextField
             label="Bank Balance"
