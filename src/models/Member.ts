@@ -30,6 +30,8 @@ export interface MemberDocument {
 
   active: boolean;
 
+  deactivatedDate: Date | null;
+
   remarks: string;
 
   userId: Types.ObjectId;
@@ -84,6 +86,11 @@ const memberSchema = new Schema<MemberDocument>({
     type: Boolean,
     default: true,
     required: true,
+  },
+
+  deactivatedDate: {
+    type: Date,
+    default: null,
   },
 
   remarks: {

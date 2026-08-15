@@ -59,6 +59,8 @@ export default function MemberList({ members }: Props) {
 
               <TableCell>Joined</TableCell>
 
+              <TableCell>Deactivated</TableCell>
+
               <TableCell>Status</TableCell>
 
               <TableCell align="center">Action</TableCell>
@@ -75,6 +77,10 @@ export default function MemberList({ members }: Props) {
                 <TableCell>{member.phone}</TableCell>
 
                 <TableCell>{member.joinedDate ? formatDate(member.joinedDate) : "-"}</TableCell>
+
+                <TableCell>
+                  {member.deactivatedDate ? formatDate(member.deactivatedDate) : "-"}
+                </TableCell>
 
                 <TableCell>
                   <Chip

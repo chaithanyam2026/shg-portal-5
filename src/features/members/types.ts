@@ -6,6 +6,7 @@ export type MemberSummary = {
   address: string;
   status: string;
   joinedDate?: string;
+  deactivatedDate?: string;
   remarks: string;
 };
 

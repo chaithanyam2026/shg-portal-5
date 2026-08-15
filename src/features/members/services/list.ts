@@ -32,6 +32,8 @@ export async function listMembers(): Promise<MemberSummary[]> {
 
     joinedDate: member.joinDate?.toISOString(),
 
+    deactivatedDate: member.deactivatedDate?.toISOString(),
+
     remarks: member.remarks ?? "",
   }));
 }
