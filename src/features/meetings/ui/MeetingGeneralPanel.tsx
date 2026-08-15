@@ -9,13 +9,15 @@ import {
 
 import type { MeetingDetails } from "../types";
 
+import { formatDate } from "@/lib/utils/date";
+
 import MeetingStatusChip from "./MeetingStatusChip";
 
 type Props = {
   meeting: MeetingDetails;
 };
 
-function formatDate(value: string | null) {
+function formatDateTime(value: string | null) {
   if (!value) {
     return "-";
   }
@@ -52,7 +54,9 @@ export default function MeetingGeneralPanel({ meeting }: Props) {
                 Meeting Date
               </Typography>
 
-              <Typography>{formatDate(meeting.meetingDate)}</Typography>
+              <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                {formatDate(meeting.meetingDate)}
+              </Typography>
             </Stack>
 
             <Stack spacing={1}>
@@ -86,7 +90,7 @@ export default function MeetingGeneralPanel({ meeting }: Props) {
                 Started At
               </Typography>
 
-              <Typography>{formatDate(meeting.startedAt)}</Typography>
+              <Typography>{formatDateTime(meeting.startedAt)}</Typography>
             </Stack>
 
             <Stack spacing={1}>
@@ -94,7 +98,7 @@ export default function MeetingGeneralPanel({ meeting }: Props) {
                 Approved At
               </Typography>
 
-              <Typography>{formatDate(meeting.approvedAt)}</Typography>
+              <Typography>{formatDateTime(meeting.approvedAt)}</Typography>
             </Stack>
 
             <Stack spacing={1}>
@@ -102,7 +106,7 @@ export default function MeetingGeneralPanel({ meeting }: Props) {
                 Closed At
               </Typography>
 
-              <Typography>{formatDate(meeting.closedAt)}</Typography>
+              <Typography>{formatDateTime(meeting.closedAt)}</Typography>
             </Stack>
 
             <Divider />
@@ -112,7 +116,7 @@ export default function MeetingGeneralPanel({ meeting }: Props) {
                 Created
               </Typography>
 
-              <Typography>{formatDate(meeting.createdAt)}</Typography>
+              <Typography>{formatDateTime(meeting.createdAt)}</Typography>
             </Stack>
 
             <Stack spacing={1}>
@@ -120,7 +124,7 @@ export default function MeetingGeneralPanel({ meeting }: Props) {
                 Last Updated
               </Typography>
 
-              <Typography>{formatDate(meeting.updatedAt)}</Typography>
+              <Typography>{formatDateTime(meeting.updatedAt)}</Typography>
             </Stack>
           </Stack>
         </CardContent>

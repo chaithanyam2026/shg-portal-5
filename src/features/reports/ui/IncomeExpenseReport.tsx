@@ -28,8 +28,8 @@ export function IncomeExpenseReport({ report }: Props) {
         <Typography variant="h6">Cash Book</Typography>
 
         <Typography variant="body2" color="text.secondary">
-          Monthly cash and bank movement including contributions, loan repayments, and bank
-          transfers from closed meetings.
+          Monthly cash and bank movement including contributions, loan repayments, meeting expenses,
+          and bank transactions on their actual transaction dates.
         </Typography>
 
         {report.months.length === 0 ? (

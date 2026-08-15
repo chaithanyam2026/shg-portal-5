@@ -2,6 +2,7 @@
 
 import { ReactNode } from "react";
 
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v16-appRouter";
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 
 type Props = {
@@ -30,10 +31,12 @@ const theme = createTheme({
 
 export default function Providers({ children }: Props) {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <AppRouterCacheProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
 
-      {children}
-    </ThemeProvider>
+        {children}
+      </ThemeProvider>
+    </AppRouterCacheProvider>
   );
 }

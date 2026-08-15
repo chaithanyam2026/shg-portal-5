@@ -34,8 +34,8 @@ export default function FinancialYearTabs({ financialYear, members, report }: Pr
         <Tab label="Members" />
         <Tab label="Committee" />
         <Tab label="Accounts" />
-        <Tab label="Summary" />
         <Tab label="Income & Expense" />
+        <Tab label="Summary" />
       </Tabs>
 
       <Box sx={{ mt: 3 }}>
@@ -47,10 +47,10 @@ export default function FinancialYearTabs({ financialYear, members, report }: Pr
 
         {tab === 3 && <OpeningAccountsTab financialYear={financialYear} />}
 
-        {tab === 4 && <SummaryTab financialYear={financialYear} />}
-      </Box>
+        {tab === 4 && <IncomeExpenseReport report={report} />}
 
-      {tab === 5 && <IncomeExpenseReport report={report} />}
+        {tab === 5 && <SummaryTab financialYear={financialYear} />}
+      </Box>
     </>
   );
 }

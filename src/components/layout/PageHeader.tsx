@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography, type TypographyProps } from "@mui/material";
 
 import BackButton from "./BackButton";
 
@@ -10,6 +10,8 @@ type Props = {
   title: string;
 
   subtitle?: string;
+
+  subtitleVariant?: TypographyProps["variant"];
 
   showBack?: boolean;
 
@@ -21,6 +23,7 @@ type Props = {
 export default function PageHeader({
   title,
   subtitle,
+  subtitleVariant = "body2",
   showBack = true,
   backHref = "/",
   children,
@@ -63,7 +66,7 @@ export default function PageHeader({
           </Typography>
 
           {subtitle && (
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant={subtitleVariant} color="text.secondary">
               {subtitle}
             </Typography>
           )}

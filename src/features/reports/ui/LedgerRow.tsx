@@ -27,7 +27,7 @@ export function LedgerRow({ entry }: Props) {
       </TableCell>
 
       <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
-        {formatCurrency(entry.cashInHand)}
+        {entry.cashInHandHidden ? "-" : formatCurrency(entry.cashInHand)}
       </TableCell>
 
       <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>

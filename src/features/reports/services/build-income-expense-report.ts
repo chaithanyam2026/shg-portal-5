@@ -39,6 +39,7 @@ export async function buildIncomeExpenseReport(
     ...buildFinancialYearOpeningEntries({
       financialYearId: financialYear._id,
       startDate: financialYear.startDate,
+      openingBalances: financialYear.openingBalances,
       members: financialYear.members,
     }),
   ];
@@ -86,7 +87,8 @@ export async function buildIncomeExpenseReport(
     ledgerEntries.push(
       ...buildExpenseEntries({
         _id: meeting._id.toString(),
-        expenses: meeting.expenses.map((expense) => ({
+        meetingDate: meeting.meetingDate,
+        expenses: (meeting.expenses ?? []).map((expense) => ({
           transactionDate: expense.transactionDate,
           category: expense.category,
           amount: expense.amount,
@@ -98,7 +100,7 @@ export async function buildIncomeExpenseReport(
     ledgerEntries.push(
       ...buildBankEntries({
         _id: meeting._id.toString(),
-        bankTransactions: meeting.bankTransactions.map((transaction) => ({
+        bankTransactions: (meeting.bankTransactions ?? []).map((transaction) => ({
           transactionDate: transaction.transactionDate,
           type: transaction.type,
           amount: transaction.amount,
@@ -126,13 +128,19 @@ export async function buildIncomeExpenseReport(
 
   const closingBalance = calculateRunningBalances(
     sortedEntries,
-    openingBalance.cashInHand,
+    0,
     openingBalance.bankBalance,
   );
 
   const months = groupMonthlyLedger(sortedEntries);
 
-  const statement = await buildIncomeExpenseStatement(financialYearId, meetings);
+  const statement = await buildIncomeExpenseStatement(
+    financialYearId,
+    meetings,
+    financialYear.openingBalances,
+    financialYear.startDate,
+    financialYear.members,
+  );
 
   return {
     financialYearId,

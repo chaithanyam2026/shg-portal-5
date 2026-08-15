@@ -10,7 +10,10 @@ type Props = {
 export async function IncomeExpenseTab({ financialYearId }: Props) {
   const report = await buildIncomeExpenseReport(financialYearId);
 
-  if (report.months.length === 0) {
+  const hasStatementData =
+    report.statement.income.total > 0 || report.statement.expense.total > 0;
+
+  if (report.months.length === 0 && !hasStatementData) {
     return <Alert severity="info">No transactions found.</Alert>;
   }
 

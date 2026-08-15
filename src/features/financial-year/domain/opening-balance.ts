@@ -13,3 +13,8 @@ export type OpeningBalance = {
 
   otherLoans: number;
 };
+
+/** Bank + cash + investments — the liquid opening account total shown on the summary tab. */
+export function getOpeningAccountBalance(opening: OpeningBalance): number {
+  return opening.bankBalance + opening.cashInHand + opening.investments;
+}

@@ -26,12 +26,15 @@ import LoanForm from "@/features/loans/ui/LoanForm";
 
 import type { MeetingLoansSummary } from "../types";
 
+import { useMeetingDataRefresh } from "./MeetingDataRefresh";
+
 type Props = {
   initialSummary: MeetingLoansSummary;
 };
 
 export default function MeetingLoanForm({ initialSummary }: Props) {
   const router = useRouter();
+  const { refreshMeetingData } = useMeetingDataRefresh();
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -53,7 +56,8 @@ export default function MeetingLoanForm({ initialSummary }: Props) {
       interestRate: values.interestRate,
       sanctionedDate: values.sanctionedDate,
       disbursedDate: values.disbursedDate,
-      expiryDate: values.expiryDate,
+        expiryDate: values.expiryDate,
+      expectedMonthlyRepayment: values.expectedMonthlyRepayment,
       remarks: values.remarks,
     };
 
@@ -74,6 +78,7 @@ export default function MeetingLoanForm({ initialSummary }: Props) {
 
       setSuccess(`Loan ${result.loanNumber} created successfully.`);
 
+      refreshMeetingData();
       router.refresh();
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Unable to create loan.");

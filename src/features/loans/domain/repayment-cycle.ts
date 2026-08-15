@@ -1,3 +1,5 @@
+import { compareCalendarDates, toCalendarDate } from "@/lib/utils/date";
+
 export type RepaymentCycleInput = {
   disbursedDate: Date;
 
@@ -31,42 +33,49 @@ function getPreviousTransactionDate(input: RepaymentCycleInput): Date {
 }
 
 /**
- * Returns whether the repayment is
- * the first repayment for the loan.
+ * First interest period starts on the disbursement date.
+ * Callers often pass disbursedDate as previousRepaymentDate for that period.
  */
 function isFirstRepayment(input: RepaymentCycleInput): boolean {
-  return input.previousRepaymentDate == null;
+  if (input.previousRepaymentDate == null) {
+    return true;
+  }
+
+  return compareCalendarDates(input.previousRepaymentDate, input.disbursedDate) === 0;
 }
 
 /**
- * Calculates the number of whole days
- * between two dates.
+ * Whole calendar days in an interest period.
  *
- * Rules
- * -----
- * • Same day => 0
- * • Negative interval => 0
- * • Positive interval => Actual days
+ * The first period includes both the start and end dates.
+ * Later periods exclude the start date so the previous period's
+ * end date is not charged twice.
  */
-function calculateDays(fromDate: Date, toDate: Date): number {
-  return Math.max(
-    Math.floor((toDate.getTime() - fromDate.getTime()) / MILLISECONDS_PER_DAY) + 1,
-    0,
+function calculateDays(fromDate: Date, toDate: Date, includeStartDay: boolean): number {
+  const elapsed = Math.round(
+    (toCalendarDate(toDate).getTime() - toCalendarDate(fromDate).getTime()) / MILLISECONDS_PER_DAY,
   );
+
+  if (elapsed < 0) {
+    return 0;
+  }
+
+  return includeStartDay ? elapsed + 1 : elapsed;
 }
 
 export function getRepaymentCycle(input: RepaymentCycleInput): RepaymentCycle {
   const fromDate = getPreviousTransactionDate(input);
 
   const toDate = input.repaymentDate;
+  const firstRepayment = isFirstRepayment(input);
 
   return {
-    isFirstRepayment: isFirstRepayment(input),
+    isFirstRepayment: firstRepayment,
 
     fromDate,
 
     toDate,
 
-    interestDays: calculateDays(fromDate, toDate),
+    interestDays: calculateDays(fromDate, toDate, firstRepayment),
   };
 }

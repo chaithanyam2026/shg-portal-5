@@ -1,7 +1,12 @@
+import { FINANCIAL_YEAR_STATUS } from "@/features/financial-year/domain/financial-year-status";
 import connectMongo from "@/lib/db/mongodb";
+import { compareCalendarDates, toCalendarDate } from "@/lib/utils/date";
 
+import FinancialYear from "@/models/FinancialYear";
 import Loan from "@/models/Loan";
 
+import { CLOSED_LOAN_STATUS } from "../domain/loan-status";
+import { canUpdateExpectedMonthlyRepayment } from "../domain/loan-rules";
 import type { LoanDetails } from "../types";
 
 import { ObjectIdSchema, type UpdateLoanInput, UpdateLoanSchema } from "../validation";
@@ -15,15 +20,7 @@ export async function updateLoan(loanId: string, input: UpdateLoanInput): Promis
 
   const data = UpdateLoanSchema.parse(input);
 
-  const loan = await Loan.findById(id)
-    .populate({
-      path: "financialYearId",
-      select: "name",
-    })
-    .populate({
-      path: "memberId",
-      select: "memberCode name",
-    });
+  const loan = await Loan.findById(id);
 
   if (!loan) {
     throw new Error("Loan not found.");
@@ -35,6 +32,39 @@ export async function updateLoan(loanId: string, input: UpdateLoanInput): Promis
 
   if (data.status) {
     loan.status = data.status;
+  }
+
+  if (data.closedDate !== undefined) {
+    if (loan.status !== CLOSED_LOAN_STATUS && data.status !== CLOSED_LOAN_STATUS) {
+      throw new Error("Close date can only be set on a closed loan.");
+    }
+
+    if (data.closedDate && compareCalendarDates(data.closedDate, loan.disbursedDate) < 0) {
+      throw new Error("Close date cannot be before the loan start date.");
+    }
+
+    loan.closedDate = data.closedDate ? toCalendarDate(data.closedDate) : null;
+  }
+
+  if (data.expectedMonthlyRepayment !== undefined) {
+    const financialYear = await FinancialYear.findById(loan.financialYearId).select("status").lean();
+
+    if (
+      !canUpdateExpectedMonthlyRepayment({
+        loanStatus: loan.status,
+        financialYearStatus: financialYear?.status ?? FINANCIAL_YEAR_STATUS.CLOSED,
+      })
+    ) {
+      throw new Error(
+        "Minimum monthly repayment can only be changed on an active loan in an in-progress financial year.",
+      );
+    }
+
+    if (data.expectedMonthlyRepayment > loan.disbursedAmount) {
+      throw new Error("Minimum monthly repayment cannot exceed the disbursed amount.");
+    }
+
+    loan.expectedMonthlyRepayment = data.expectedMonthlyRepayment;
   }
 
   ensureLoanSanctionedDate(loan);

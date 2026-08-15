@@ -4,13 +4,16 @@ import { TableCell, TableRow, TextField } from "@mui/material";
 
 import type { PaymentRecord } from "../types";
 
+import AmountField from "./AmountField";
+
 type Props = {
+  serialNumber: number;
   record: PaymentRecord;
   disabled?: boolean;
   onChange(record: PaymentRecord): void;
 };
 
-export default function PaymentRow({ record, disabled = false, onChange }: Props) {
+export default function PaymentRow({ serialNumber, record, disabled = false, onChange }: Props) {
   function update<K extends keyof PaymentRecord>(key: K, value: PaymentRecord[K]) {
     const next = {
       ...record,
@@ -24,15 +27,14 @@ export default function PaymentRow({ record, disabled = false, onChange }: Props
 
   return (
     <TableRow hover>
-      <TableCell>{record.memberCode}</TableCell>
+      <TableCell align="right">{serialNumber}</TableCell>
 
       <TableCell>{record.memberName}</TableCell>
 
       <TableCell width={120}>
-        <TextField
+        <AmountField
           fullWidth
           size="small"
-          type="number"
           disabled={disabled}
           value={record.contribution}
           slotProps={{
@@ -42,40 +44,37 @@ export default function PaymentRow({ record, disabled = false, onChange }: Props
               },
             },
           }}
-          onChange={(event) => update("contribution", Number(event.target.value))}
+          onChange={(value) => update("contribution", value)}
         />
       </TableCell>
 
       <TableCell width={120}>
-        <TextField
+        <AmountField
           fullWidth
           size="small"
-          type="number"
           disabled={disabled}
           value={record.loanRepayment}
-          onChange={(event) => update("loanRepayment", Number(event.target.value))}
+          onChange={(value) => update("loanRepayment", value)}
         />
       </TableCell>
 
       <TableCell width={120}>
-        <TextField
+        <AmountField
           fullWidth
           size="small"
-          type="number"
           disabled={disabled}
           value={record.absentFine}
-          onChange={(event) => update("absentFine", Number(event.target.value))}
+          onChange={(value) => update("absentFine", value)}
         />
       </TableCell>
 
       <TableCell width={150}>
-        <TextField
+        <AmountField
           fullWidth
           size="small"
-          type="number"
           disabled={disabled}
           value={record.specialLoanFine}
-          onChange={(event) => update("specialLoanFine", Number(event.target.value))}
+          onChange={(value) => update("specialLoanFine", value)}
         />
       </TableCell>
 

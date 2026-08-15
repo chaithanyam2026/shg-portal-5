@@ -119,6 +119,7 @@ export async function listLoans(filters: ListLoansInput = {}): Promise<LoanSumma
           interestRate: loan.interestRate,
           expectedMonthlyRepayment: loan.expectedMonthlyRepayment,
           disbursedDate: loan.disbursedDate,
+          closedDate: loan.closedDate,
           financialYearEndDate: toCalendarDate(financialYear.endDate),
         },
         repaymentsByMember.get(memberId) ?? [],
@@ -157,6 +158,8 @@ export async function listLoans(filters: ListLoansInput = {}): Promise<LoanSumma
           toIsoString(loan.sanctionedDate) ?? toIsoString(loan.disbursedDate) ?? "",
 
         disbursedDate: toIsoString(loan.disbursedDate) ?? "",
+
+        closedDate: toIsoString(loan.closedDate),
 
         expiryDate: toIsoString(loan.expiryDate),
 

@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 
 import { Button, ButtonProps } from "@mui/material";
 
+import { useMeetingDataRefresh } from "./MeetingDataRefresh";
+
 type Props = {
   meetingId: string;
   action: "start" | "close" | "delete";
@@ -26,6 +28,7 @@ export default function MeetingActionButton({
   confirm = false,
 }: Props) {
   const router = useRouter();
+  const { refreshMeetingData } = useMeetingDataRefresh();
 
   const [loading, setLoading] = useState(false);
 
@@ -61,6 +64,7 @@ export default function MeetingActionButton({
       if (action === "delete") {
         router.push("/meetings");
       } else {
+        refreshMeetingData();
         router.refresh();
       }
     } catch (error) {

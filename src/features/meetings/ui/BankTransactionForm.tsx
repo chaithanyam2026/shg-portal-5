@@ -9,6 +9,7 @@ import { Alert, Button, Card, CardContent, Stack, Typography } from "@mui/materi
 import type { BankTransactionSummary } from "../types";
 
 import BankTransactionTable from "./BankTransactionTable";
+import { useMeetingDataRefresh } from "./MeetingDataRefresh";
 
 type Props = {
   meetingId: string;
@@ -17,6 +18,7 @@ type Props = {
 
 export default function BankTransactionForm({ meetingId, initialSummary }: Props) {
   const router = useRouter();
+  const { refreshMeetingData } = useMeetingDataRefresh();
 
   const [records, setRecords] = useState(initialSummary.records);
 
@@ -76,6 +78,7 @@ export default function BankTransactionForm({ meetingId, initialSummary }: Props
 
       setSuccess("Bank transactions saved successfully.");
 
+      refreshMeetingData();
       router.refresh();
     } catch (error) {
       setSuccess("");

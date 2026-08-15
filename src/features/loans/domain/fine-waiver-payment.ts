@@ -3,7 +3,6 @@ import { compareCalendarDates } from "@/lib/utils/date";
 import { evaluateMonthlyLoanFineAtMonthEnd } from "./loan-fine";
 import { getFineEligibilityForMonth } from "./fine-eligibility";
 import type { LoanPassbook } from "./loan-passbook";
-import { getMinimumMonthlyRepayment } from "./minimum-monthly-repayment";
 import { isRepaymentEntry } from "./passbook-entry-type";
 
 export type FineWaiverPaymentInput = {
@@ -250,7 +249,7 @@ export function buildFineWaiverSnapshot(
       ? passbook.calculationEndDate
       : referenceDate;
 
-  const minimumMonthlyRepayment = getMinimumMonthlyRepayment(passbook.disbursedAmount);
+  const minimumMonthlyRepayment = passbook.expectedMonthlyRepayment;
   const monthStart = getMonthStart(effectiveReferenceDate);
   const monthKey = getCalendarMonthKey(effectiveReferenceDate);
   const evaluationMonthLabel = formatCalendarMonthLabel(

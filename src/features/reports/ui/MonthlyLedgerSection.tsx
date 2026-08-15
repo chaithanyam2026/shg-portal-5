@@ -60,7 +60,7 @@ export function MonthlyLedgerSection({ ledger }: Props) {
             </Typography>
           </Grid>
 
-          <Grid size={{ xs: 6, md: 4 }}>
+          {/* <Grid size={{ xs: 6, md: 4 }}>
             <Typography variant="body2" color="text.secondary">
               Income
             </Typography>
@@ -74,7 +74,7 @@ export function MonthlyLedgerSection({ ledger }: Props) {
             </Typography>
 
             <Typography sx={{ fontWeight: 600 }}>{formatCurrency(ledger.totalExpense)}</Typography>
-          </Grid>
+          </Grid> */}
         </Grid>
       </AccordionSummary>
 
@@ -110,9 +110,9 @@ export function MonthlyLedgerSection({ ledger }: Props) {
 
           <LedgerTable entries={ledger.entries} />
 
-          <Divider />
+          {/*<Divider />
 
-          <Grid container spacing={3}>
+             <Grid container spacing={3}>
             <Grid size={{ xs: 12, sm: 6 }}>
               <BalanceItem label="Total Income" value={ledger.totalIncome} />
             </Grid>
@@ -120,7 +120,7 @@ export function MonthlyLedgerSection({ ledger }: Props) {
             <Grid size={{ xs: 12, sm: 6 }}>
               <BalanceItem label="Total Expense" value={ledger.totalExpense} />
             </Grid>
-          </Grid>
+          </Grid> */}
         </Stack>
       </AccordionDetails>
     </Accordion>

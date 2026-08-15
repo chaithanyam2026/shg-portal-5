@@ -70,6 +70,7 @@ export async function getMemberTransactions(
           interestRate: loan.interestRate,
           expectedMonthlyRepayment: loan.expectedMonthlyRepayment,
           disbursedDate: loan.disbursedDate,
+          closedDate: loan.closedDate,
         },
         repaymentsByMember.get(memberId) ?? [],
       );

@@ -7,6 +7,8 @@ import { INCOME_CATEGORY_OPTIONS } from "../domain/income";
 
 import type { IncomeRecord } from "../types";
 
+import AmountField from "./AmountField";
+
 type Props = {
   record: IncomeRecord;
   disabled?: boolean;
@@ -61,16 +63,15 @@ export default function IncomeRow({ record, disabled = false, onChange, onDelete
       </TableCell>
 
       <TableCell width={140}>
-        <TextField
+        <AmountField
           fullWidth
           size="small"
-          type="number"
           disabled={disabled}
           value={record.amount}
-          onChange={(event) =>
+          onChange={(amount) =>
             onChange({
               ...record,
-              amount: Number(event.target.value),
+              amount,
             })
           }
           slotProps={{

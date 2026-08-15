@@ -18,6 +18,10 @@ async function main() {
       await import("./seed-admin");
       break;
 
+    case "fix-meeting-indexes":
+      await import("./fix-meeting-indexes");
+      break;
+
     default:
       throw new Error(`Unknown script: ${script}`);
   }

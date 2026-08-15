@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { formatCurrency, formatDate, formatNumber } from "../format";
 
-import { getMinimumMonthlyRepaymentDescription } from "../../domain/minimum-monthly-repayment";
+import { formatMinimumMonthlyRepayment } from "../../domain/minimum-monthly-repayment";
 
 import type { LoanPassbook } from "../../domain";
 
@@ -52,11 +52,13 @@ export default function PassbookTab({ passbook }: Props) {
   return (
     <Stack spacing={2}>
       <Alert severity="info">
-        {getMinimumMonthlyRepaymentDescription(passbook.disbursedAmount)}. Each month is checked on
+        {formatMinimumMonthlyRepayment(passbook.expectedMonthlyRepayment)}. Each month is checked on
         the 1st: interest is posted and a fine entry is added (₹100 when the previous month&apos;s
         minimum principal or pending fines were not met, ₹0 when waived). Repayments only record
-        payments. The disbursement month is exempt if the loan was disbursed after the first Sunday
-        of that month.
+        payments between the start date
+        {passbook.closedDate ? ` and close date (${formatDate(passbook.closedDate)})` : ""}. The
+        disbursement month is exempt if the loan was disbursed after the first Sunday of that
+        month.
       </Alert>
 
       <TableContainer

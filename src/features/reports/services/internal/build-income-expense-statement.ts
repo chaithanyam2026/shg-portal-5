@@ -1,13 +1,14 @@
 import { INCOME_CATEGORY, INCOME_CATEGORY_OPTIONS } from "@/features/meetings/domain/income";
 import { BANK_TRANSACTION_TYPE } from "@/features/meetings/domain/bank-transaction";
 import { EXPENSE_CATEGORY_OPTIONS } from "@/features/meetings/domain/expense";
+import type { OpeningBalance } from "@/features/financial-year/domain/opening-balance";
 import type {
   IncomeExpenseDetail,
   IncomeExpenseStatement,
   IncomeExpenseStatementItem,
 } from "@/features/reports/domain/income-expense-statement";
 import { clubIncomeExpenseDetails } from "@/features/reports/domain/club-income-expense-details";
-import { OPENING_BALANCE_MIGRATION_REMARK } from "@/features/loans/domain/loan-constants";
+import { isOpeningBalanceMigrationLoan } from "@/features/loans/domain/loan-constants";
 import Loan from "@/models/Loan";
 import Member from "@/models/Member";
 import { Types } from "mongoose";
@@ -78,9 +79,104 @@ function buildItem(key: string, label: string, details: IncomeExpenseDetail[]): 
   };
 }
 
+function buildOpeningStatementItems(
+  openingBalances: OpeningBalance,
+  startDate: Date,
+): {
+  excessCorpusDetails: IncomeExpenseDetail[];
+  bankBalanceDetails: IncomeExpenseDetail[];
+  cashInHandDetails: IncomeExpenseDetail[];
+  investmentDetails: IncomeExpenseDetail[];
+} {
+  const excessCorpusDetails: IncomeExpenseDetail[] = [];
+  const bankBalanceDetails: IncomeExpenseDetail[] = [];
+  const cashInHandDetails: IncomeExpenseDetail[] = [];
+  const investmentDetails: IncomeExpenseDetail[] = [];
+
+  pushDetail(excessCorpusDetails, {
+    date: startDate,
+    description: "Excess Corpus",
+    amount: openingBalances.excessCorpus,
+  });
+
+  pushDetail(bankBalanceDetails, {
+    date: startDate,
+    description: "Initial Bank Balance",
+    amount: openingBalances.bankBalance,
+  });
+
+  pushDetail(cashInHandDetails, {
+    date: startDate,
+    description: "Initial Cash In Hand",
+    amount: openingBalances.cashInHand,
+  });
+
+  pushDetail(investmentDetails, {
+    date: startDate,
+    description: "Initial Investments",
+    amount: openingBalances.investments,
+  });
+
+  return { excessCorpusDetails, bankBalanceDetails, cashInHandDetails, investmentDetails };
+}
+
+type MemberOpening = {
+  contribution: number;
+  loan: number;
+  specialLoan: number;
+};
+
+function buildOpeningMemberStatementItems(
+  members: { opening: MemberOpening }[],
+  startDate: Date,
+): {
+  contributionDetails: IncomeExpenseDetail[];
+  loanDetails: IncomeExpenseDetail[];
+  specialLoanDetails: IncomeExpenseDetail[];
+} {
+  const contributionDetails: IncomeExpenseDetail[] = [];
+  const loanDetails: IncomeExpenseDetail[] = [];
+  const specialLoanDetails: IncomeExpenseDetail[] = [];
+
+  const totalContribution = members.reduce(
+    (total, member) => total + (member.opening?.contribution ?? 0),
+    0,
+  );
+
+  const totalLoan = members.reduce((total, member) => total + (member.opening?.loan ?? 0), 0);
+
+  const totalSpecialLoan = members.reduce(
+    (total, member) => total + (member.opening?.specialLoan ?? 0),
+    0,
+  );
+
+  pushDetail(contributionDetails, {
+    date: startDate,
+    description: "Initial Contribution",
+    amount: totalContribution,
+  });
+
+  pushDetail(loanDetails, {
+    date: startDate,
+    description: "Initial Loan",
+    amount: totalLoan,
+  });
+
+  pushDetail(specialLoanDetails, {
+    date: startDate,
+    description: "Initial Special Loan",
+    amount: totalSpecialLoan,
+  });
+
+  return { contributionDetails, loanDetails, specialLoanDetails };
+}
+
 export async function buildIncomeExpenseStatement(
   financialYearId: string,
   meetings: StatementMeeting[],
+  openingBalances?: OpeningBalance,
+  startDate?: Date,
+  members: { opening: MemberOpening }[] = [],
 ): Promise<IncomeExpenseStatement> {
   const meetingIds = new Set(meetings.map((meeting) => meeting._id.toString()));
 
@@ -190,21 +286,21 @@ export async function buildIncomeExpenseStatement(
 
   const loanIncome = await sumLoanIncomeForFinancialYear(financialYearId, meetingIds);
 
-  const disbursementLoans = await Loan.find({
-    financialYearId: new Types.ObjectId(financialYearId),
-    remarks: {
-      $ne: OPENING_BALANCE_MIGRATION_REMARK,
-    },
-  })
-    .select({
-      loanNumber: 1,
-      memberId: 1,
-      disbursedAmount: 1,
-      disbursedDate: 1,
-      meetingId: 1,
+  const disbursementLoans = (
+    await Loan.find({
+      financialYearId: new Types.ObjectId(financialYearId),
     })
-    .lean()
-    .exec();
+      .select({
+        loanNumber: 1,
+        memberId: 1,
+        disbursedAmount: 1,
+        disbursedDate: 1,
+        meetingId: 1,
+        remarks: 1,
+      })
+      .lean()
+      .exec()
+  ).filter((loan) => !isOpeningBalanceMigrationLoan(loan.remarks ?? ""));
 
   if (disbursementLoans.length > 0) {
     const memberIds = [...new Set(disbursementLoans.map((loan) => loan.memberId.toString()))];
@@ -243,7 +339,32 @@ export async function buildIncomeExpenseStatement(
 
   const loanFineDetails = [...paymentLoanFineDetails, ...loanIncome.fineDetails];
 
+  const openingItems =
+    openingBalances && startDate
+      ? buildOpeningStatementItems(openingBalances, startDate)
+      : {
+        excessCorpusDetails: [],
+        bankBalanceDetails: [],
+        cashInHandDetails: [],
+        investmentDetails: [],
+      };
+
+  const openingMemberItems =
+    startDate && members.length > 0
+      ? buildOpeningMemberStatementItems(members, startDate)
+      : {
+        contributionDetails: [],
+        loanDetails: [],
+        specialLoanDetails: [],
+      };
+
   const incomeItems: IncomeExpenseStatementItem[] = [
+    buildItem("OPENING_EXCESS_CORPUS", "Excess Corpus", openingItems.excessCorpusDetails),
+    buildItem(
+      "OPENING_CONTRIBUTION",
+      "Initial Contribution",
+      openingMemberItems.contributionDetails,
+    ),
     buildItem("CONTRIBUTION", "Contribution", contributionDetails),
     buildItem("ABSENT_FINE", "Absent Fine", absentFineDetails),
     buildItem("LOAN_FINE", "Loan Fine", loanFineDetails),
@@ -274,6 +395,11 @@ export async function buildIncomeExpenseStatement(
   }
 
   const expenseItems: IncomeExpenseStatementItem[] = [
+    buildItem("OPENING_BANK_BALANCE", "Bank Balance", openingItems.bankBalanceDetails),
+    buildItem("OPENING_INVESTMENTS", "Investments", openingItems.investmentDetails),
+    buildItem("OPENING_CASH_IN_HAND", "Cash In Hand", openingItems.cashInHandDetails),
+    buildItem("OPENING_LOAN", "Initial Loan", openingMemberItems.loanDetails),
+    buildItem("OPENING_SPECIAL_LOAN", "Initial Special Loan", openingMemberItems.specialLoanDetails),
     buildItem("LOAN_DISBURSEMENT", "Loan Disbursement", loanDisbursementDetails),
   ];
 

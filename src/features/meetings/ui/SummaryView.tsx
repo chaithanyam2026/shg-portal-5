@@ -2,6 +2,8 @@
 
 import { Chip, Stack } from "@mui/material";
 
+import { formatDate } from "@/lib/utils/date";
+
 import type { MeetingDashboardSummary } from "../types";
 
 import MeetingActionButton from "@/features/meetings/ui/MeetingActionButton";
@@ -22,7 +24,7 @@ export default function SummaryView({ meetingId, summary }: Props) {
           rows={[
             {
               label: "Date",
-              value: new Date(summary.meetingDate).toLocaleDateString(),
+              value: formatDate(summary.meetingDate),
             },
             {
               label: "Place",

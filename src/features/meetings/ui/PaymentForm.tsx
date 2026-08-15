@@ -8,6 +8,7 @@ import { Alert, Button, Card, CardContent, Stack, Typography } from "@mui/materi
 
 import type { PaymentRecord } from "../types";
 
+import { useMeetingDataRefresh } from "./MeetingDataRefresh";
 import PaymentTable from "./PaymentTable";
 
 type Props = {
@@ -17,6 +18,7 @@ type Props = {
 
 export default function PaymentForm({ meetingId, initialRecords }: Props) {
   const router = useRouter();
+  const { refreshMeetingData } = useMeetingDataRefresh();
 
   const [records, setRecords] = useState(initialRecords);
 
@@ -67,6 +69,7 @@ export default function PaymentForm({ meetingId, initialRecords }: Props) {
 
       setSuccess("Payments saved successfully.");
 
+      refreshMeetingData();
       router.refresh();
     } catch (error) {
       setSuccess("");
