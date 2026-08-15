@@ -7,6 +7,8 @@ export * from "./list";
 export * from "./summary";
 
 export * from "./create-opening-loans";
+export * from "./close";
+export * from "./close-financial-year-loans";
 export * from "./generate-loan-number";
 export * from "./record-loan-collection";
 export * from "./validate-eligibility";

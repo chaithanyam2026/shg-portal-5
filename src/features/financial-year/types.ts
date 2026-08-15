@@ -110,6 +110,10 @@ export type ClosedFinancialYearLookup = {
   bankBalance: number;
 };
 
+export type OpeningBalanceSourceFinancialYearLookup = ClosedFinancialYearLookup & {
+  status: "CLOSED" | "VALIDATED" | "APPROVED";
+};
+
 export type CreateFinancialYearDraft = {
   name: string;
 

@@ -1,4 +1,5 @@
 import connectMongo from "@/lib/db/mongodb";
+import { toCalendarDate } from "@/lib/utils/date";
 import { Types } from "mongoose";
 
 import { calculateLoanSummary } from "@/features/loans/domain";
@@ -83,6 +84,8 @@ export async function buildMemberFinancialSummary(
 
   const members = financialYear.members;
 
+  const financialYearEndDate = toCalendarDate(financialYear.endDate);
+
   const memberIds = members.map((member) => member.memberId._id.toString());
 
   const [meetings, loans, fineRegister, repaymentsByMember] = await Promise.all([
@@ -145,6 +148,7 @@ export async function buildMemberFinancialSummary(
           interestRate: loan.interestRate,
           expectedMonthlyRepayment: loan.expectedMonthlyRepayment,
           disbursedDate: loan.disbursedDate,
+          financialYearEndDate,
         },
         repaymentsByMember.get(memberId) ?? [],
       );

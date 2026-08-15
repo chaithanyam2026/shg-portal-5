@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useMemo, useState } from "react";
 
 import {
@@ -17,10 +19,12 @@ import {
 } from "@mui/material";
 
 import type { MemberLookup } from "@/features/financial-year/types";
+import { parseDateInputValue } from "@/lib/utils/date";
+
+import { getMinimumMonthlyRepayment } from "../domain/minimum-monthly-repayment";
+import { LOAN_TYPES, SPECIAL_LOAN_TYPE } from "../domain";
 
 import type { CreateLoanInput } from "../validation";
-
-import { LOAN_TYPES } from "../domain";
 
 type Props = {
   financialYearId: string;
@@ -29,35 +33,66 @@ type Props = {
 
   loading?: boolean;
 
+  cancelHref?: string;
+
+  defaultSanctionedDate?: string;
+
+  defaultStartDate?: string;
+
   onSubmit(values: CreateLoanInput): Promise<void>;
 };
 
-type LoanFormValues = Omit<CreateLoanInput, "disbursedDate"> & {
+type LoanFormValues = {
+  financialYearId: string;
+  memberId: string;
+  loanType: CreateLoanInput["loanType"];
+  sanctionedAmount: number;
+  disbursedAmount: number;
+  interestRate: number;
+  sanctionedDate: string;
   disbursedDate: string;
+  expiryDate: string;
+  remarks: string;
 };
 
-export default function LoanForm({ financialYearId, members, loading = false, onSubmit }: Props) {
+function toDateInputValue(value?: string): string {
+  if (!value) {
+    return new Date().toISOString().split("T")[0];
+  }
+
+  return value.split("T")[0];
+}
+
+export default function LoanForm({
+  financialYearId,
+  members,
+  loading = false,
+  cancelHref = "/loans",
+  defaultSanctionedDate,
+  defaultStartDate,
+  onSubmit,
+}: Props) {
+  const initialDate = toDateInputValue(defaultStartDate ?? defaultSanctionedDate);
+
   const [values, setValues] = useState<LoanFormValues>({
     financialYearId,
-
     memberId: "",
-
     loanType: LOAN_TYPES[0],
-
     sanctionedAmount: 0,
-
     disbursedAmount: 0,
-
-    interestRate: 0,
-
-    expectedMonthlyRepayment: 0,
-
-    disbursedDate: new Date().toISOString().split("T")[0],
-
+    interestRate: 10,
+    sanctionedDate: toDateInputValue(defaultSanctionedDate ?? defaultStartDate),
+    disbursedDate: initialDate,
+    expiryDate: "",
     remarks: "",
   });
 
   const [error, setError] = useState("");
+
+  const minimumMonthlyRepayment = useMemo(
+    () => getMinimumMonthlyRepayment(values.disbursedAmount),
+    [values.disbursedAmount],
+  );
 
   const validationError = useMemo(() => {
     if (!values.memberId) {
@@ -80,12 +115,27 @@ export default function LoanForm({ financialYearId, members, loading = false, on
       return "Interest rate cannot be negative.";
     }
 
-    if (values.expectedMonthlyRepayment <= 0) {
-      return "Minimum monthly repayment must be greater than zero.";
+    if (!values.sanctionedDate) {
+      return "Please select the sanctioned date.";
     }
 
     if (!values.disbursedDate) {
-      return "Please select the disbursed date.";
+      return "Please select the start date.";
+    }
+
+    if (parseDateInputValue(values.disbursedDate) < parseDateInputValue(values.sanctionedDate)) {
+      return "Start date cannot be before the sanctioned date.";
+    }
+
+    if (values.loanType === SPECIAL_LOAN_TYPE && !values.expiryDate) {
+      return "Expiry date is required for special loans.";
+    }
+
+    if (
+      values.expiryDate &&
+      parseDateInputValue(values.expiryDate) < parseDateInputValue(values.disbursedDate)
+    ) {
+      return "Expiry date cannot be before the start date.";
     }
 
     return "";
@@ -102,8 +152,16 @@ export default function LoanForm({ financialYearId, members, loading = false, on
 
     try {
       await onSubmit({
-        ...values,
-        disbursedDate: new Date(values.disbursedDate),
+        financialYearId: values.financialYearId,
+        memberId: values.memberId,
+        loanType: values.loanType,
+        sanctionedAmount: values.sanctionedAmount,
+        disbursedAmount: values.disbursedAmount,
+        interestRate: values.interestRate,
+        sanctionedDate: parseDateInputValue(values.sanctionedDate),
+        disbursedDate: parseDateInputValue(values.disbursedDate),
+        expiryDate: values.expiryDate ? parseDateInputValue(values.expiryDate) : null,
+        remarks: values.remarks,
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to create loan.");
@@ -204,6 +262,73 @@ export default function LoanForm({ financialYearId, members, loading = false, on
             spacing={2}
           >
             <TextField
+              label="Sanctioned Date"
+              type="date"
+              fullWidth
+              required
+              value={values.sanctionedDate}
+              onChange={(event) =>
+                setValues({
+                  ...values,
+                  sanctionedDate: event.target.value,
+                })
+              }
+              slotProps={{
+                inputLabel: {
+                  shrink: true,
+                },
+              }}
+            />
+
+            <TextField
+              label="Start Date"
+              type="date"
+              fullWidth
+              required
+              value={values.disbursedDate}
+              onChange={(event) =>
+                setValues({
+                  ...values,
+                  disbursedDate: event.target.value,
+                })
+              }
+              slotProps={{
+                inputLabel: {
+                  shrink: true,
+                },
+              }}
+            />
+
+            {values.loanType === SPECIAL_LOAN_TYPE && (
+              <TextField
+                label="Expiry Date"
+                type="date"
+                fullWidth
+                required
+                value={values.expiryDate}
+                onChange={(event) =>
+                  setValues({
+                    ...values,
+                    expiryDate: event.target.value,
+                  })
+                }
+                slotProps={{
+                  inputLabel: {
+                    shrink: true,
+                  },
+                }}
+              />
+            )}
+          </Stack>
+
+          <Stack
+            direction={{
+              xs: "column",
+              sm: "row",
+            }}
+            spacing={2}
+          >
+            <TextField
               label="Interest Rate (%)"
               type="number"
               fullWidth
@@ -219,37 +344,19 @@ export default function LoanForm({ financialYearId, members, loading = false, on
 
             <TextField
               label="Minimum Monthly Repayment"
-              type="number"
               fullWidth
-              required
-              value={values.expectedMonthlyRepayment}
-              onChange={(event) =>
-                setValues({
-                  ...values,
-                  expectedMonthlyRepayment: Number(event.target.value),
-                })
+              value={
+                minimumMonthlyRepayment > 0
+                  ? `₹${minimumMonthlyRepayment.toLocaleString("en-IN")}`
+                  : "No minimum"
               }
+              slotProps={{
+                input: {
+                  readOnly: true,
+                },
+              }}
             />
           </Stack>
-
-          <TextField
-            label="Disbursed Date"
-            type="date"
-            fullWidth
-            required
-            value={values.disbursedDate}
-            onChange={(event) =>
-              setValues({
-                ...values,
-                disbursedDate: event.target.value,
-              })
-            }
-            slotProps={{
-              inputLabel: {
-                shrink: true,
-              },
-            }}
-          />
 
           <TextField
             label="Remarks"
@@ -272,7 +379,7 @@ export default function LoanForm({ financialYearId, members, loading = false, on
               justifyContent: "flex-end",
             }}
           >
-            <Button variant="outlined" type="button">
+            <Button variant="outlined" component={Link} href={cancelHref}>
               Cancel
             </Button>
 

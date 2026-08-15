@@ -1,6 +1,28 @@
-import { LOAN_REPAYMENT_ENTRY } from "./passbook-entry-type";
+import { LOAN_FINE_ENTRY, LOAN_REPAYMENT_ENTRY } from "./passbook-entry-type";
 
 import type { LoanPassbookEntry } from "./loan-passbook";
+
+/**
+ * Input for creating a monthly fine
+ * passbook entry.
+ */
+export type FineLedgerEntryInput = {
+  transactionDate: Date;
+
+  description: string;
+
+  interestDays: number;
+
+  interestCharged: number;
+
+  loanFineCharged: number;
+
+  outstandingPrincipal: number;
+
+  pendingInterest: number;
+
+  pendingLoanFine: number;
+};
 
 /**
  * Input for creating a repayment
@@ -35,6 +57,50 @@ export type LedgerEntryInput = {
 
   remainingAmount: number;
 };
+
+/**
+ * Creates a monthly fine passbook entry.
+ */
+export function createFineLedgerEntry({
+  transactionDate,
+  description,
+  interestDays,
+  interestCharged,
+  loanFineCharged,
+  outstandingPrincipal,
+  pendingInterest,
+  pendingLoanFine,
+}: FineLedgerEntryInput): LoanPassbookEntry {
+  return {
+    transactionDate,
+
+    type: LOAN_FINE_ENTRY,
+
+    description,
+
+    amountPaid: 0,
+
+    interestDays,
+
+    interestCharged,
+
+    loanFineCharged,
+
+    paidInterest: 0,
+
+    paidLoanFine: 0,
+
+    paidPrincipal: 0,
+
+    outstandingPrincipal,
+
+    pendingInterest,
+
+    pendingLoanFine,
+
+    remainingAmount: 0,
+  };
+}
 
 /**
  * Creates a repayment passbook

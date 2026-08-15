@@ -11,6 +11,12 @@ export function calculateRunningBalances(
   let bankBalance = openingBank;
 
   for (const entry of entries) {
+    if (entry.isSummary) {
+      entry.cashInHand = cashInHand;
+      entry.bankBalance = bankBalance;
+      continue;
+    }
+
     if (entry.transactionType === LEDGER_TRANSACTION_TYPE.BANK_DEPOSIT) {
       cashInHand -= entry.expense;
       bankBalance += entry.expense;

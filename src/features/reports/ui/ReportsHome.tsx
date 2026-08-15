@@ -18,6 +18,10 @@ type Props = {
   onFinancialYearChange(id: string): void;
 };
 
+function reportHref(path: string, financialYearId: string): string {
+  return `${path}?financialYear=${encodeURIComponent(financialYearId)}`;
+}
+
 export default function ReportsHome({ financialYearId, options, onFinancialYearChange }: Props) {
   return (
     <Stack spacing={4}>
@@ -38,7 +42,7 @@ export default function ReportsHome({ financialYearId, options, onFinancialYearC
             <ReportCard
               title="Attendance Register"
               description="Complete attendance register."
-              href="/reports/attendance"
+              href={reportHref("/reports/attendance", financialYearId)}
             />
           </Grid>
 
@@ -51,7 +55,7 @@ export default function ReportsHome({ financialYearId, options, onFinancialYearC
             <ReportCard
               title="Attendance Fine Register"
               description="Attendance fine summary."
-              href="/reports/attendance-fines"
+              href={reportHref("/reports/attendance-fines", financialYearId)}
             />
           </Grid>
 
@@ -64,7 +68,7 @@ export default function ReportsHome({ financialYearId, options, onFinancialYearC
             <ReportCard
               title="Attendance Fine Defaulters"
               description="Members with pending attendance fines."
-              href="/reports/attendance-fine-defaulters"
+              href={reportHref("/reports/attendance-fine-defaulters", financialYearId)}
             />
           </Grid>
 
@@ -77,7 +81,7 @@ export default function ReportsHome({ financialYearId, options, onFinancialYearC
             <ReportCard
               title="Attendance Fine Collection"
               description="Meeting-wise attendance fine collection."
-              href="/reports/attendance-fine-collection"
+              href={reportHref("/reports/attendance-fine-collection", financialYearId)}
             />
           </Grid>
         </Grid>
@@ -92,9 +96,22 @@ export default function ReportsHome({ financialYearId, options, onFinancialYearC
             }}
           >
             <ReportCard
+              title="Financial Year End Report"
+              description="Member-wise paid and pending contribution, loan, interest, and fine balances."
+              href={reportHref("/reports/year-end", financialYearId)}
+            />
+          </Grid>
+
+          <Grid
+            size={{
+              xs: 12,
+              md: 6,
+            }}
+          >
+            <ReportCard
               title="Member Financial Summary"
               description="Contribution, loan, interest, and fine balances per member."
-              href="/reports/member-summary"
+              href={reportHref("/reports/member-summary", financialYearId)}
             />
           </Grid>
 
@@ -107,7 +124,7 @@ export default function ReportsHome({ financialYearId, options, onFinancialYearC
             <ReportCard
               title="Income & Expense"
               description="Income and expense statement."
-              href="/reports/income-expense"
+              href={reportHref("/reports/income-expense", financialYearId)}
             />
           </Grid>
         </Grid>
@@ -124,7 +141,7 @@ export default function ReportsHome({ financialYearId, options, onFinancialYearC
             <ReportCard
               title="Loan Register"
               description="Loan register and balances."
-              href="/reports/loans"
+              href={reportHref("/reports/loans", financialYearId)}
             />
           </Grid>
         </Grid>

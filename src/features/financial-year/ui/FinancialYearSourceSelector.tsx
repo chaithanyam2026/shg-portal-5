@@ -2,15 +2,28 @@
 
 import { Card, CardActionArea, CardContent, Chip, Stack, Typography } from "@mui/material";
 
-import type { ClosedFinancialYearLookup } from "../types";
+import type { OpeningBalanceSourceFinancialYearLookup } from "../types";
 
 type Props = {
-  financialYears: ClosedFinancialYearLookup[];
+  financialYears: OpeningBalanceSourceFinancialYearLookup[];
 
   value: string;
 
   onChange: (value: string) => void;
 };
+
+function sourceStatusColor(
+  status: OpeningBalanceSourceFinancialYearLookup["status"],
+): "success" | "warning" | "info" {
+  switch (status) {
+    case "CLOSED":
+      return "success";
+    case "VALIDATED":
+      return "warning";
+    case "APPROVED":
+      return "info";
+  }
+}
 
 export default function FinancialYearSourceSelector({ financialYears, value, onChange }: Props) {
   console.log('financialYears', { financialYears })
@@ -37,14 +50,14 @@ export default function FinancialYearSourceSelector({ financialYears, value, onC
                 >
                   <Typography variant="h6">{financialYear.name}</Typography>
 
-                  <Chip color="success" label="CLOSED" />
+                  <Chip color={sourceStatusColor(financialYear.status)} label={financialYear.status} />
                 </Stack>
 
                 <Typography variant="body2" color="text.secondary">
-                  Closed:{" "}
-                  {financialYear.closedAt
+                  {financialYear.status === "CLOSED" ? "Closed" : "Ends"}:{" "}
+                  {financialYear.status === "CLOSED" && financialYear.closedAt
                     ? new Date(financialYear.closedAt).toLocaleDateString("en-IN")
-                    : "-"}
+                    : new Date(financialYear.endDate).toLocaleDateString("en-IN")}
                 </Typography>
 
                 <Typography variant="body2">Members: {financialYear.memberCount}</Typography>

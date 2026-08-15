@@ -9,6 +9,8 @@ export interface LoanDocument {
 
   financialYearId: Types.ObjectId;
 
+  meetingId: Types.ObjectId | null;
+
   memberId: Types.ObjectId;
 
   loanNumber: string;
@@ -26,6 +28,8 @@ status: LoanStatus;
   interestRate: number;
 
   expectedMonthlyRepayment: number;
+
+  sanctionedDate: Date;
 
   disbursedDate: Date;
 
@@ -47,6 +51,13 @@ const LoanSchema = new Schema<LoanDocument>(
       type: Schema.Types.ObjectId,
       ref: "FinancialYear",
       required: true,
+      index: true,
+    },
+
+    meetingId: {
+      type: Schema.Types.ObjectId,
+      ref: "Meeting",
+      default: null,
       index: true,
     },
 
@@ -100,6 +111,11 @@ const LoanSchema = new Schema<LoanDocument>(
       required: true,
     },
 
+    sanctionedDate: {
+      type: Date,
+      required: true,
+    },
+
     disbursedDate: {
       type: Date,
       required: true,
@@ -130,8 +146,10 @@ LoanSchema.index({
   status: 1,
 });
 
-export const Loan: Model<LoanDocument> =
-  (models.Loan as Model<LoanDocument>) ??
-  model<LoanDocument>("Loan", LoanSchema);
+if (models.Loan) {
+  delete models.Loan;
+}
+
+export const Loan: Model<LoanDocument> = model<LoanDocument>("Loan", LoanSchema);
 
 export default Loan;

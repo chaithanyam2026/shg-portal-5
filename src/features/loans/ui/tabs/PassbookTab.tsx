@@ -52,10 +52,11 @@ export default function PassbookTab({ passbook }: Props) {
   return (
     <Stack spacing={2}>
       <Alert severity="info">
-        {getMinimumMonthlyRepaymentDescription(passbook.disbursedAmount)}. To avoid a monthly
-        loan fine of ₹100, pay the minimum monthly principal plus any pending loan fines each
-        month. The disbursement month is exempt if the loan was disbursed after the first Sunday
-        of that month. Each evaluated month shows a fine entry in the passbook (₹0 when waived).
+        {getMinimumMonthlyRepaymentDescription(passbook.disbursedAmount)}. Each month is checked on
+        the 1st: interest is posted and a fine entry is added (₹100 when the previous month&apos;s
+        minimum principal or pending fines were not met, ₹0 when waived). Repayments only record
+        payments. The disbursement month is exempt if the loan was disbursed after the first Sunday
+        of that month.
       </Alert>
 
       <TableContainer
@@ -93,11 +94,11 @@ export default function PassbookTab({ passbook }: Props) {
 
             <TableCell align="right">Principal Paid</TableCell>
 
-            <TableCell align="right">Outstanding</TableCell>
-
             <TableCell align="right">Pending Interest</TableCell>
 
             <TableCell align="right">Pending Fine</TableCell>
+
+            <TableCell align="right">Outstanding</TableCell>
           </TableRow>
         </TableHead>
 
@@ -125,15 +126,6 @@ export default function PassbookTab({ passbook }: Props) {
               <TableCell
                 align="right"
                 sx={{
-                  fontWeight: 700,
-                }}
-              >
-                {formatCurrency(entry.outstandingPrincipal)}
-              </TableCell>
-
-              <TableCell
-                align="right"
-                sx={{
                   color: "warning.main",
                   fontWeight: 600,
                 }}
@@ -149,6 +141,15 @@ export default function PassbookTab({ passbook }: Props) {
                 }}
               >
                 {formatCurrency(entry.pendingLoanFine)}
+              </TableCell>
+
+              <TableCell
+                align="right"
+                sx={{
+                  fontWeight: 700,
+                }}
+              >
+                {formatCurrency(entry.outstandingPrincipal)}
               </TableCell>
             </TableRow>
           ))}

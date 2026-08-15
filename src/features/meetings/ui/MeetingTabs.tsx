@@ -35,6 +35,11 @@ export default function MeetingTabs({ meetingId, status }: Props) {
       disabled: status === "DRAFT",
     },
     {
+      label: "Loans",
+      href: "/loan",
+      disabled: status === "DRAFT",
+    },
+    {
       label: "Bank",
       href: "/bank",
       disabled: status === "DRAFT",
@@ -47,6 +52,11 @@ export default function MeetingTabs({ meetingId, status }: Props) {
     {
       label: "Expenses",
       href: "/expenses",
+      disabled: status === "DRAFT",
+    },
+    {
+      label: "Members",
+      href: "/members",
       disabled: status === "DRAFT",
     },
     {

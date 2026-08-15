@@ -43,6 +43,16 @@ export type MonthlyLoanFineEvaluation = {
   reason: string;
 };
 
+export type MonthlyLoanFineAtMonthEndInput = {
+  minimumMonthlyRepayment: number;
+
+  principalPaidInMonth: number;
+
+  pendingFineAtMonthStart: number;
+
+  finePaidDuringMonth: number;
+};
+
 /**
  * Calculates the monthly loan fine.
  */
@@ -64,6 +74,60 @@ export function calculateLoanFine({
     fineAmount: shouldApplyFine ? MONTHLY_LOAN_FINE : 0,
 
     shouldApplyFine,
+  };
+}
+
+/**
+ * Evaluates the monthly loan fine on the first day of the next month.
+ */
+export function evaluateMonthlyLoanFineAtMonthEnd(
+  input: MonthlyLoanFineAtMonthEndInput,
+): MonthlyLoanFineEvaluation {
+  if (input.minimumMonthlyRepayment === 0) {
+    return {
+      shouldApplyFine: false,
+
+      fineAmount: 0,
+
+      reason: "No minimum monthly repayment required.",
+    };
+  }
+
+  const metMinimumPrincipal =
+    input.principalPaidInMonth >= input.minimumMonthlyRepayment;
+
+  const metPendingFines =
+    input.pendingFineAtMonthStart === 0 ||
+    input.finePaidDuringMonth >= input.pendingFineAtMonthStart;
+
+  if (metMinimumPrincipal && metPendingFines) {
+    return {
+      shouldApplyFine: false,
+
+      fineAmount: 0,
+
+      reason: "Minimum monthly repayment and pending loan fines paid.",
+    };
+  }
+
+  const reasons: string[] = [];
+
+  if (!metMinimumPrincipal) {
+    reasons.push(
+      `Minimum monthly principal of ₹${input.minimumMonthlyRepayment.toLocaleString("en-IN")} not met.`,
+    );
+  }
+
+  if (!metPendingFines) {
+    reasons.push("Pending loan fines were not fully paid during the month.");
+  }
+
+  return {
+    shouldApplyFine: true,
+
+    fineAmount: MONTHLY_LOAN_FINE,
+
+    reason: reasons.join(" "),
   };
 }
 

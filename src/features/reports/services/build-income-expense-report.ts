@@ -6,11 +6,16 @@ import type { LedgerEntry } from "@/features/reports/domain/ledger-entry";
 import type { IncomeExpenseReport } from "@/features/reports/types";
 import Meeting from "@/models/Meeting";
 
+import { buildIncomeExpenseStatement } from "./internal/build-income-expense-statement";
+import { buildLoanDisbursementEntries } from "./helpers/build-loan-disbursement-entries";
 import { buildBankEntries } from "./helpers/build-bank-entries";
 import { buildExpenseEntries } from "./helpers/build-expense-entries";
 import { buildFinancialYearOpeningEntries } from "./helpers/build-financial-year-opening-entries";
 import { buildIncomeEntries } from "./helpers/build-income-entries";
-import { buildPaymentEntries } from "./helpers/build-payment-entries";
+import {
+  buildMeetingIncomeTotalEntry,
+  buildPaymentEntries,
+} from "./helpers/build-payment-entries";
 import { calculateRunningBalances } from "./helpers/calculate-running-balances";
 import { groupMonthlyLedger } from "./helpers/group-monthly-ledger";
 import { sortLedgerEntries } from "./helpers/sort-ledger-entries";
@@ -39,31 +44,44 @@ export async function buildIncomeExpenseReport(
   ];
 
   for (const meeting of meetings) {
-    ledgerEntries.push(
-      ...buildPaymentEntries({
-        _id: meeting._id.toString(),
-        meetingDate: meeting.meetingDate,
-        payments: meeting.payments.map((payment) => ({
-          memberId: payment.memberId.toString(),
-          contribution: payment.contribution,
-          loanRepayment: payment.loanRepayment,
-          absentFine: payment.absentFine,
-          specialLoanFine: payment.specialLoanFine,
-        })),
-      }),
+    const paymentEntries = buildPaymentEntries({
+      _id: meeting._id.toString(),
+      meetingDate: meeting.meetingDate,
+      payments: meeting.payments.map((payment) => ({
+        memberId: payment.memberId.toString(),
+        contribution: payment.contribution,
+        loanRepayment: payment.loanRepayment,
+        absentFine: payment.absentFine,
+        specialLoanFine: payment.specialLoanFine,
+      })),
+    });
+
+    const incomeEntries = buildIncomeEntries({
+      _id: meeting._id.toString(),
+      otherIncomes: meeting.otherIncomes.map((income) => ({
+        transactionDate: income.transactionDate,
+        category: income.category,
+        amount: income.amount,
+        remarks: income.remarks,
+      })),
+    });
+
+    const meetingIncomeTotal = [...paymentEntries, ...incomeEntries].reduce(
+      (total, entry) => total + entry.income,
+      0,
     );
 
-    ledgerEntries.push(
-      ...buildIncomeEntries({
-        _id: meeting._id.toString(),
-        otherIncomes: meeting.otherIncomes.map((income) => ({
-          transactionDate: income.transactionDate,
-          category: income.category,
-          amount: income.amount,
-          remarks: income.remarks,
-        })),
-      }),
+    const meetingIncomeTotalEntry = buildMeetingIncomeTotalEntry(
+      meeting._id.toString(),
+      meeting.meetingDate,
+      meetingIncomeTotal,
     );
+
+    ledgerEntries.push(...paymentEntries, ...incomeEntries);
+
+    if (meetingIncomeTotalEntry) {
+      ledgerEntries.push(meetingIncomeTotalEntry);
+    }
 
     ledgerEntries.push(
       ...buildExpenseEntries({
@@ -90,6 +108,15 @@ export async function buildIncomeExpenseReport(
     );
   }
 
+  const closedMeetingIds = new Set(meetings.map((meeting) => meeting._id.toString()));
+
+  ledgerEntries.push(
+    ...(await buildLoanDisbursementEntries({
+      financialYearId,
+      closedMeetingIds,
+    })),
+  );
+
   const sortedEntries = sortLedgerEntries(ledgerEntries);
 
   const openingBalance = {
@@ -105,20 +132,20 @@ export async function buildIncomeExpenseReport(
 
   const months = groupMonthlyLedger(sortedEntries);
 
-  const totalIncome = sortedEntries.reduce((total, entry) => total + entry.income, 0);
-
-  const totalExpense = sortedEntries.reduce((total, entry) => total + entry.expense, 0);
+  const statement = await buildIncomeExpenseStatement(financialYearId, meetings);
 
   return {
     financialYearId,
+
+    statement,
 
     openingBalance,
 
     closingBalance,
 
-    totalIncome,
+    totalIncome: statement.income.total,
 
-    totalExpense,
+    totalExpense: statement.expense.total,
 
     months,
   };

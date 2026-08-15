@@ -110,5 +110,13 @@ export type LoanPassbook = {
 
   disbursedDate: Date;
 
+  interestRate: number;
+
+  /**
+   * Interest and fines are calculated only up to this date
+   * (typically the loan financial year end).
+   */
+  calculationEndDate: Date;
+
   entries: LoanPassbookEntry[];
 };

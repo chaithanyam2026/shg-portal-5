@@ -47,6 +47,38 @@ export type FineEligibility = {
   reason: string;
 };
 
+export function getFineEligibilityForMonth(
+  disbursedDate: Date,
+  evaluationYear: number,
+  evaluationMonth: number,
+): FineEligibility {
+  const isStartingMonth =
+    disbursedDate.getFullYear() === evaluationYear &&
+    disbursedDate.getMonth() === evaluationMonth;
+
+  if (isStartingMonth && isAfterFirstSundayOfMonth(disbursedDate)) {
+    return {
+      isEligible: false,
+
+      evaluationMonth,
+
+      evaluationYear,
+
+      reason: "Loan disbursed after the first Sunday of the starting month.",
+    };
+  }
+
+  return {
+    isEligible: true,
+
+    evaluationMonth,
+
+    evaluationYear,
+
+    reason: "Monthly loan fine evaluation applicable.",
+  };
+}
+
 /**
  * Determines whether the monthly
  * loan fine should be evaluated.
@@ -75,32 +107,9 @@ export function getFineEligibility({
     1,
   );
 
-  const evaluationMonth = evaluationDate.getMonth();
-
-  const evaluationYear = evaluationDate.getFullYear();
-
-  const isStartingMonth =
-    disbursedDate.getFullYear() === evaluationYear && disbursedDate.getMonth() === evaluationMonth;
-
-  if (isStartingMonth && isAfterFirstSundayOfMonth(disbursedDate)) {
-    return {
-      isEligible: false,
-
-      evaluationMonth,
-
-      evaluationYear,
-
-      reason: "Loan disbursed after the first Sunday of the starting month.",
-    };
-  }
-
-  return {
-    isEligible: true,
-
-    evaluationMonth,
-
-    evaluationYear,
-
-    reason: "Monthly loan fine evaluation applicable.",
-  };
+  return getFineEligibilityForMonth(
+    disbursedDate,
+    evaluationDate.getFullYear(),
+    evaluationDate.getMonth(),
+  );
 }

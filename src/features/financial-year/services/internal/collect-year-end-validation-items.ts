@@ -1,5 +1,7 @@
 import { Types, type QueryFilter } from "mongoose";
 
+import { countActiveLoansInFinancialYear } from "@/features/loans/services";
+
 import Loan, { type LoanDocument } from "@/models/Loan";
 import Meeting, { type MeetingDocument } from "@/models/Meeting";
 
@@ -33,6 +35,8 @@ export async function collectYearEndValidationItems(
     status: "DRAFT",
   } as unknown as QueryFilter<LoanDocument>);
 
+  const activeLoans = await countActiveLoansInFinancialYear(financialYearObjectId.toString());
+
   const openingBalances = financialYear.openingBalances ?? {
     bankBalance: 0,
     cashInHand: 0,
@@ -53,6 +57,15 @@ export async function collectYearEndValidationItems(
       title: "Loans Approved",
       valid: draftLoans === 0,
       message: draftLoans === 0 ? "OK" : `${draftLoans} draft loan(s) found.`,
+    },
+    {
+      code: "LOANS_CLOSED",
+      title: "Loans Closed",
+      valid: activeLoans === 0,
+      message:
+        activeLoans === 0
+          ? "OK"
+          : `${activeLoans} active loan(s) must be closed before approving or closing.`,
     },
     {
       code: "CASH_VALID",

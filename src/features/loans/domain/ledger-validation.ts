@@ -1,5 +1,7 @@
 import type { LoanPassbook } from "./loan-passbook";
 
+import { isFineEntry } from "./passbook-entry-type";
+
 /**
  * Validates the generated loan ledger.
  *
@@ -24,6 +26,10 @@ export function validateLoanPassbook(passbook: LoanPassbook): void {
       throw new Error("Payment amount cannot be negative.");
     }
 
+    if (isFineEntry(entry.type)) {
+      continue;
+    }
+
     if (entry.paidPrincipal < 0 || entry.paidInterest < 0 || entry.paidLoanFine < 0) {
       throw new Error("Allocated payment cannot be negative.");
     }
@@ -32,7 +38,12 @@ export function validateLoanPassbook(passbook: LoanPassbook): void {
       entry.paidPrincipal + entry.paidInterest + entry.paidLoanFine + entry.remainingAmount;
 
     if (Math.abs(allocated - entry.amountPaid) > 0.01) {
-      throw new Error(`Payment allocation mismatch on ${entry.transactionDate.toISOString()}.`);
+      const transactionDate =
+        entry.transactionDate instanceof Date
+          ? entry.transactionDate.toISOString()
+          : "unknown date";
+
+      throw new Error(`Payment allocation mismatch on ${transactionDate}.`);
     }
   }
 }

@@ -106,15 +106,6 @@ const userSchema =
 /**
  * Indexes
  */
-userSchema.index(
-  {
-    username: 1,
-  },
-  {
-    unique: true,
-  },
-);
-
 userSchema.index({
   memberId: 1,
 });

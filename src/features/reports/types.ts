@@ -1,3 +1,4 @@
+import type { IncomeExpenseStatement } from "./domain/income-expense-statement";
 import type { LedgerEntry } from "./domain/ledger-entry";
 
 export type RunningBalance = {
@@ -17,6 +18,8 @@ export type MonthlyLedger = {
 
 export type IncomeExpenseReport = {
   financialYearId: string;
+
+  statement: IncomeExpenseStatement;
 
   openingBalance: RunningBalance;
 

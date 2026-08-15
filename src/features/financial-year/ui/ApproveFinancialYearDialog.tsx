@@ -13,12 +13,17 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   Snackbar,
   Stack,
   Typography,
 } from "@mui/material";
 
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
+
+import type { ClosingValidation } from "../domain";
+
+import ClosingValidationList from "./ClosingValidationList";
 
 type Props = {
   open: boolean;
@@ -41,13 +46,16 @@ export default function ApproveFinancialYearDialog({
 }: Props) {
   const router = useRouter();
 
-  const [loading, setLoading] = useState(false);
+  const [loadingValidation, setLoadingValidation] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [validation, setValidation] = useState<ClosingValidation | null>(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
 
+  const loading = loadingValidation || submitting;
   const canCloseDialog = useMemo(() => !loading, [loading]);
 
   useEffect(() => {
@@ -55,13 +63,44 @@ export default function ApproveFinancialYearDialog({
       return;
     }
 
-    setLoading(false);
+    setSubmitting(false);
     setCompleted(false);
     setError(null);
+    setValidation(null);
     setSnackbarOpen(false);
     setSnackbarMessage("");
     setSnackbarSeverity("success");
-  }, [open]);
+
+    async function loadValidation() {
+      try {
+        setLoadingValidation(true);
+
+        const response = await fetch(
+          `/api/financial-years/${financialYearId}/approve-validation`,
+        );
+
+        const result = (await response.json()) as ClosingValidation | { message: string };
+
+        if (!response.ok) {
+          throw new Error("message" in result ? result.message : "Unable to load validation.");
+        }
+
+        setValidation(result as ClosingValidation);
+      } catch (loadError) {
+        const message =
+          loadError instanceof Error ? loadError.message : "Unable to load validation.";
+
+        setError(message);
+        setSnackbarSeverity("error");
+        setSnackbarMessage(message);
+        setSnackbarOpen(true);
+      } finally {
+        setLoadingValidation(false);
+      }
+    }
+
+    void loadValidation();
+  }, [open, financialYearId]);
 
   function handleCancel() {
     if (loading) {
@@ -77,12 +116,12 @@ export default function ApproveFinancialYearDialog({
   }
 
   async function handleApproveFinancialYear() {
-    if (loading || completed) {
+    if (loading || completed || !validation?.valid) {
       return;
     }
 
     try {
-      setLoading(true);
+      setSubmitting(true);
       setError(null);
 
       const response = await fetch(`/api/financial-years/${financialYearId}/approve`, {
@@ -112,7 +151,7 @@ export default function ApproveFinancialYearDialog({
       setSnackbarMessage(message);
       setSnackbarOpen(true);
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   }
 
@@ -155,27 +194,33 @@ export default function ApproveFinancialYearDialog({
 
             <Alert severity="warning" variant="outlined">
               <AlertTitle>Approval Confirmation</AlertTitle>
-              Once approved, the financial year can be permanently closed. Member and account changes
-              will no longer be allowed.
+              Once approved, the financial year can be permanently closed. All active loans must be
+              closed before approval.
             </Alert>
 
-            {loading && (
+            <Divider />
+
+            {loadingValidation && (
               <Stack spacing={2} sx={{ alignItems: "center", py: 4 }}>
                 <CircularProgress size={42} />
-                <Typography>Approving financial year...</Typography>
+                <Typography>Loading approval checks...</Typography>
               </Stack>
             )}
 
-            {!loading && completed && (
+            {!loadingValidation && completed && (
               <Alert severity="success" variant="filled">
                 Financial year approved successfully. You can now close the financial year.
               </Alert>
             )}
 
-            {!loading && error && (
+            {!loadingValidation && error && (
               <Alert severity="error" variant="filled">
                 {error}
               </Alert>
+            )}
+
+            {!loadingValidation && validation && (
+              <ClosingValidationList validation={validation} />
             )}
           </Stack>
         </DialogContent>
@@ -189,10 +234,10 @@ export default function ApproveFinancialYearDialog({
             <Button
               variant="contained"
               color="success"
-              disabled={loading}
+              disabled={loading || !validation?.valid}
               onClick={handleApproveFinancialYear}
             >
-              {loading ? "Approving..." : "Approve Financial Year"}
+              {submitting ? "Approving..." : "Approve Financial Year"}
             </Button>
           )}
         </DialogActions>

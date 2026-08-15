@@ -1,8 +1,10 @@
 import FinancialYear from "@/models/FinancialYear";
 
-import { FINANCIAL_YEAR_STATUS } from "../domain/financial-year-status";
+import { isOpeningBalanceSourceStatus } from "../domain/financial-year-lifecycle";
 
 import type { CreateFinancialYearInput } from "../validation";
+
+import { assertFinancialYearCreateAllowed } from "./internal/assert-financial-year-lifecycle";
 
 export async function validateCreateFinancialYear(input: CreateFinancialYearInput) {
   //
@@ -38,6 +40,8 @@ export async function validateCreateFinancialYear(input: CreateFinancialYearInpu
   // Source Already Used
   //
 
+  await assertFinancialYearCreateAllowed(input.sourceFinancialYearId);
+
   if (!input.sourceFinancialYearId) {
     return;
   }
@@ -60,11 +64,11 @@ export async function validateCreateFinancialYear(input: CreateFinancialYearInpu
     throw new Error("Source financial year not found.");
   }
 
-  if (source.status !== FINANCIAL_YEAR_STATUS.CLOSED) {
-    throw new Error("Source financial year must be closed.");
+  if (!isOpeningBalanceSourceStatus(source.status)) {
+    throw new Error("Source financial year must be closed, validated, or approved.");
   }
 
-  if (!source.closing) {
+  if (source.status === "CLOSED" && !source.closing) {
     throw new Error("Closing snapshot not found.");
   }
 }

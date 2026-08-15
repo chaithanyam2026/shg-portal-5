@@ -1,3 +1,7 @@
+import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
+
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+
 import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
 
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
@@ -9,6 +13,10 @@ import EventOutlinedIcon from "@mui/icons-material/EventOutlined";
 import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
 
 import AssessmentOutlinedIcon from "@mui/icons-material/AssessmentOutlined";
+
+import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
+
+import type { UserRole } from "@/lib/auth/roles";
 
 import type { NavigationItem } from "./navigation-types";
 
@@ -36,6 +44,7 @@ export const dashboardNavigation: NavigationItem[] = [
     href: "/attendance",
     icon: AssessmentOutlinedIcon,
   },
+
   {
     title: "Financial Years",
     href: "/financial-years",
@@ -51,12 +60,27 @@ export const dashboardNavigation: NavigationItem[] = [
   {
     title: "Reports",
     href: "/reports",
-    icon: AssessmentOutlinedIcon,
+    icon: BarChartOutlinedIcon,
+    // roles: ["ADMIN", "TREASURER"],
   },
 
   {
-    title: "Member Summary",
-    href: "/reports/member-summary",
-    icon: AssessmentOutlinedIcon,
+    title: "Change Password",
+    href: "/account/change-password",
+    icon: LockOutlinedIcon,
+  },
+
+  {
+    title: "Users",
+    href: "/settings/users",
+    icon: SettingsOutlinedIcon,
+    roles: ["ADMIN"],
   },
 ];
+
+export function filterNavigationByRole(
+  items: NavigationItem[],
+  role: UserRole | string,
+): NavigationItem[] {
+  return items.filter((item) => !item.roles || item.roles.includes(role as UserRole));
+}

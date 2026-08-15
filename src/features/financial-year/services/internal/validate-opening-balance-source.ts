@@ -2,6 +2,8 @@ import connectMongo from "@/lib/db/mongodb";
 
 import FinancialYear from "@/models/FinancialYear";
 
+import { isOpeningBalanceSourceStatus } from "../../domain/financial-year-lifecycle";
+
 /**
  * Validates whether a
  * financial year can be used
@@ -23,11 +25,13 @@ export async function validateOpeningBalanceSource(financialYearId: string): Pro
     throw new Error("Source financial year not found.");
   }
 
-  if (financialYear.status !== "CLOSED") {
-    throw new Error("Opening balances can only be generated from a closed financial year.");
+  if (!isOpeningBalanceSourceStatus(financialYear.status)) {
+    throw new Error(
+      "Opening balances can only be generated from a closed, validated, or approved financial year.",
+    );
   }
 
-  if (!financialYear.closing) {
+  if (financialYear.status === "CLOSED" && !financialYear.closing) {
     throw new Error("Closing snapshot not found.");
   }
 }

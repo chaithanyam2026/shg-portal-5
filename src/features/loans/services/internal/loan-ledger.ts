@@ -1,9 +1,15 @@
 // import Meeting from "@/models/Meeting";
+import connectMongo from "@/lib/db/mongodb";
+import { toCalendarDate } from "@/lib/utils/date";
+
+import FinancialYear from "@/models/FinancialYear";
+import Loan from "@/models/Loan";
+
 import { loadLoanRepayments, type LoanRepayment } from "./meeting-loader";
 
 import { LOAN_DISBURSED_ENTRY } from "../../domain/passbook-entry-type";
 
-import { processRepayments } from "./process-repayments";
+import { processLoanTimeline } from "./process-loan-timeline";
 
 import type { LoanPassbook } from "../../domain/loan-passbook";
 
@@ -31,7 +37,33 @@ export type BuildLoanLedgerInput = {
   expectedMonthlyRepayment: number;
 
   disbursedDate: Date;
+
+  financialYearEndDate?: Date;
 };
+
+async function resolveFinancialYearEndDate(loan: BuildLoanLedgerInput): Promise<Date> {
+  if (loan.financialYearEndDate) {
+    return toCalendarDate(loan.financialYearEndDate);
+  }
+
+  await connectMongo();
+
+  const loanDocument = await Loan.findById(loan._id).select("financialYearId").lean();
+
+  if (!loanDocument) {
+    throw new Error("Loan not found.");
+  }
+
+  const financialYear = await FinancialYear.findById(loanDocument.financialYearId)
+    .select("endDate")
+    .lean();
+
+  if (!financialYear) {
+    throw new Error("Financial year not found.");
+  }
+
+  return toCalendarDate(financialYear.endDate);
+}
 
 /**
  * Builds the complete loan ledger.
@@ -284,7 +316,9 @@ export async function buildLoanLedger(
   //     repayment.meetingDate;
   // }
 
-  const balances = processRepayments({
+  const financialYearEndDate = await resolveFinancialYearEndDate(loan);
+
+  const balances = processLoanTimeline({
     loan,
 
     repayments: loanRepayments,
@@ -296,6 +330,8 @@ export async function buildLoanLedger(
     pendingInterest,
 
     pendingLoanFine,
+
+    financialYearEndDate,
   });
 
   outstandingPrincipal = balances.outstandingPrincipal;
@@ -318,6 +354,10 @@ export async function buildLoanLedger(
     disbursedAmount: loan.disbursedAmount,
 
     disbursedDate: loan.disbursedDate,
+
+    interestRate: loan.interestRate,
+
+    calculationEndDate: financialYearEndDate,
 
     entries,
   };

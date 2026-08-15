@@ -1,4 +1,5 @@
 import connectMongo from "@/lib/db/mongodb";
+import { toCalendarDate } from "@/lib/utils/date";
 import { Types } from "mongoose";
 
 import Loan from "@/models/Loan";
@@ -10,6 +11,8 @@ import type { LoanSummary } from "../types";
 import type { LoanStatus } from "../domain/loan-status";
 
 import type { LoanType } from "../domain/loan-type";
+
+import { toIsoString } from "@/lib/utils/date";
 
 import { ObjectIdSchema } from "../validation";
 
@@ -64,10 +67,11 @@ export async function listLoans(filters: ListLoansInput = {}): Promise<LoanSumma
       financialYearId: {
         _id: Types.ObjectId;
         name: string;
+        endDate: Date;
       };
     }>({
       path: "financialYearId",
-      select: "name",
+      select: "name endDate",
     })
     .sort({
       disbursedDate: -1,
@@ -115,6 +119,7 @@ export async function listLoans(filters: ListLoansInput = {}): Promise<LoanSumma
           interestRate: loan.interestRate,
           expectedMonthlyRepayment: loan.expectedMonthlyRepayment,
           disbursedDate: loan.disbursedDate,
+          financialYearEndDate: toCalendarDate(financialYear.endDate),
         },
         repaymentsByMember.get(memberId) ?? [],
       );
@@ -148,7 +153,12 @@ export async function listLoans(filters: ListLoansInput = {}): Promise<LoanSumma
 
         expectedMonthlyRepayment: loan.expectedMonthlyRepayment,
 
-        disbursedDate: loan.disbursedDate.toISOString(),
+        sanctionedDate:
+          toIsoString(loan.sanctionedDate) ?? toIsoString(loan.disbursedDate) ?? "",
+
+        disbursedDate: toIsoString(loan.disbursedDate) ?? "",
+
+        expiryDate: toIsoString(loan.expiryDate),
 
         outstandingPrincipal: summary.outstandingPrincipal,
 

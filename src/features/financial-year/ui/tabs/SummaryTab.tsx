@@ -188,6 +188,12 @@ export default function SummaryTab({ financialYear }: Props) {
               </Alert>
             )}
 
+            <Alert severity="info">
+              Starting this financial year will close all active loans from the previous financial
+              year and create opening loans from member opening balances. The previous year can
+              remain validated or approved until you close it later.
+            </Alert>
+
             <Stack spacing={1}>
               {validation.items.map((item) => (
                 <ValidationItem key={item.label} label={item.label} valid={item.valid} />

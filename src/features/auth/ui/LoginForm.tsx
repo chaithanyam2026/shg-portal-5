@@ -8,7 +8,19 @@ import { Alert, Button, Stack, TextField } from "@mui/material";
 
 import { loginAction } from "@/app/login/actions";
 
-export default function LoginForm() {
+type Props = {
+  callbackUrl?: string;
+};
+
+function getSafeCallbackUrl(callbackUrl?: string): string {
+  if (!callbackUrl || !callbackUrl.startsWith("/") || callbackUrl.startsWith("//")) {
+    return "/";
+  }
+
+  return callbackUrl;
+}
+
+export default function LoginForm({ callbackUrl }: Props) {
   const router = useRouter();
 
   const [isPending, startTransition] = useTransition();
@@ -36,7 +48,7 @@ export default function LoginForm() {
           return;
         }
 
-        router.replace("/");
+        router.replace(getSafeCallbackUrl(callbackUrl));
         router.refresh();
       } catch {
         setError("Something went wrong. Please try again.");

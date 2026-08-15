@@ -1,4 +1,9 @@
 import connectMongo from "@/lib/db/mongodb";
+import {
+  getCalendarDayRange,
+  isCalendarDateWithinRange,
+  toCalendarDate,
+} from "@/lib/utils/date";
 
 import FinancialYear from "@/models/FinancialYear";
 import Meeting from "@/models/Meeting";
@@ -29,16 +34,13 @@ export async function updateMeeting(id: string, input: UpdateMeetingInput, userI
   }
 
   if (data.meetingDate) {
-    data.meetingDate.setHours(0, 0, 0, 0);
+    const meetingDate = toCalendarDate(data.meetingDate);
 
-    if (data.meetingDate < financialYear.startDate || data.meetingDate > financialYear.endDate) {
+    if (!isCalendarDateWithinRange(meetingDate, financialYear.startDate, financialYear.endDate)) {
       throw new Error("Meeting date must be inside the financial year.");
     }
 
-    const start = new Date(data.meetingDate);
-
-    const end = new Date(start);
-    end.setDate(end.getDate() + 1);
+    const { start, end } = getCalendarDayRange(meetingDate);
 
     const exists = await Meeting.exists({
       _id: {
@@ -57,7 +59,7 @@ export async function updateMeeting(id: string, input: UpdateMeetingInput, userI
       throw new Error("A meeting already exists for this date.");
     }
 
-    meeting.meetingDate = data.meetingDate;
+    meeting.meetingDate = meetingDate;
   }
 
   if (data.place !== undefined) {

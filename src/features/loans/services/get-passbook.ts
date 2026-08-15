@@ -1,5 +1,7 @@
 import connectMongo from "@/lib/db/mongodb";
+import { toCalendarDate } from "@/lib/utils/date";
 
+import FinancialYear from "@/models/FinancialYear";
 import Loan from "@/models/Loan";
 
 import type { LoanPassbook } from "../domain";
@@ -34,6 +36,12 @@ export async function getLoanPassbook(loanId: LoanIdInput): Promise<LoanPassbook
     throw new Error("Loan not found.");
   }
 
+  const financialYear = await FinancialYear.findById(loan.financialYearId).select("endDate").lean();
+
+  if (!financialYear) {
+    throw new Error("Financial year not found.");
+  }
+
   const member = loan.memberId;
 
   return buildLoanLedger({
@@ -54,5 +62,7 @@ export async function getLoanPassbook(loanId: LoanIdInput): Promise<LoanPassbook
     expectedMonthlyRepayment: loan.expectedMonthlyRepayment,
 
     disbursedDate: loan.disbursedDate,
+
+    financialYearEndDate: toCalendarDate(financialYear.endDate),
   });
 }

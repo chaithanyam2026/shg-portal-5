@@ -107,11 +107,25 @@ export default function SummaryTab({ loan, summary }: Props) {
             <Card>
               <CardContent>
                 <Typography variant="caption" color="text.secondary">
-                  Effective Interest
+                  Effective Interest (Interest Only)
                 </Typography>
 
                 <Typography variant="h6">
-                  {summary.effectiveInterestPercentage.toFixed(2)}%
+                  {summary.effectiveInterestPercentage.toFixed(2)}% p.a.
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Card>
+              <CardContent>
+                <Typography variant="caption" color="text.secondary">
+                  Effective Interest (Interest + Fines)
+                </Typography>
+
+                <Typography variant="h6">
+                  {summary.effectiveInterestWithFinesPercentage.toFixed(2)}% p.a.
                 </Typography>
               </CardContent>
             </Card>
@@ -130,10 +144,14 @@ export default function SummaryTab({ loan, summary }: Props) {
           </Grid>
         </Grid>
 
-        <Alert severity={summary.isClosable ? "success" : "info"}>
-          {summary.isClosable
-            ? "This loan is eligible to be closed."
-            : "This loan still has outstanding balances."}
+        <Alert severity={loan.canBeClosed ? "success" : "info"}>
+          {loan.status === "CLOSED"
+            ? "This loan is closed."
+            : loan.canBeClosed
+              ? loan.isClosable
+                ? "This loan is fully repaid and can be closed."
+                : "This loan can be closed because the financial year is approved."
+              : "This loan still has outstanding balances. It can be closed once fully repaid or when the financial year is approved."}
         </Alert>
       </Stack>
     </Box>

@@ -50,11 +50,13 @@ export default function BankTransactionForm({ meetingId, initialSummary }: Props
   const [saving, setSaving] = useState(false);
 
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   async function save() {
     try {
       setSaving(true);
       setError("");
+      setSuccess("");
 
       const response = await fetch(`/api/meetings/${meetingId}/bank`, {
         method: "PATCH",
@@ -72,8 +74,11 @@ export default function BankTransactionForm({ meetingId, initialSummary }: Props
         throw new Error(body.message ?? "Unable to save bank transactions.");
       }
 
+      setSuccess("Bank transactions saved successfully.");
+
       router.refresh();
     } catch (error) {
+      setSuccess("");
       setError(error instanceof Error ? error.message : "Unable to save bank transactions.");
     } finally {
       setSaving(false);
@@ -83,6 +88,8 @@ export default function BankTransactionForm({ meetingId, initialSummary }: Props
   return (
     <Stack spacing={3}>
       {error && <Alert severity="error">{error}</Alert>}
+
+      {success && <Alert severity="success">{success}</Alert>}
 
       <BankTransactionTable records={records} disabled={saving} onChange={setRecords} />
 

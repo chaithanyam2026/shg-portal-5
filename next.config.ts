@@ -1,5 +1,9 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {/* config options here */};
+import { withSerwist } from "@serwist/turbopack";
 
-export default nextConfig;
+const nextConfig: NextConfig = {
+  serverExternalPackages: ["esbuild"],
+};
+
+export default withSerwist(nextConfig);

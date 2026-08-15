@@ -27,13 +27,13 @@ import OpeningBalancePreview from "./OpeningBalancePreview";
 import MemberOpeningBalanceTable from "./MemberOpeningBalanceTable";
 import { createEmptyOpeningBalance } from "../domain/create-empty-opening-balance";
 
-import type { ClosedFinancialYearLookup, CreateFinancialYearDraft } from "../types";
+import type { CreateFinancialYearDraft, OpeningBalanceSourceFinancialYearLookup } from "../types";
 
 import FinancialYearDetailsStep from "./FinancialYearDetailsStep";
 import FinancialYearSourceSelector from "./FinancialYearSourceSelector";
 
 type Props = {
-  financialYears: ClosedFinancialYearLookup[];
+  financialYears: OpeningBalanceSourceFinancialYearLookup[];
   isFirstFinancialYear: boolean;
 };
 
@@ -269,8 +269,8 @@ export default function CreateFinancialYearWizard({ financialYears, isFirstFinan
               <Typography variant="h6">Select Source Financial Year</Typography>
 
               <Typography variant="body2" color="text.secondary">
-                Select the closed financial year that will provide the opening balances for the next
-                financial year.
+                Select the financial year that will provide the opening balances for the next year.
+                You can use a closed year, or a validated or approved year without closing it first.
               </Typography>
 
               <FinancialYearSourceSelector

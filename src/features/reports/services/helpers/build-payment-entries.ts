@@ -13,66 +13,101 @@ type MeetingPayments = {
   }[];
 };
 
+function sumPayments(meeting: MeetingPayments) {
+  return meeting.payments.reduce(
+    (totals, payment) => ({
+      contribution: totals.contribution + payment.contribution,
+      loanRepayment: totals.loanRepayment + payment.loanRepayment,
+      absentFine: totals.absentFine + payment.absentFine,
+      specialLoanFine: totals.specialLoanFine + payment.specialLoanFine,
+    }),
+    {
+      contribution: 0,
+      loanRepayment: 0,
+      absentFine: 0,
+      specialLoanFine: 0,
+    },
+  );
+}
+
 export function buildPaymentEntries(meeting: MeetingPayments): LedgerEntry[] {
-  return meeting.payments.flatMap((payment) => {
-    const entries: LedgerEntry[] = [];
+  const totals = sumPayments(meeting);
+  const entries: LedgerEntry[] = [];
 
-    if (payment.contribution > 0) {
-      entries.push({
-        date: meeting.meetingDate,
-        transactionType: LEDGER_TRANSACTION_TYPE.CONTRIBUTION,
-        description: "Weekly Contribution",
-        income: payment.contribution,
-        expense: 0,
-        cashInHand: 0,
-        bankBalance: 0,
-        meetingId: meeting._id,
-        referenceId: payment.memberId,
-      });
-    }
+  if (totals.contribution > 0) {
+    entries.push({
+      date: meeting.meetingDate,
+      transactionType: LEDGER_TRANSACTION_TYPE.CONTRIBUTION,
+      description: "Weekly Contribution",
+      income: totals.contribution,
+      expense: 0,
+      cashInHand: 0,
+      bankBalance: 0,
+      meetingId: meeting._id,
+    });
+  }
 
-    if (payment.loanRepayment > 0) {
-      entries.push({
-        date: meeting.meetingDate,
-        transactionType: LEDGER_TRANSACTION_TYPE.LOAN_REPAYMENT,
-        description: "Loan Repayment",
-        income: payment.loanRepayment,
-        expense: 0,
-        cashInHand: 0,
-        bankBalance: 0,
-        meetingId: meeting._id,
-        referenceId: payment.memberId,
-      });
-    }
+  if (totals.loanRepayment > 0) {
+    entries.push({
+      date: meeting.meetingDate,
+      transactionType: LEDGER_TRANSACTION_TYPE.LOAN_REPAYMENT,
+      description: "Loan Repayment",
+      income: totals.loanRepayment,
+      expense: 0,
+      cashInHand: 0,
+      bankBalance: 0,
+      meetingId: meeting._id,
+    });
+  }
 
-    if (payment.absentFine > 0) {
-      entries.push({
-        date: meeting.meetingDate,
-        transactionType: LEDGER_TRANSACTION_TYPE.ABSENT_FINE,
-        description: "Absent Fine",
-        income: payment.absentFine,
-        expense: 0,
-        cashInHand: 0,
-        bankBalance: 0,
-        meetingId: meeting._id,
-        referenceId: payment.memberId,
-      });
-    }
+  if (totals.absentFine > 0) {
+    entries.push({
+      date: meeting.meetingDate,
+      transactionType: LEDGER_TRANSACTION_TYPE.ABSENT_FINE,
+      description: "Absent Fine",
+      income: totals.absentFine,
+      expense: 0,
+      cashInHand: 0,
+      bankBalance: 0,
+      meetingId: meeting._id,
+    });
+  }
 
-    if (payment.specialLoanFine > 0) {
-      entries.push({
-        date: meeting.meetingDate,
-        transactionType: LEDGER_TRANSACTION_TYPE.SPECIAL_LOAN_FINE,
-        description: "Special Loan Fine",
-        income: payment.specialLoanFine,
-        expense: 0,
-        cashInHand: 0,
-        bankBalance: 0,
-        meetingId: meeting._id,
-        referenceId: payment.memberId,
-      });
-    }
+  if (totals.specialLoanFine > 0) {
+    entries.push({
+      date: meeting.meetingDate,
+      transactionType: LEDGER_TRANSACTION_TYPE.SPECIAL_LOAN_FINE,
+      description: "Special Loan Fine",
+      income: totals.specialLoanFine,
+      expense: 0,
+      cashInHand: 0,
+      bankBalance: 0,
+      meetingId: meeting._id,
+    });
+  }
 
-    return entries;
-  });
+  return entries;
+}
+
+export function buildMeetingIncomeTotalEntry(
+  meetingId: string,
+  meetingDate: Date,
+  meetingIncome: number,
+): LedgerEntry | null {
+  if (meetingIncome <= 0) {
+    return null;
+  }
+
+  return {
+    date: meetingDate,
+    transactionType: LEDGER_TRANSACTION_TYPE.MEETING_INCOME_TOTAL,
+    description: "Total Meeting Income",
+    income: 0,
+    displayIncome: meetingIncome,
+    isSummary: true,
+    expense: 0,
+    cashInHand: 0,
+    bankBalance: 0,
+    meetingId,
+  };
 }

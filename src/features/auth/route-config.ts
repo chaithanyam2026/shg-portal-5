@@ -1,4 +1,4 @@
-export const PUBLIC_ROUTES = ["/login"] as const;
+export const PUBLIC_ROUTES = ["/login", "/~offline"] as const;
 
 export const PROTECTED_ROUTE_PREFIXES = ["/"] as const;
 
