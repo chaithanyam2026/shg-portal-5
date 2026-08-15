@@ -1,6 +1,6 @@
 "use client";
 
-import { Stack, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 type Props = {
   rows: {
@@ -11,21 +11,33 @@ type Props = {
 
 export default function SummaryTotals({ rows }: Props) {
   return (
-    <Stack spacing={1}>
+    <Box
+      sx={{
+        display: "grid",
+        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+        gap: 1,
+      }}
+    >
       {rows.map((row) => (
-        <Stack
+        <Box
           key={row.label}
           sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
+            bgcolor: "action.hover",
+            borderRadius: 1,
+            px: 1,
+            py: 0.75,
+            minWidth: 0,
           }}
         >
-          <Typography>{row.label}</Typography>
+          <Typography variant="caption" color="text.secondary" noWrap>
+            {row.label}
+          </Typography>
 
-          <Typography sx={{ fontWeight: 600 }}>{row.value}</Typography>
-        </Stack>
+          <Typography variant="body2" sx={{ fontWeight: 600 }} noWrap>
+            {row.value}
+          </Typography>
+        </Box>
       ))}
-    </Stack>
+    </Box>
   );
 }
