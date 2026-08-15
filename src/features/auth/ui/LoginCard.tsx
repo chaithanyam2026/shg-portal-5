@@ -1,6 +1,6 @@
 import { Card, CardContent, Divider, Stack, Typography } from "@mui/material";
 
-import { PWA_APP_NAME } from "@/lib/pwa/app-metadata";
+import AppLogo from "@/components/layout/AppLogo";
 
 import LoginForm from "./LoginForm";
 
@@ -26,20 +26,13 @@ export default function LoginCard({ callbackUrl }: Props) {
       >
         <Stack spacing={3}>
           <Stack
-            spacing={1}
+            spacing={2}
             sx={{
               textAlign: "center",
+              alignItems: "center",
             }}
           >
-            <Typography
-              component="h1"
-              variant="h4"
-              sx={{
-                fontWeight: 700,
-              }}
-            >
-              {PWA_APP_NAME}
-            </Typography>
+            <AppLogo href={undefined} height={120} priority showTitle titleLayout="column" />
 
             <Typography variant="body2" color="text.secondary">
               Sign in to continue

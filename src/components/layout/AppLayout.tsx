@@ -6,33 +6,21 @@ import { useTransition } from "react";
 
 import type { PropsWithChildren } from "react";
 
-import {
-  AppBar,
-  Box,
-  Button,
-  CssBaseline,
-  Stack,
-  Toolbar,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { AppBar, Box, Button, Stack, Toolbar, Typography } from "@mui/material";
 
 import { logoutAction } from "@/app/logout/actions";
-import { ROLE_LABELS, type UserRole } from "@/lib/auth/roles";
-import { PWA_APP_NAME } from "@/lib/pwa/app-metadata";
+import AppLogo from "@/components/layout/AppLogo";
+import type { UserRole } from "@/lib/auth/roles";
 
 import MobileNavigation from "./MobileNavigation";
 import Sidebar, { DRAWER_WIDTH } from "./Sidebar";
 
 type Props = PropsWithChildren<{
-  username?: string;
+  displayName?: string;
   userRole?: UserRole;
 }>;
 
-export default function AppLayout({ children, username, userRole = "MEMBER" }: Props) {
-  const theme = useTheme();
-  const mobile = useMediaQuery(theme.breakpoints.down("md"));
+export default function AppLayout({ children, displayName, userRole = "MEMBER" }: Props) {
   const [isPending, startTransition] = useTransition();
 
   function handleLogout() {
@@ -48,45 +36,36 @@ export default function AppLayout({ children, username, userRole = "MEMBER" }: P
         minHeight: "100vh",
       }}
     >
-      <CssBaseline />
-
       <AppBar
         position="fixed"
         elevation={1}
+        color="inherit"
         sx={{
-          width: mobile ? "100%" : `calc(100% - ${DRAWER_WIDTH}px)`,
-
-          ml: mobile ? 0 : `${DRAWER_WIDTH}px`,
+          width: { xs: "100%", md: `calc(100% - ${DRAWER_WIDTH}px)` },
+          ml: { xs: 0, md: `${DRAWER_WIDTH}px` },
+          bgcolor: "background.paper",
+          borderBottom: 1,
+          borderColor: "divider",
         }}
       >
-        <Toolbar>
-          <MobileNavigation userRole={userRole} />
+        <Toolbar sx={{ gap: 1 }}>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <AppLogo height={44} />
+          </Box>
 
-          <Typography
-            variant="h6"
-            component="h1"
-            sx={{
-              ml: 1,
-              flexGrow: 1,
-            }}
-          >
-            {PWA_APP_NAME}
-          </Typography>
-
-          <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
-            {username && (
+          <Stack direction="row" spacing={1} sx={{ alignItems: "center", ml: "auto" }}>
+            {displayName && (
               <Typography variant="body2" sx={{ display: { xs: "none", sm: "block" } }}>
-                {username}
-                {" · "}
-                {ROLE_LABELS[userRole] ?? userRole}
+                Welcome {displayName}
               </Typography>
             )}
 
             <Button
               component={Link}
               href="/account/profile"
-              color="inherit"
-              sx={{ display: { xs: "none", md: "inline-flex" } }}
+              color="primary"
+              size="small"
+              sx={{ display: { xs: "none", sm: "inline-flex" } }}
             >
               My Profile
             </Button>
@@ -94,27 +73,30 @@ export default function AppLayout({ children, username, userRole = "MEMBER" }: P
             <Button
               component={Link}
               href="/account/change-password"
-              color="inherit"
-              sx={{ display: { xs: "none", lg: "inline-flex" } }}
+              color="primary"
+              size="small"
+              sx={{ display: { xs: "none", md: "inline-flex" } }}
             >
               Change Password
             </Button>
 
-            <Button color="inherit" onClick={handleLogout} disabled={isPending}>
+            <Button color="primary" size="small" onClick={handleLogout} disabled={isPending}>
               {isPending ? "Signing Out..." : "Sign Out"}
             </Button>
+
+            <MobileNavigation userRole={userRole} />
           </Stack>
         </Toolbar>
       </AppBar>
 
-      {!mobile && <Sidebar userRole={userRole} />}
+      <Sidebar userRole={userRole} />
 
       <Box
         component="main"
         sx={{
           flexGrow: 1,
           minWidth: 0,
-          width: mobile ? "100%" : `calc(100% - ${DRAWER_WIDTH}px)`,
+          width: { xs: "100%", md: `calc(100% - ${DRAWER_WIDTH}px)` },
           bgcolor: "background.default",
         }}
       >

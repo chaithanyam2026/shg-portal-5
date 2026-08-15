@@ -42,6 +42,8 @@ export default function Sidebar({
 
         flexShrink: 0,
 
+        display: mobile ? undefined : { xs: "none", md: "block" },
+
         "& .MuiDrawer-paper": {
           width: DRAWER_WIDTH,
 
