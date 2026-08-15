@@ -21,8 +21,8 @@ import {
 import type { MemberLookup } from "@/features/financial-year/types";
 import { parseDateInputValue } from "@/lib/utils/date";
 
-import { getMinimumMonthlyRepayment } from "../domain/minimum-monthly-repayment";
 import { LOAN_TYPES, SPECIAL_LOAN_TYPE } from "../domain";
+import MinimumMonthlyRepaymentField from "./MinimumMonthlyRepaymentField";
 
 import type { CreateLoanInput } from "../validation";
 
@@ -49,6 +49,7 @@ type LoanFormValues = {
   sanctionedAmount: number;
   disbursedAmount: number;
   interestRate: number;
+  expectedMonthlyRepayment: number;
   sanctionedDate: string;
   disbursedDate: string;
   expiryDate: string;
@@ -81,6 +82,7 @@ export default function LoanForm({
     sanctionedAmount: 0,
     disbursedAmount: 0,
     interestRate: 10,
+    expectedMonthlyRepayment: 0,
     sanctionedDate: toDateInputValue(defaultSanctionedDate ?? defaultStartDate),
     disbursedDate: initialDate,
     expiryDate: "",
@@ -88,11 +90,6 @@ export default function LoanForm({
   });
 
   const [error, setError] = useState("");
-
-  const minimumMonthlyRepayment = useMemo(
-    () => getMinimumMonthlyRepayment(values.disbursedAmount),
-    [values.disbursedAmount],
-  );
 
   const validationError = useMemo(() => {
     if (!values.memberId) {
@@ -113,6 +110,14 @@ export default function LoanForm({
 
     if (values.interestRate < 0) {
       return "Interest rate cannot be negative.";
+    }
+
+    if (values.expectedMonthlyRepayment < 0) {
+      return "Minimum monthly repayment cannot be negative.";
+    }
+
+    if (values.expectedMonthlyRepayment > values.disbursedAmount) {
+      return "Minimum monthly repayment cannot exceed the disbursed amount.";
     }
 
     if (!values.sanctionedDate) {
@@ -158,6 +163,7 @@ export default function LoanForm({
         sanctionedAmount: values.sanctionedAmount,
         disbursedAmount: values.disbursedAmount,
         interestRate: values.interestRate,
+        expectedMonthlyRepayment: values.expectedMonthlyRepayment,
         sanctionedDate: parseDateInputValue(values.sanctionedDate),
         disbursedDate: parseDateInputValue(values.disbursedDate),
         expiryDate: values.expiryDate ? parseDateInputValue(values.expiryDate) : null,
@@ -342,19 +348,15 @@ export default function LoanForm({
               }
             />
 
-            <TextField
-              label="Minimum Monthly Repayment"
-              fullWidth
-              value={
-                minimumMonthlyRepayment > 0
-                  ? `₹${minimumMonthlyRepayment.toLocaleString("en-IN")}`
-                  : "No minimum"
+            <MinimumMonthlyRepaymentField
+              disbursedAmount={values.disbursedAmount}
+              value={values.expectedMonthlyRepayment}
+              onChange={(expectedMonthlyRepayment) =>
+                setValues((current) => ({
+                  ...current,
+                  expectedMonthlyRepayment,
+                }))
               }
-              slotProps={{
-                input: {
-                  readOnly: true,
-                },
-              }}
             />
           </Stack>
 

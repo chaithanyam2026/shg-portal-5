@@ -7,10 +7,12 @@ import Link from "next/link";
 import { Box, Button, Stack } from "@mui/material";
 
 import PageHeader from "@/components/layout/PageHeader";
+import { formatDate } from "@/lib/utils/date";
 
 import type { MeetingDetails } from "../types";
 
 import MeetingActionButton from "./MeetingActionButton";
+import { MeetingDataRefreshProvider, useMeetingDataRefresh } from "./MeetingDataRefresh";
 import MeetingGeneralPanel from "./MeetingGeneralPanel";
 import {
   AttendanceTabPanel,
@@ -22,18 +24,26 @@ import {
   PaymentsTabPanel,
   SummaryTabPanel,
 } from "./MeetingTabPanels";
-import MeetingTabs, { resolveMeetingTabIndex } from "./MeetingTabs";
+import MeetingTabs, { MEETING_TAB_SLUGS, resolveMeetingTabIndex } from "./MeetingTabs";
+
+const SUMMARY_TAB_INDEX = MEETING_TAB_SLUGS.indexOf("summary");
+const MEMBERS_TAB_INDEX = MEETING_TAB_SLUGS.indexOf("members");
 
 type Props = {
   meeting: MeetingDetails;
   initialTab?: string | null;
 };
 
-function formatDate(value: string) {
-  return new Date(value).toLocaleString();
+export default function MeetingWorkspace({ meeting, initialTab }: Props) {
+  return (
+    <MeetingDataRefreshProvider>
+      <MeetingWorkspaceContent meeting={meeting} initialTab={initialTab} />
+    </MeetingDataRefreshProvider>
+  );
 }
 
-export default function MeetingWorkspace({ meeting, initialTab }: Props) {
+function MeetingWorkspaceContent({ meeting, initialTab }: Props) {
+  const { refreshKey, refreshMeetingData } = useMeetingDataRefresh();
   const initialTabIndex = resolveMeetingTabIndex(initialTab);
   const [tab, setTab] = useState(initialTabIndex);
   const [visitedTabs, setVisitedTabs] = useState(() => new Set([initialTabIndex]));
@@ -45,6 +55,10 @@ export default function MeetingWorkspace({ meeting, initialTab }: Props) {
       next.add(value);
       return next;
     });
+
+    if (value === SUMMARY_TAB_INDEX || value === MEMBERS_TAB_INDEX) {
+      refreshMeetingData();
+    }
   }
 
   const panelSx = useMemo(
@@ -59,6 +73,7 @@ export default function MeetingWorkspace({ meeting, initialTab }: Props) {
       <PageHeader
         title="Meeting"
         subtitle={formatDate(meeting.meetingDate)}
+        subtitleVariant="body1"
         backHref="/meetings"
       >
         <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", gap: 1 }}>
@@ -138,13 +153,13 @@ export default function MeetingWorkspace({ meeting, initialTab }: Props) {
 
       {visitedTabs.has(7) && (
         <Box sx={panelSx(7)}>
-          <MembersTabPanel meetingId={meeting.id} />
+          <MembersTabPanel meetingId={meeting.id} refreshKey={refreshKey} />
         </Box>
       )}
 
       {visitedTabs.has(8) && (
         <Box sx={panelSx(8)}>
-          <SummaryTabPanel meetingId={meeting.id} />
+          <SummaryTabPanel meetingId={meeting.id} refreshKey={refreshKey} />
         </Box>
       )}
     </Stack>

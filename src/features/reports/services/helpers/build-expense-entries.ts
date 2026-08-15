@@ -5,6 +5,7 @@ import { compareCalendarDates, toCalendarDate } from "@/lib/utils/date";
 
 type MeetingExpenses = {
   _id: string;
+  meetingDate: Date;
   expenses: {
     transactionDate: Date;
     category: string;
@@ -19,16 +20,16 @@ function getExpenseCategoryLabel(category: string): string {
 
 export function buildExpenseEntries(meeting: MeetingExpenses): LedgerEntry[] {
   const grouped = new Map<string, LedgerEntry>();
+  const meetingDate = toCalendarDate(meeting.meetingDate);
 
   for (const expense of meeting.expenses) {
     if (expense.amount <= 0) {
       continue;
     }
 
-    const date = toCalendarDate(expense.transactionDate);
-    const dateKey = date.toISOString().slice(0, 10);
-    const key = `${dateKey}|${expense.category}`;
     const label = getExpenseCategoryLabel(expense.category);
+    const key = `${meeting._id}|${expense.category}`;
+    const description = expense.remarks ? `${label} — ${expense.remarks}` : label;
     const existing = grouped.get(key);
 
     if (existing) {
@@ -37,9 +38,9 @@ export function buildExpenseEntries(meeting: MeetingExpenses): LedgerEntry[] {
     }
 
     grouped.set(key, {
-      date,
+      date: meetingDate,
       transactionType: LEDGER_TRANSACTION_TYPE.OTHER_EXPENSE,
-      description: label,
+      description,
       income: 0,
       expense: expense.amount,
       cashInHand: 0,

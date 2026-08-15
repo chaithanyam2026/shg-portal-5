@@ -39,6 +39,11 @@ const CreateLoanFieldsSchema = z.object({
 
   expiryDate: z.coerce.date().nullable().optional(),
 
+  expectedMonthlyRepayment: z.coerce
+    .number()
+    .min(0, "Minimum monthly repayment cannot be negative.")
+    .optional(),
+
   remarks: z
     .string()
     .trim()
@@ -82,6 +87,17 @@ function refineCreateLoanData(
       message: "Expiry date cannot be before the start date.",
     });
   }
+
+  if (
+    data.expectedMonthlyRepayment !== undefined &&
+    data.expectedMonthlyRepayment > data.disbursedAmount
+  ) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["expectedMonthlyRepayment"],
+      message: "Minimum monthly repayment cannot exceed the disbursed amount.",
+    });
+  }
 }
 
 export const CreateMeetingLoanSchema = CreateLoanFieldsSchema.superRefine(refineCreateLoanData);
@@ -119,12 +135,14 @@ export const UpdateLoanSchema = z
 
     expectedMonthlyRepayment: z.coerce
       .number()
-      .positive("Minimum monthly repayment must be greater than zero.")
+      .min(0, "Minimum monthly repayment cannot be negative.")
       .optional(),
 
     sanctionedDate: z.coerce.date().optional(),
 
     disbursedDate: z.coerce.date().optional(),
+
+    closedDate: z.coerce.date().nullable().optional(),
 
     expiryDate: z.coerce.date().nullable().optional(),
 
@@ -169,6 +187,7 @@ export type LoanIdInput = z.infer<typeof LoanIdSchema>;
  * Close Loan
  */
 export const CloseLoanSchema = z.object({
+  closedDate: z.coerce.date(),
   comment: z
     .string()
     .trim()

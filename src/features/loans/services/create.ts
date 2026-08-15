@@ -57,7 +57,8 @@ export async function createLoan(input: CreateLoanInput): Promise<LoanDetails> {
 
   const { loanNumber, sequenceNumber } = await generateNextLoanNumber(data.financialYearId);
 
-  const expectedMonthlyRepayment = getMinimumMonthlyRepayment(data.disbursedAmount);
+  const expectedMonthlyRepayment =
+    data.expectedMonthlyRepayment ?? getMinimumMonthlyRepayment(data.disbursedAmount);
 
   const loan = await Loan.create({
     loanNumber,

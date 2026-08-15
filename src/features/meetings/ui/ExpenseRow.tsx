@@ -8,6 +8,8 @@ import { EXPENSE_CATEGORY_OPTIONS } from "../domain/expense";
 
 import type { ExpenseRecord } from "../types";
 
+import AmountField from "./AmountField";
+
 type Props = {
   record: ExpenseRecord;
   disabled?: boolean;
@@ -62,16 +64,15 @@ export default function ExpenseRow({ record, disabled = false, onChange, onDelet
       </TableCell>
 
       <TableCell width={140}>
-        <TextField
+        <AmountField
           fullWidth
           size="small"
-          type="number"
           disabled={disabled}
           value={record.amount}
-          onChange={(event) =>
+          onChange={(amount) =>
             onChange({
               ...record,
-              amount: Number(event.target.value),
+              amount,
             })
           }
           slotProps={{

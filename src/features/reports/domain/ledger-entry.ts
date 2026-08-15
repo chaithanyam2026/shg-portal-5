@@ -24,5 +24,10 @@ export type LedgerEntry = {
    */
   displayIncome?: number;
 
+  /**
+   * Hide the cash-in-hand column until opening cash is established.
+   */
+  cashInHandHidden?: boolean;
+
   isSummary?: boolean;
 };

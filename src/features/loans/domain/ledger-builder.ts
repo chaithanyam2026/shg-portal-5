@@ -15,7 +15,11 @@ export function buildLoanLedger(loan: LoanDetails): LoanPassbook {
 
     disbursedAmount: loan.disbursedAmount,
 
+    expectedMonthlyRepayment: loan.expectedMonthlyRepayment,
+
     disbursedDate: new Date(loan.disbursedDate),
+
+    closedDate: loan.closedDate ? new Date(loan.closedDate) : null,
 
     interestRate: loan.interestRate,
 

@@ -63,6 +63,8 @@ export async function getLoanPassbook(loanId: LoanIdInput): Promise<LoanPassbook
 
     disbursedDate: loan.disbursedDate,
 
+    closedDate: loan.closedDate,
+
     financialYearEndDate: toCalendarDate(financialYear.endDate),
   });
 }

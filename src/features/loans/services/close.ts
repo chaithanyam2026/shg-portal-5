@@ -1,5 +1,6 @@
 import connectMongo from "@/lib/db/mongodb";
 import { AppError } from "@/lib/errors";
+import { compareCalendarDates, toCalendarDate } from "@/lib/utils/date";
 import FinancialYear from "@/models/FinancialYear";
 import Loan from "@/models/Loan";
 
@@ -19,7 +20,7 @@ export async function closeLoan(loanId: string, input: unknown): Promise<LoanDet
   await connectMongo();
 
   const id = LoanIdSchema.parse(loanId);
-  const { comment } = CloseLoanSchema.parse(input);
+  const { comment, closedDate } = CloseLoanSchema.parse(input);
 
   const loan = await Loan.findById(id);
 
@@ -49,10 +50,15 @@ export async function closeLoan(loanId: string, input: unknown): Promise<LoanDet
     );
   }
 
+  if (compareCalendarDates(closedDate, loan.disbursedDate) < 0) {
+    throw new AppError("Close date cannot be before the loan start date.", 400);
+  }
+
   const closingRemark = formatLoanClosingRemark(comment);
 
   loan.remarks = loan.remarks.trim() ? `${loan.remarks.trim()}\n${closingRemark}` : closingRemark;
   loan.status = CLOSED_LOAN_STATUS;
+  loan.closedDate = toCalendarDate(closedDate);
   ensureLoanSanctionedDate(loan);
 
   await loan.save();

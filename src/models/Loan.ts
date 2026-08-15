@@ -33,6 +33,8 @@ status: LoanStatus;
 
   disbursedDate: Date;
 
+  closedDate: Date | null;
+
   expiryDate: Date | null;
 
   remarks: string;
@@ -119,6 +121,11 @@ const LoanSchema = new Schema<LoanDocument>(
     disbursedDate: {
       type: Date,
       required: true,
+    },
+
+    closedDate: {
+      type: Date,
+      default: null,
     },
 
     expiryDate: {

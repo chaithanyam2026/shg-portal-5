@@ -26,3 +26,4 @@ export * from "./outstanding-balance";
 export * from "./effective-interest";
 export * from "./summary-calculator";
 export * from "./loan-close";
+export * from "./loan-repayment-window";

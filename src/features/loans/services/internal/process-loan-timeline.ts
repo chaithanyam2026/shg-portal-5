@@ -9,6 +9,7 @@ import {
   getFineEligibilityForMonth,
   getMinimumMonthlyRepayment,
   getRepaymentCycle,
+  isWithinLoanRepaymentWindow,
   MONTHLY_LOAN_FINE,
   updateOutstandingBalance,
 } from "../../domain";
@@ -142,13 +143,19 @@ function evaluateMonthlyFineForMonth(
   };
 }
 
-function filterRepaymentsWithinFinancialYear(
+function filterRepaymentsForLoanWindow(
   repayments: LoanRepayment[],
+  disbursedDate: Date,
+  closedDate: Date | null | undefined,
   financialYearEndDate: Date,
 ): LoanRepayment[] {
-  return repayments.filter(
-    (repayment) => !isAfterFinancialYearEnd(repayment.meetingDate, financialYearEndDate),
-  );
+  return repayments.filter((repayment) => {
+    if (!isWithinLoanRepaymentWindow(repayment.meetingDate, disbursedDate, closedDate)) {
+      return false;
+    }
+
+    return !isAfterFinancialYearEnd(repayment.meetingDate, financialYearEndDate);
+  });
 }
 
 function buildFinancialYearEndFineDescription(
@@ -266,15 +273,18 @@ export function processLoanTimeline({
   pendingLoanFine,
   financialYearEndDate,
 }: ProcessLoanTimelineInput): ProcessLoanTimelineResult {
-  const financialYearRepayments = filterRepaymentsWithinFinancialYear(
+  const financialYearRepayments = filterRepaymentsForLoanWindow(
     repayments,
+    loan.disbursedDate,
+    loan.closedDate,
     financialYearEndDate,
   );
 
   let previousTransactionDate = loan.disbursedDate;
   let currentMonthKey = getCalendarMonthKey(loan.disbursedDate);
 
-  const minimumMonthlyRepayment = getMinimumMonthlyRepayment(loan.disbursedAmount);
+  const minimumMonthlyRepayment =
+    loan.expectedMonthlyRepayment ?? getMinimumMonthlyRepayment(loan.disbursedAmount);
   const monthStartPendingFine = new Map<string, number>();
   const monthFineDueDuringMonth = new Map<string, number>();
   const monthlyActivity = new Map<string, MonthlyActivity>();

@@ -10,7 +10,13 @@ import type { LoanDetails } from "../types";
 
 import { LoanIdInput, LoanIdSchema } from "../validation";
 
-import { buildFineWaiverSnapshot, calculateLoanSummary, canCloseLoan, calculateLoanCloseTotal } from "../domain";
+import {
+  buildFineWaiverSnapshot,
+  calculateLoanCloseTotal,
+  calculateLoanSummary,
+  canCloseLoan,
+  canUpdateExpectedMonthlyRepayment,
+} from "../domain";
 import { getLoanPassbook } from "./get-passbook";
 import { getLoanMemberCloseBalances } from "./internal/get-loan-member-close-balances";
 
@@ -89,6 +95,8 @@ export async function getLoan(loanId: LoanIdInput): Promise<LoanDetails> {
 
     disbursedDate: toIsoString(loan.disbursedDate) ?? "",
 
+    closedDate: toIsoString(loan.closedDate),
+
     expiryDate: toIsoString(loan.expiryDate),
 
     remarks: loan.remarks ?? "",
@@ -117,6 +125,11 @@ export async function getLoan(loanId: LoanIdInput): Promise<LoanDetails> {
       loanStatus: loan.status,
       financialYearStatus: financialYear.status,
       isClosable: summary.isClosable,
+    }),
+
+    canUpdateExpectedMonthlyRepayment: canUpdateExpectedMonthlyRepayment({
+      loanStatus: loan.status,
+      financialYearStatus: financialYear.status,
     }),
 
     pendingAbsentFine: memberCloseBalances.pendingAbsentFine,

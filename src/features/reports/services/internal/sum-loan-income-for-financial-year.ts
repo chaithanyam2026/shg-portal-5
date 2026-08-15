@@ -82,6 +82,7 @@ export async function sumLoanIncomeForFinancialYear(
         interestRate: loan.interestRate,
         expectedMonthlyRepayment: loan.expectedMonthlyRepayment,
         disbursedDate: loan.disbursedDate,
+        closedDate: loan.closedDate,
         financialYearEndDate,
       },
       repaymentsByMember.get(memberId) ?? [],

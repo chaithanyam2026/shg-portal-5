@@ -3,6 +3,8 @@ import { Card, CardContent, Divider, Grid, Stack, Typography } from "@mui/materi
 import { formatDate } from "@/lib/utils/date";
 import type { LoanDetails } from "../../types";
 import { formatCurrency } from "../format";
+import SetLoanClosedDateForm from "../SetLoanClosedDateForm";
+import UpdateExpectedMonthlyRepaymentForm from "../UpdateExpectedMonthlyRepaymentForm";
 
 type Props = {
   loan: LoanDetails;
@@ -51,10 +53,16 @@ export default function GeneralTab({ loan }: Props) {
 
           <Row label="Nominal Interest Rate" value={`${loan.interestRate}%`} />
 
-          <Row
-            label="Minimum Monthly Repayment"
-            value={formatCurrency(loan.expectedMonthlyRepayment)}
-          />
+          {loan.canUpdateExpectedMonthlyRepayment ? (
+            <Grid size={12}>
+              <UpdateExpectedMonthlyRepaymentForm loan={loan} />
+            </Grid>
+          ) : (
+            <Row
+              label="Minimum Monthly Repayment"
+              value={formatCurrency(loan.expectedMonthlyRepayment)}
+            />
+          )}
 
           <Grid size={12}>
             <Divider sx={{ my: 1 }} />
@@ -74,6 +82,17 @@ export default function GeneralTab({ loan }: Props) {
           <Row label="Disbursed Amount" value={formatCurrency(loan.disbursedAmount)} />
 
           <Row label="Start Date" value={formatDate(loan.disbursedDate)} />
+
+          {loan.status === "CLOSED" && !loan.closedDate ? (
+            <Grid size={12}>
+              <SetLoanClosedDateForm loan={loan} />
+            </Grid>
+          ) : (
+            <Row
+              label="Close Date"
+              value={loan.closedDate ? formatDate(loan.closedDate) : "Not closed"}
+            />
+          )}
 
           <Row
             label="Expiry Date"

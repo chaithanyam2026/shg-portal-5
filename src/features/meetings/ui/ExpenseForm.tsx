@@ -9,6 +9,7 @@ import { Alert, Button, Card, CardContent, Stack, Typography } from "@mui/materi
 import type { ExpenseSummary } from "../types";
 
 import ExpenseTable from "./ExpenseTable";
+import { useMeetingDataRefresh } from "./MeetingDataRefresh";
 
 type Props = {
   meetingId: string;
@@ -17,6 +18,7 @@ type Props = {
 
 export default function ExpenseForm({ meetingId, initialSummary }: Props) {
   const router = useRouter();
+  const { refreshMeetingData } = useMeetingDataRefresh();
 
   const [records, setRecords] = useState(initialSummary.records);
 
@@ -54,6 +56,7 @@ export default function ExpenseForm({ meetingId, initialSummary }: Props) {
 
       setSuccess("Expenses saved successfully.");
 
+      refreshMeetingData();
       router.refresh();
     } catch (error) {
       setSuccess("");

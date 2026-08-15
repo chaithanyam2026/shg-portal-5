@@ -26,6 +26,7 @@ import SummaryView from "./SummaryView";
 
 type LoaderProps = {
   meetingId: string;
+  refreshKey?: number;
 };
 
 function TabLoader({ label }: { label: string }) {
@@ -36,7 +37,7 @@ function TabLoader({ label }: { label: string }) {
   );
 }
 
-function useMeetingTabData<T>(meetingId: string, path: string) {
+function useMeetingTabData<T>(meetingId: string, path: string, refreshKey = 0) {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -76,7 +77,7 @@ function useMeetingTabData<T>(meetingId: string, path: string) {
     return () => {
       cancelled = true;
     };
-  }, [meetingId, path]);
+  }, [meetingId, path, refreshKey]);
 
   return { data, loading, error };
 }
@@ -193,10 +194,11 @@ export function ExpensesTabPanel({ meetingId }: LoaderProps) {
   return <ExpenseForm meetingId={meetingId} initialSummary={data} />;
 }
 
-export function MembersTabPanel({ meetingId }: LoaderProps) {
+export function MembersTabPanel({ meetingId, refreshKey = 0 }: LoaderProps) {
   const { data, loading, error } = useMeetingTabData<MemberTransactionsSummary>(
     meetingId,
     "member-transactions",
+    refreshKey,
   );
 
   if (loading) {
@@ -214,10 +216,11 @@ export function MembersTabPanel({ meetingId }: LoaderProps) {
   return <MemberTransactionsView summary={data} />;
 }
 
-export function SummaryTabPanel({ meetingId }: LoaderProps) {
+export function SummaryTabPanel({ meetingId, refreshKey = 0 }: LoaderProps) {
   const { data, loading, error } = useMeetingTabData<MeetingDashboardSummary>(
     meetingId,
     "summary",
+    refreshKey,
   );
 
   if (loading) {

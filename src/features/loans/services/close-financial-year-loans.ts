@@ -1,6 +1,8 @@
 import { Types } from "mongoose";
 
 import { AppError } from "@/lib/errors";
+import { toCalendarDate } from "@/lib/utils/date";
+import FinancialYear from "@/models/FinancialYear";
 import Loan from "@/models/Loan";
 
 import { ACTIVE_LOAN_STATUS, CLOSED_LOAN_STATUS } from "../domain";
@@ -20,6 +22,14 @@ export async function closeFinancialYearLoans(financialYearId: string): Promise<
     throw new AppError("Invalid financial year id.", 400);
   }
 
+  const financialYear = await FinancialYear.findById(financialYearId).select("endDate").lean();
+
+  if (!financialYear) {
+    throw new AppError("Financial year not found.", 404);
+  }
+
+  const closedDate = toCalendarDate(financialYear.endDate);
+
   const activeLoans = await Loan.find({
     financialYearId,
     status: ACTIVE_LOAN_STATUS,
@@ -33,6 +43,7 @@ export async function closeFinancialYearLoans(financialYearId: string): Promise<
 
   for (const loan of activeLoans) {
     loan.status = CLOSED_LOAN_STATUS;
+    loan.closedDate = closedDate;
 
     if (loan.remarks.trim().length === 0) {
       loan.remarks = AUTO_CLOSE_REMARK;

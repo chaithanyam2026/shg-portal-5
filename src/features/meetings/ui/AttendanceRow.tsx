@@ -7,6 +7,8 @@ import { ATTENDANCE_STATUS_OPTIONS } from "../domain/attendance-status";
 import type { AttendanceRecord } from "../types";
 
 type Props = {
+  serialNumber: number;
+
   record: AttendanceRecord;
 
   disabled?: boolean;
@@ -14,10 +16,15 @@ type Props = {
   onChange(value: AttendanceRecord): void;
 };
 
-export default function AttendanceRow({ record, disabled = false, onChange }: Props) {
+export default function AttendanceRow({
+  serialNumber,
+  record,
+  disabled = false,
+  onChange,
+}: Props) {
   return (
     <TableRow hover>
-      <TableCell>{record.memberCode}</TableCell>
+      <TableCell align="right">{serialNumber}</TableCell>
 
       <TableCell>{record.memberName}</TableCell>
 

@@ -1,6 +1,75 @@
 import type { LedgerEntry } from "@/features/reports/domain/ledger-entry";
-import { LEDGER_TRANSACTION_TYPE } from "@/features/reports/domain/transaction-type";
+import {
+  isOpeningAccountLedgerEntry,
+  isOpeningMemberLedgerEntry,
+  LEDGER_TRANSACTION_TYPE,
+} from "@/features/reports/domain/transaction-type";
 import type { MonthlyLedger } from "@/features/reports/types";
+
+function getMonthOpeningBalance(entry: LedgerEntry): {
+  cashInHand: number;
+  bankBalance: number;
+} {
+  if (isOpeningAccountLedgerEntry(entry.transactionType)) {
+    return {
+      cashInHand: entry.cashInHandHidden ? 0 : entry.cashInHand,
+      bankBalance: entry.bankBalance,
+    };
+  }
+
+  if (isOpeningMemberLedgerEntry(entry.transactionType)) {
+    return {
+      cashInHand: entry.cashInHandHidden ? 0 : entry.cashInHand,
+      bankBalance: entry.bankBalance,
+    };
+  }
+
+  if (entry.transactionType === LEDGER_TRANSACTION_TYPE.OPENING_CASH_IN_HAND) {
+    return {
+      cashInHand: 0,
+      bankBalance: entry.bankBalance,
+    };
+  }
+
+  if (entry.transactionType === LEDGER_TRANSACTION_TYPE.BANK_DEPOSIT) {
+    return {
+      cashInHand: entry.cashInHand + entry.expense,
+      bankBalance: entry.bankBalance - entry.expense,
+    };
+  }
+
+  if (entry.transactionType === LEDGER_TRANSACTION_TYPE.BANK_WITHDRAWAL) {
+    return {
+      cashInHand: entry.cashInHand - entry.income,
+      bankBalance: entry.bankBalance + entry.income,
+    };
+  }
+
+  if (
+    entry.transactionType === LEDGER_TRANSACTION_TYPE.BANK_INTEREST ||
+    entry.transactionType === LEDGER_TRANSACTION_TYPE.BANK_INVESTMENT_MATURITY
+  ) {
+    return {
+      cashInHand: entry.cashInHand,
+      bankBalance: entry.bankBalance - entry.income,
+    };
+  }
+
+  if (
+    entry.transactionType === LEDGER_TRANSACTION_TYPE.BANK_INVESTMENT ||
+    entry.transactionType === LEDGER_TRANSACTION_TYPE.BANK_CHARGE
+  ) {
+    return {
+      cashInHand: entry.cashInHand,
+      bankBalance: entry.bankBalance + entry.expense,
+    };
+  }
+
+  return {
+    cashInHand: entry.cashInHand - entry.income + entry.expense,
+    bankBalance: entry.bankBalance,
+  };
+}
 
 export function groupMonthlyLedger(entries: LedgerEntry[]): MonthlyLedger[] {
   const months = new Map<string, MonthlyLedger>();
@@ -14,19 +83,7 @@ export function groupMonthlyLedger(entries: LedgerEntry[]): MonthlyLedger[] {
     let ledger = months.get(key);
 
     if (!ledger) {
-      const openingCash =
-        entry.transactionType === LEDGER_TRANSACTION_TYPE.BANK_DEPOSIT
-          ? entry.cashInHand + entry.expense
-          : entry.transactionType === LEDGER_TRANSACTION_TYPE.BANK_WITHDRAWAL
-            ? entry.cashInHand - entry.income
-            : entry.cashInHand - entry.income + entry.expense;
-
-      const openingBank =
-        entry.transactionType === LEDGER_TRANSACTION_TYPE.BANK_DEPOSIT
-          ? entry.bankBalance - entry.expense
-          : entry.transactionType === LEDGER_TRANSACTION_TYPE.BANK_WITHDRAWAL
-            ? entry.bankBalance + entry.income
-            : entry.bankBalance;
+      const { cashInHand: openingCash, bankBalance: openingBank } = getMonthOpeningBalance(entry);
 
       ledger = {
         month: entry.date.toLocaleString("default", {

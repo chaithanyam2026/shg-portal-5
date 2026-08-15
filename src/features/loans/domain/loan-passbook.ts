@@ -108,7 +108,11 @@ export type LoanPassbook = {
 
   disbursedAmount: number;
 
+  expectedMonthlyRepayment: number;
+
   disbursedDate: Date;
+
+  closedDate?: Date | null;
 
   interestRate: number;
 

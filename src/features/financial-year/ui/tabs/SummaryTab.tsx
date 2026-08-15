@@ -10,6 +10,7 @@ import ApproveFinancialYearDialog from "../ApproveFinancialYearDialog";
 import CloseFinancialYearDialog from "../CloseFinancialYearDialog";
 import ValidateFinancialYearDialog from "../ValidateFinancialYearDialog";
 
+import { getOpeningAccountBalance } from "../../domain/opening-balance";
 import type { FinancialYearDetails } from "../../types";
 
 import { validateFinancialYear } from "../../services/validate";
@@ -35,12 +36,7 @@ export default function SummaryTab({ financialYear }: Props) {
 
   const opening = financialYear.openingBalances;
 
-  const totalOpeningBalance =
-    opening.bankBalance +
-    opening.cashInHand +
-    opening.excessCorpus +
-    opening.investments -
-    opening.otherLoans;
+  const totalOpeningBalance = getOpeningAccountBalance(opening);
 
   const memberTotals = financialYear.members.reduce(
     (totals, member) => ({
@@ -132,7 +128,7 @@ export default function SummaryTab({ financialYear }: Props) {
 
           <Grid size={{ xs: 12, sm: 6 }}>
             <SummaryCard
-              title="Opening Account Balance"
+              title="Opening Account Balance (Bank Balance + Investment + Cash in hand)"
               value={`₹ ${totalOpeningBalance.toLocaleString("en-IN")}`}
             />
           </Grid>

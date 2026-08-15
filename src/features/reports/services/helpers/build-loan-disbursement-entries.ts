@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 
-import { OPENING_BALANCE_MIGRATION_REMARK } from "@/features/loans/domain/loan-constants";
+import { isOpeningBalanceMigrationLoan } from "@/features/loans/domain/loan-constants";
 import type { LedgerEntry } from "@/features/reports/domain/ledger-entry";
 import { LEDGER_TRANSACTION_TYPE } from "@/features/reports/domain/transaction-type";
 import Loan from "@/models/Loan";
@@ -14,21 +14,21 @@ type BuildLoanDisbursementEntriesInput = {
 export async function buildLoanDisbursementEntries(
   input: BuildLoanDisbursementEntriesInput,
 ): Promise<LedgerEntry[]> {
-  const loans = await Loan.find({
-    financialYearId: new Types.ObjectId(input.financialYearId),
-    remarks: {
-      $ne: OPENING_BALANCE_MIGRATION_REMARK,
-    },
-  })
-    .select({
-      loanNumber: 1,
-      memberId: 1,
-      disbursedAmount: 1,
-      disbursedDate: 1,
-      meetingId: 1,
+  const loans = (
+    await Loan.find({
+      financialYearId: new Types.ObjectId(input.financialYearId),
     })
-    .lean()
-    .exec();
+      .select({
+        loanNumber: 1,
+        memberId: 1,
+        disbursedAmount: 1,
+        disbursedDate: 1,
+        meetingId: 1,
+        remarks: 1,
+      })
+      .lean()
+      .exec()
+  ).filter((loan) => !isOpeningBalanceMigrationLoan(loan.remarks ?? ""));
 
   if (loans.length === 0) {
     return [];

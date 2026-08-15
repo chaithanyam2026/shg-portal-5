@@ -94,6 +94,6 @@ export function calculateInterest({
   return {
     interestDays: days,
 
-    interestAmount: Number(interest.toFixed(2)),
+    interestAmount: Math.round(interest),
   };
 }

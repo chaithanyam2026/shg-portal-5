@@ -61,23 +61,35 @@ export default function MeetingsPage() {
       setLoading(true);
       setError("");
 
-      const params = new URLSearchParams();
+      const pageSize = 100;
+      let page = 1;
+      let allMeetings: MeetingSummary[] = [];
+      let total = 0;
 
-      if (selectedFinancialYearId) {
-        params.set("financialYearId", selectedFinancialYearId);
-      }
+      do {
+        const params = new URLSearchParams({
+          page: String(page),
+          pageSize: String(pageSize),
+        });
 
-      const response = await fetch(
-        params.size > 0 ? `/api/meetings?${params.toString()}` : "/api/meetings",
-      );
+        if (selectedFinancialYearId) {
+          params.set("financialYearId", selectedFinancialYearId);
+        }
 
-      if (!response.ok) {
-        throw new Error("Failed to load meetings.");
-      }
+        const response = await fetch(`/api/meetings?${params.toString()}`);
 
-      const result: MeetingListResult = await response.json();
+        if (!response.ok) {
+          throw new Error("Failed to load meetings.");
+        }
 
-      setMeetings(result.items);
+        const result: MeetingListResult = await response.json();
+
+        allMeetings = allMeetings.concat(result.items);
+        total = result.total;
+        page += 1;
+      } while (allMeetings.length < total);
+
+      setMeetings(allMeetings);
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : "Failed to load meetings.");
     } finally {

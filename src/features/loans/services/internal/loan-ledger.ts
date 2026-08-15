@@ -13,7 +13,7 @@ import { processLoanTimeline } from "./process-loan-timeline";
 
 import type { LoanPassbook } from "../../domain/loan-passbook";
 
-import { validateLoanPassbook } from "../../domain";
+import { resolveLoanCalculationEndDate, validateLoanPassbook } from "../../domain";
 
 export type BuildLoanLedgerInput = {
   _id: {
@@ -37,6 +37,8 @@ export type BuildLoanLedgerInput = {
   expectedMonthlyRepayment: number;
 
   disbursedDate: Date;
+
+  closedDate?: Date | null;
 
   financialYearEndDate?: Date;
 };
@@ -317,6 +319,7 @@ export async function buildLoanLedger(
   // }
 
   const financialYearEndDate = await resolveFinancialYearEndDate(loan);
+  const calculationEndDate = resolveLoanCalculationEndDate(financialYearEndDate, loan.closedDate);
 
   const balances = processLoanTimeline({
     loan,
@@ -331,7 +334,7 @@ export async function buildLoanLedger(
 
     pendingLoanFine,
 
-    financialYearEndDate,
+    financialYearEndDate: calculationEndDate,
   });
 
   outstandingPrincipal = balances.outstandingPrincipal;
@@ -353,11 +356,15 @@ export async function buildLoanLedger(
 
     disbursedAmount: loan.disbursedAmount,
 
+    expectedMonthlyRepayment: loan.expectedMonthlyRepayment,
+
     disbursedDate: loan.disbursedDate,
+
+    closedDate: loan.closedDate ?? null,
 
     interestRate: loan.interestRate,
 
-    calculationEndDate: financialYearEndDate,
+    calculationEndDate,
 
     entries,
   };

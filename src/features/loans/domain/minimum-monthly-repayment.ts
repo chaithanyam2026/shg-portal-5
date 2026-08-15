@@ -28,14 +28,16 @@ export function getMinimumMonthlyRepayment(disbursedAmount: number): number {
   return tier * MINIMUM_REPAYMENT_STEP;
 }
 
-export function getMinimumMonthlyRepaymentDescription(disbursedAmount: number): string {
-  const minimum = getMinimumMonthlyRepayment(disbursedAmount);
-
+export function formatMinimumMonthlyRepayment(minimum: number): string {
   if (minimum === 0) {
     return "No minimum monthly repayment";
   }
 
   return `Minimum monthly repayment: ₹${minimum.toLocaleString("en-IN")}`;
+}
+
+export function getMinimumMonthlyRepaymentDescription(disbursedAmount: number): string {
+  return formatMinimumMonthlyRepayment(getMinimumMonthlyRepayment(disbursedAmount));
 }
 
 export function getLoanFineAmount(): number {

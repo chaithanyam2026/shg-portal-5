@@ -41,6 +41,8 @@ export type LoanBase = {
 
   disbursedDate: string;
 
+  closedDate: string | null;
+
   expiryDate: string | null;
 };
 
@@ -104,6 +106,8 @@ export type LoanDetails = LoanBase & {
   isClosable: boolean;
 
   canBeClosed: boolean;
+
+  canUpdateExpectedMonthlyRepayment: boolean;
 
   pendingAbsentFine: number;
 

@@ -32,7 +32,9 @@ export default function PaymentTable({ records, disabled = false, onChange }: Pr
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>Code</TableCell>
+            <TableCell width={80} align="right">
+              Si. No.
+            </TableCell>
             <TableCell>Member</TableCell>
             <TableCell>Contribution</TableCell>
             <TableCell>Loan</TableCell>
@@ -55,6 +57,7 @@ export default function PaymentTable({ records, disabled = false, onChange }: Pr
           {records.map((record, index) => (
             <PaymentRow
               key={record.memberId}
+              serialNumber={index + 1}
               record={record}
               disabled={disabled}
               onChange={(value) => updateRecord(index, value)}

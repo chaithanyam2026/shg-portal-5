@@ -51,6 +51,13 @@ export default function LoanCard({ loan }: Props) {
               </Typography>
 
               <Typography variant="body2">
+                <strong>Min. Monthly:</strong>{" "}
+                {loan.expectedMonthlyRepayment > 0
+                  ? `₹${loan.expectedMonthlyRepayment.toLocaleString()}`
+                  : "No minimum"}
+              </Typography>
+
+              <Typography variant="body2">
                 <strong>Outstanding:</strong> ₹{loan.outstandingPrincipal.toLocaleString()}
               </Typography>
 

@@ -17,6 +17,8 @@ import {
   Typography,
 } from "@mui/material";
 
+import { parseDateInputValue, toCalendarDate } from "@/lib/utils/date";
+
 import type { LoanDetails } from "../types";
 import { formatCurrency } from "./format";
 
@@ -31,6 +33,14 @@ type CloseSummaryRow = {
   value: number;
   emphasize?: boolean;
 };
+
+function toDateInputValue(value: Date | string): string {
+  const date = toCalendarDate(value);
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${date.getFullYear()}-${month}-${day}`;
+}
 
 function CloseSummaryItem({ label, value, emphasize = false }: CloseSummaryRow) {
   return (
@@ -63,6 +73,7 @@ export default function CloseLoanDialog({ loan, onClose, onSuccess }: Props) {
   const router = useRouter();
 
   const [comment, setComment] = useState("");
+  const [closedDate, setClosedDate] = useState(toDateInputValue(new Date()));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -72,6 +83,7 @@ export default function CloseLoanDialog({ loan, onClose, onSuccess }: Props) {
     }
 
     setComment("");
+    setClosedDate(toDateInputValue(new Date()));
     setError("");
     setLoading(false);
   }, [loan]);
@@ -91,6 +103,18 @@ export default function CloseLoanDialog({ loan, onClose, onSuccess }: Props) {
       return;
     }
 
+    if (!closedDate) {
+      setError("Please select the loan close date.");
+      return;
+    }
+
+    if (
+      parseDateInputValue(closedDate) < parseDateInputValue(toDateInputValue(loan.disbursedDate))
+    ) {
+      setError("Close date cannot be before the loan start date.");
+      return;
+    }
+
     try {
       setLoading(true);
       setError("");
@@ -102,6 +126,7 @@ export default function CloseLoanDialog({ loan, onClose, onSuccess }: Props) {
         },
         body: JSON.stringify({
           comment,
+          closedDate: parseDateInputValue(closedDate),
         }),
       });
 
@@ -187,6 +212,21 @@ export default function CloseLoanDialog({ loan, onClose, onSuccess }: Props) {
           <Divider />
 
           <TextField
+            label="Close Date"
+            type="date"
+            required
+            fullWidth
+            value={closedDate}
+            onChange={(event) => setClosedDate(event.target.value)}
+            helperText="Repayments after this date are not included in the passbook."
+            slotProps={{
+              inputLabel: {
+                shrink: true,
+              },
+            }}
+          />
+
+          <TextField
             label="Closing Comment"
             required
             fullWidth
@@ -211,7 +251,7 @@ export default function CloseLoanDialog({ loan, onClose, onSuccess }: Props) {
           form="close-loan-form"
           variant="contained"
           color="warning"
-          disabled={loading || !comment.trim()}
+          disabled={loading || !comment.trim() || !closedDate}
         >
           {loading ? "Closing..." : "Close Loan"}
         </Button>
