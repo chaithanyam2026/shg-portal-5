@@ -50,9 +50,9 @@ export default async function MeetingDetailsPage({ params }: Props) {
         backHref="/meetings"
       >
         <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", gap: 1 }}>
-          <Button component={Link} href={`/meetings/${meeting.id}/edit`} variant="outlined">
-            Edit
-          </Button>
+          <Link href={`/meetings/${meeting.id}/edit`} style={{ textDecoration: "none" }}>
+            <Button variant="outlined">Edit</Button>
+          </Link>
 
           <MeetingActionButton
             meetingId={meeting.id}

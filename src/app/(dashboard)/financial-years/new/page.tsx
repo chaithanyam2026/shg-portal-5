@@ -2,7 +2,7 @@ import { Stack, Typography } from "@mui/material";
 
 import PageHeader from "@/components/layout/PageHeader";
 
-import { listClosedFinancialYears } from "@/features/financial-year/services/list-closed";
+import { listOpeningBalanceSourceFinancialYears } from "@/features/financial-year/services/list-opening-balance-sources";
 
 import CreateFinancialYearWizard from "@/features/financial-year/ui/CreateFinancialYearWizard";
 import { listFinancialYears } from "@/features/financial-year/services";
@@ -13,7 +13,7 @@ export const metadata = {
 
 export default async function NewFinancialYearPage() {
   const allFinancialYears = await listFinancialYears();
-  const closedFinancialYears = await listClosedFinancialYears();
+  const closedFinancialYears = await listOpeningBalanceSourceFinancialYears();
 
   const isFirstFinancialYear = allFinancialYears.length === 0;
 
@@ -22,8 +22,8 @@ export default async function NewFinancialYearPage() {
       <PageHeader title="Create Next Financial Year" backHref="/financial-years" />
 
       <Typography variant="body2" color="text.secondary">
-        Create the next financial year by selecting a previously closed financial year. Opening
-        balances and member balances will be carried forward automatically.
+        Create the next financial year by selecting a closed, validated, or approved financial year.
+        Opening balances and member balances will be carried forward automatically.
       </Typography>
 
       <CreateFinancialYearWizard

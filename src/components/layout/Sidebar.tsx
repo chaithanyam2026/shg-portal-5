@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 
 import { Drawer, List, ListItemButton, ListItemIcon, ListItemText, Toolbar } from "@mui/material";
 
-import { dashboardNavigation } from "@/lib/navigation";
+import { dashboardNavigation, filterNavigationByRole } from "@/lib/navigation";
 
 export const DRAWER_WIDTH = 260;
 
@@ -16,10 +16,18 @@ type Props = {
   onClose?: () => void;
 
   mobile?: boolean;
+
+  userRole?: string;
 };
 
-export default function Sidebar({ mobile = false, mobileOpen = false, onClose }: Props) {
+export default function Sidebar({
+  mobile = false,
+  mobileOpen = false,
+  onClose,
+  userRole = "MEMBER",
+}: Props) {
   const pathname = usePathname();
+  const navigation = filterNavigationByRole(dashboardNavigation, userRole);
 
   return (
     <Drawer
@@ -44,7 +52,7 @@ export default function Sidebar({ mobile = false, mobileOpen = false, onClose }:
       <Toolbar />
 
       <List>
-        {dashboardNavigation.map((item) => {
+        {navigation.map((item) => {
           const Icon = item.icon;
 
           const selected =

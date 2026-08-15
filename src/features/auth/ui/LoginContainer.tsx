@@ -2,7 +2,11 @@ import { Box, Container } from "@mui/material";
 
 import LoginCard from "./LoginCard";
 
-export default function LoginContainer() {
+type Props = {
+  callbackUrl?: string;
+};
+
+export default function LoginContainer({ callbackUrl }: Props) {
   return (
     <Container
       maxWidth="sm"
@@ -19,7 +23,7 @@ export default function LoginContainer() {
           width: "100%",
         }}
       >
-        <LoginCard />
+        <LoginCard callbackUrl={callbackUrl} />
       </Box>
     </Container>
   );

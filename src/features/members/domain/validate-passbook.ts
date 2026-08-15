@@ -1,4 +1,5 @@
 import type { MemberPassbook } from "./member-passbook";
+import { isOpeningContributionEntry } from "./passbook-entry-type";
 
 /**
  * Validates a generated member
@@ -11,8 +12,6 @@ export function validateMemberPassbook(passbook: MemberPassbook): void {
   let previousDate: Date | undefined;
 
   let runningBalance = 0;
-
-  let contributionCount = 0;
 
   for (const entry of passbook.entries) {
     /**
@@ -40,8 +39,6 @@ export function validateMemberPassbook(passbook: MemberPassbook): void {
     if (entry.runningBalance !== runningBalance) {
       throw new Error("Invalid running balance.");
     }
-
-    contributionCount++;
   }
 
   /**
@@ -54,11 +51,14 @@ export function validateMemberPassbook(passbook: MemberPassbook): void {
   /**
    * Opening contribution.
    */
-  if (
-    passbook.entries.length > 0 &&
-    passbook.entries[0].contribution !== passbook.openingContribution
-  ) {
-    throw new Error("Opening contribution mismatch.");
+  if (passbook.openingContribution > 0) {
+    if (
+      passbook.entries.length === 0 ||
+      !isOpeningContributionEntry(passbook.entries[0].type) ||
+      passbook.entries[0].contribution !== passbook.openingContribution
+    ) {
+      throw new Error("Opening contribution mismatch.");
+    }
   }
 
   /**
@@ -66,11 +66,11 @@ export function validateMemberPassbook(passbook: MemberPassbook): void {
    *
    * Excludes opening entry.
    */
-  if (contributionCount > 0) {
-    contributionCount--;
-  }
+  const weeklyContributionCount = passbook.entries.filter(
+    (entry) => !isOpeningContributionEntry(entry.type),
+  ).length;
 
-  if (contributionCount !== passbook.contributionCount) {
+  if (weeklyContributionCount !== passbook.contributionCount) {
     throw new Error("Contribution count mismatch.");
   }
 }

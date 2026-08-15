@@ -15,7 +15,7 @@ async function main() {
       break;
 
     case "admin":
-      // await import('./create-admin');
+      await import("./seed-admin");
       break;
 
     default:

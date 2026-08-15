@@ -17,11 +17,13 @@ export default function CreateMeetingPage() {
   const [loading, setLoading] = useState(false);
 
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   async function handleSubmit(values: CreateMeetingInput) {
     try {
       setLoading(true);
       setError("");
+      setSuccess("");
 
       const response = await fetch("/api/meetings", {
         method: "POST",
@@ -33,15 +35,20 @@ export default function CreateMeetingPage() {
         body: JSON.stringify(values),
       });
 
-      if (!response.ok) {
-        const body = await response.json();
+      const body = await response.json();
 
+      if (!response.ok) {
         throw new Error(body.message ?? "Unable to create meeting.");
       }
 
-      router.push("/meetings");
-      router.refresh();
+      setSuccess("Meeting created successfully.");
+
+      window.setTimeout(() => {
+        router.push(`/meetings/${body.id}`);
+        router.refresh();
+      }, 1500);
     } catch (error) {
+      setSuccess("");
       setError(error instanceof Error ? error.message : "Unable to create meeting.");
     } finally {
       setLoading(false);
@@ -55,7 +62,9 @@ export default function CreateMeetingPage() {
 
         {error && <Alert severity="error">{error}</Alert>}
 
-        <MeetingForm loading={loading} onSubmit={handleSubmit} />
+        {success && <Alert severity="success">{success}</Alert>}
+
+        <MeetingForm loading={loading || Boolean(success)} onSubmit={handleSubmit} />
       </Stack>
     </Container>
   );

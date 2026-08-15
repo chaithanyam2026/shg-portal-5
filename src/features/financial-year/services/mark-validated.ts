@@ -6,6 +6,7 @@ import FinancialYear from "@/models/FinancialYear";
 
 import type { ClosingValidation } from "../domain";
 
+import { assertNoOtherReviewFinancialYear } from "./internal/assert-financial-year-lifecycle";
 import { mapFinancialYearDetails } from "./internal";
 import { populateFinancialYear } from "./internal/populate-financial-year";
 import { validateFinancialYearYearEnd } from "./internal/validate-year-end";
@@ -42,6 +43,8 @@ export async function markFinancialYearValidated(id: string) {
   if (!validation.valid) {
     throw new AppError("Financial year is not ready to be validated.", 400);
   }
+
+  await assertNoOtherReviewFinancialYear(id);
 
   financialYear.status = "VALIDATED";
 

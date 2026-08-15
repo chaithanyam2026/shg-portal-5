@@ -8,12 +8,20 @@ export const metadata = {
   title: "Login",
 };
 
-export default async function LoginPage() {
+type Props = {
+  searchParams: Promise<{
+    callbackUrl?: string;
+  }>;
+};
+
+export default async function LoginPage({ searchParams }: Props) {
   const session = await auth();
 
   if (session) {
     redirect("/");
   }
 
-  return <LoginContainer />;
+  const { callbackUrl } = await searchParams;
+
+  return <LoginContainer callbackUrl={callbackUrl} />;
 }

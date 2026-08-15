@@ -5,6 +5,7 @@ import FinancialYear from "@/models/FinancialYear";
 import type { OpeningBalanceResult } from "../domain/opening-balance-result";
 import { buildOpeningBalances } from "./internal";
 import { validateOpeningBalanceSource } from "./internal";
+import { buildComputedClosingSnapshot } from "./internal/build-computed-closing-snapshot";
 import { enrichMemberOpeningBalances } from "./internal/enrich-member-opening-balances";
 
 export type { OpeningBalanceResult };
@@ -56,7 +57,12 @@ export async function generateOpeningBalances(
 
   await validateOpeningBalanceSource(sourceFinancialYearId);
 
-  const opening = buildOpeningBalances(sourceFinancialYear.closing);
+  const closingSnapshot =
+    sourceFinancialYear.status === "CLOSED" && sourceFinancialYear.closing
+      ? sourceFinancialYear.closing
+      : await buildComputedClosingSnapshot(sourceFinancialYearId);
+
+  const opening = buildOpeningBalances(closingSnapshot);
   const members = await enrichMemberOpeningBalances(
     opening.summary.members,
     sourceFinancialYear,

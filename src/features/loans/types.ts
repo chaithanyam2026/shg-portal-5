@@ -1,6 +1,10 @@
+import type { FinancialYearStatus } from "@/features/financial-year/domain/financial-year-status";
+
 import type { LoanStatus } from "./domain/loan-status";
 
 import type { LoanType } from "./domain/loan-type";
+
+import type { FineWaiverSnapshot } from "./domain/fine-waiver-payment";
 
 /**
  * Common loan information shared by
@@ -33,7 +37,11 @@ export type LoanBase = {
 
   expectedMonthlyRepayment: number;
 
+  sanctionedDate: string;
+
   disbursedDate: string;
+
+  expiryDate: string | null;
 };
 
 /**
@@ -71,6 +79,8 @@ export type LoanListFilters = {
  * the Loan Details page.
  */
 export type LoanDetails = LoanBase & {
+  financialYearStatus: FinancialYearStatus;
+
   remarks: string;
 
   outstandingPrincipal: number;
@@ -89,7 +99,19 @@ export type LoanDetails = LoanBase & {
 
   effectiveInterestPercentage: number;
 
+  effectiveInterestWithFinesPercentage: number;
+
   isClosable: boolean;
+
+  canBeClosed: boolean;
+
+  pendingAbsentFine: number;
+
+  pendingContribution: number;
+
+  closeTotal: number;
+
+  fineWaiver: FineWaiverSnapshot;
 };
 
 /**
@@ -114,6 +136,8 @@ export type LoanSummaryResult = {
   totalPayable: number;
 
   effectiveInterestPercentage: number;
+
+  effectiveInterestWithFinesPercentage: number;
 
   isClosable: boolean;
 };

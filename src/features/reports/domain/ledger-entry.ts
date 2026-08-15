@@ -18,4 +18,11 @@ export type LedgerEntry = {
   meetingId?: string;
 
   referenceId?: string;
+
+  /**
+   * Shown in the income column without affecting running balances.
+   */
+  displayIncome?: number;
+
+  isSummary?: boolean;
 };

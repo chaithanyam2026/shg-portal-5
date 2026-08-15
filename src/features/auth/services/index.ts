@@ -1,3 +1,4 @@
+export * from "./activate";
 export * from "./close";
 export * from "./create";
 export * from "./get";

@@ -116,6 +116,31 @@ export type PaymentSummary = {
   grandTotal: number;
 };
 
+export type MemberMeetingTransactions = {
+  memberId: string;
+  memberCode: string;
+  memberName: string;
+  attendanceStatus: AttendanceStatus | null;
+  attendanceRemarks: string;
+  contribution: number;
+  loanRepayment: number;
+  absentFine: number;
+  specialLoanFine: number;
+  total: number;
+};
+
+export type MemberTransactionsSummary = {
+  meetingId: string;
+  meetingDate: string;
+  status: MeetingStatus;
+  records: MemberMeetingTransactions[];
+  totalContribution: number;
+  totalLoanRepayment: number;
+  totalAbsentFine: number;
+  totalSpecialLoanFine: number;
+  grandTotal: number;
+};
+
 export type BankTransactionRecord = {
   transactionDate: string;
 
@@ -254,4 +279,30 @@ export type MeetingDashboardSummary = {
   validations: SummaryValidation[];
 
   canClose: boolean;
+};
+
+export type MeetingLoanRecord = {
+  _id: string;
+  loanNumber: string;
+  memberCode: string;
+  memberName: string;
+  loanType: string;
+  sanctionedAmount: number;
+  disbursedAmount: number;
+  sanctionedDate: string;
+  disbursedDate: string;
+  expiryDate: string | null;
+};
+
+export type MeetingLoansSummary = {
+  meetingId: string;
+  financialYearId: string;
+  meetingDate: string;
+  status: MeetingStatus;
+  members: {
+    _id: string;
+    memberCode: string;
+    name: string;
+  }[];
+  loans: MeetingLoanRecord[];
 };

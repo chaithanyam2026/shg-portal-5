@@ -3,6 +3,7 @@ import connectMongo from "@/lib/db/mongodb";
 import User from "@/models/User";
 
 import { hashPassword, verifyPassword } from "@/lib/auth/password";
+import { AppError } from "@/lib/errors";
 
 import { ChangePasswordInput, ChangePasswordSchema } from "../validation";
 
@@ -22,21 +23,19 @@ export async function changePassword(
   const user = await User.findById(userId);
 
   if (!user) {
-    throw new Error("User not found.");
+    throw new AppError("User not found.", 404);
   }
 
-  // Verify the current password.
   const passwordValid = await verifyPassword(data.currentPassword, user.passwordHash);
 
   if (!passwordValid) {
-    throw new Error("Current password is incorrect.");
+    throw new AppError("Current password is incorrect.", 400);
   }
 
-  // Prevent reusing the existing password.
   const samePassword = await verifyPassword(data.newPassword, user.passwordHash);
 
   if (samePassword) {
-    throw new Error("New password must be different from the current password.");
+    throw new AppError("New password must be different from the current password.", 400);
   }
 
   // Hash the new password.

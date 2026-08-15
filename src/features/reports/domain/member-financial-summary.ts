@@ -55,3 +55,19 @@ export type MemberFinancialSummary = {
 
   totals: MemberFinancialSummaryTotals;
 };
+
+export function getFinancialYearLoanInterestIncomeTotal(
+  totals: MemberFinancialSummaryTotals,
+): number {
+  return totals.loanInterestPaid + totals.loanInterestPending;
+}
+
+export function getFinancialYearLoanFineIncomeTotal(totals: MemberFinancialSummaryTotals): number {
+  return totals.loanFinePaid + totals.loanFinePending;
+}
+
+export function getFinancialYearAbsentFineIncomeTotal(
+  totals: MemberFinancialSummaryTotals,
+): number {
+  return totals.absentFinePaid + totals.absentFinePending;
+}

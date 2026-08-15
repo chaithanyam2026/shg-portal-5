@@ -23,6 +23,7 @@ export default function PaymentForm({ meetingId, initialRecords }: Props) {
   const [saving, setSaving] = useState(false);
 
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const totals = useMemo(() => {
     const contribution = records.reduce((sum, record) => sum + record.contribution, 0);
@@ -46,6 +47,7 @@ export default function PaymentForm({ meetingId, initialRecords }: Props) {
     try {
       setSaving(true);
       setError("");
+      setSuccess("");
 
       const response = await fetch(`/api/meetings/${meetingId}/payments`, {
         method: "PATCH",
@@ -63,8 +65,11 @@ export default function PaymentForm({ meetingId, initialRecords }: Props) {
         throw new Error(body.message ?? "Unable to save payments.");
       }
 
+      setSuccess("Payments saved successfully.");
+
       router.refresh();
     } catch (error) {
+      setSuccess("");
       setError(error instanceof Error ? error.message : "Unable to save payments.");
     } finally {
       setSaving(false);
@@ -74,6 +79,8 @@ export default function PaymentForm({ meetingId, initialRecords }: Props) {
   return (
     <Stack spacing={3}>
       {error && <Alert severity="error">{error}</Alert>}
+
+      {success && <Alert severity="success">{success}</Alert>}
 
       <PaymentTable records={records} disabled={saving} onChange={setRecords} />
 

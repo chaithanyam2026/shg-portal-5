@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { useRouter } from "next/navigation";
 
-import { Alert, Button, Snackbar, Stack } from "@mui/material";
+import { Alert, Button, Stack } from "@mui/material";
 
 import type { AttendanceRecord } from "../types";
 
@@ -31,6 +31,7 @@ export default function AttendanceForm({ meetingId, initialRecords }: Props) {
     try {
       setSaving(true);
       setError("");
+      setMessage("");
 
       const response = await fetch(`/api/meetings/${meetingId}/attendance`, {
         method: "PATCH",
@@ -54,6 +55,7 @@ export default function AttendanceForm({ meetingId, initialRecords }: Props) {
 
       router.refresh();
     } catch (error) {
+      setMessage("");
       setError(error instanceof Error ? error.message : "Unable to save attendance.");
     } finally {
       setSaving(false);
@@ -61,20 +63,16 @@ export default function AttendanceForm({ meetingId, initialRecords }: Props) {
   }
 
   return (
-    <>
-      <Stack spacing={3}>
-        {error && <Alert severity="error">{error}</Alert>}
+    <Stack spacing={3}>
+      {error && <Alert severity="error">{error}</Alert>}
 
-        <AttendanceTable records={records} disabled={saving} onChange={setRecords} />
+      {message && <Alert severity="success">{message}</Alert>}
 
-        <Button variant="contained" onClick={save} disabled={saving}>
-          Save Attendance
-        </Button>
-      </Stack>
+      <AttendanceTable records={records} disabled={saving} onChange={setRecords} />
 
-      <Snackbar open={!!message} autoHideDuration={3000} onClose={() => setMessage("")}>
-        <Alert severity="success">{message}</Alert>
-      </Snackbar>
-    </>
+      <Button variant="contained" onClick={save} disabled={saving}>
+        Save Attendance
+      </Button>
+    </Stack>
   );
 }

@@ -1,3 +1,4 @@
+import { calculateEffectiveInterestRates } from "./effective-interest";
 import type { LoanPassbook } from "./loan-passbook";
 
 import type { LoanSummaryResult } from "../types";
@@ -6,7 +7,10 @@ import type { LoanSummaryResult } from "../types";
  * Computes the loan summary from
  * the generated loan passbook.
  */
-export function calculateLoanSummary(passbook: LoanPassbook): LoanSummaryResult {
+export function calculateLoanSummary(
+  passbook: LoanPassbook,
+  referenceDate: Date = passbook.calculationEndDate,
+): LoanSummaryResult {
   const entries = passbook.entries;
 
   const paidPrincipal = entries.reduce((total, entry) => total + entry.paidPrincipal, 0);
@@ -25,10 +29,7 @@ export function calculateLoanSummary(passbook: LoanPassbook): LoanSummaryResult 
 
   const totalPayable = outstandingPrincipal + pendingInterest + pendingLoanFine;
 
-  const effectiveInterestPercentage =
-    passbook.disbursedAmount === 0
-      ? 0
-      : Number(((paidInterest / passbook.disbursedAmount) * 100).toFixed(2));
+  const effectiveInterest = calculateEffectiveInterestRates(passbook, referenceDate);
 
   const isClosable = outstandingPrincipal === 0 && pendingInterest === 0 && pendingLoanFine === 0;
 
@@ -47,7 +48,9 @@ export function calculateLoanSummary(passbook: LoanPassbook): LoanSummaryResult 
 
     totalPayable,
 
-    effectiveInterestPercentage,
+    effectiveInterestPercentage: effectiveInterest.interestOnlyPercentage,
+
+    effectiveInterestWithFinesPercentage: effectiveInterest.interestAndFinesPercentage,
 
     isClosable,
   };

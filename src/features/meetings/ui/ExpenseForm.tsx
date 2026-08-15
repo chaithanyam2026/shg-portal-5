@@ -23,6 +23,7 @@ export default function ExpenseForm({ meetingId, initialSummary }: Props) {
   const [saving, setSaving] = useState(false);
 
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const totalExpense = useMemo(
     () => records.reduce((sum, record) => sum + record.amount, 0),
@@ -33,6 +34,7 @@ export default function ExpenseForm({ meetingId, initialSummary }: Props) {
     try {
       setSaving(true);
       setError("");
+      setSuccess("");
 
       const response = await fetch(`/api/meetings/${meetingId}/expenses`, {
         method: "PATCH",
@@ -50,8 +52,11 @@ export default function ExpenseForm({ meetingId, initialSummary }: Props) {
         throw new Error(body.message ?? "Unable to save expenses.");
       }
 
+      setSuccess("Expenses saved successfully.");
+
       router.refresh();
     } catch (error) {
+      setSuccess("");
       setError(error instanceof Error ? error.message : "Unable to save expenses.");
     } finally {
       setSaving(false);
@@ -61,6 +66,8 @@ export default function ExpenseForm({ meetingId, initialSummary }: Props) {
   return (
     <Stack spacing={3}>
       {error && <Alert severity="error">{error}</Alert>}
+
+      {success && <Alert severity="success">{success}</Alert>}
 
       <ExpenseTable records={records} disabled={saving} onChange={setRecords} />
 

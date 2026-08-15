@@ -7,15 +7,18 @@ import { getActiveFinancialYear } from "./get-active";
 export type SelectedFinancialYear = {
   _id: string;
   name: string;
+  endDate: Date;
 };
 
 function mapSelectedFinancialYear(financialYear: {
   _id: { toString(): string };
   name: string;
+  endDate: Date;
 }): SelectedFinancialYear {
   return {
     _id: financialYear._id.toString(),
     name: String(financialYear.name),
+    endDate: financialYear.endDate,
   };
 }
 
@@ -35,6 +38,7 @@ export async function getSelectedFinancialYear(
     const financialYear = await FinancialYear.findById(financialYearId)
       .select({
         name: 1,
+        endDate: 1,
       })
       .lean();
 
@@ -59,6 +63,7 @@ export async function getSelectedFinancialYear(
     })
     .select({
       name: 1,
+      endDate: 1,
     })
     .lean();
 

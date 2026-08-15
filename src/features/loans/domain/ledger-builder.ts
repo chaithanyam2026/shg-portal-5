@@ -17,6 +17,10 @@ export function buildLoanLedger(loan: LoanDetails): LoanPassbook {
 
     disbursedDate: new Date(loan.disbursedDate),
 
+    interestRate: loan.interestRate,
+
+    calculationEndDate: new Date(loan.disbursedDate),
+
     entries: [],
   };
 }

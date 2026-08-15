@@ -3,6 +3,11 @@ import Meeting from "@/models/Meeting";
 import { Types } from "mongoose";
 
 import connectMongo from "@/lib/db/mongodb";
+import {
+  getCalendarDayRange,
+  isCalendarDateWithinRange,
+  toCalendarDate,
+} from "@/lib/utils/date";
 
 import type { MeetingDetails } from "../types";
 import { CreateMeetingInput, CreateMeetingSchema } from "../validation";
@@ -15,7 +20,7 @@ export async function createMeeting(
 
   const data = CreateMeetingSchema.parse(input);
 
-  data.meetingDate.setHours(0, 0, 0, 0);
+  const meetingDate = toCalendarDate(data.meetingDate);
 
   const financialYear = await FinancialYear.findOne({
     status: "IN_PROGRESS",
@@ -25,15 +30,13 @@ export async function createMeeting(
     throw new Error("No active financial year found.");
   }
 
-  if (data.meetingDate < financialYear.startDate || data.meetingDate > financialYear.endDate) {
+  if (
+    !isCalendarDateWithinRange(meetingDate, financialYear.startDate, financialYear.endDate)
+  ) {
     throw new Error("Meeting date must be inside the active financial year.");
   }
 
-  const start = new Date(data.meetingDate);
-  start.setHours(0, 0, 0, 0);
-
-  const end = new Date(start);
-  end.setDate(end.getDate() + 1);
+  const { start, end } = getCalendarDayRange(meetingDate);
 
   const exists = await Meeting.exists({
     financialYearId: financialYear._id,
@@ -52,7 +55,7 @@ export async function createMeeting(
   const meeting = await Meeting.create({
     financialYearId: financialYear._id,
 
-    meetingDate: data.meetingDate,
+    meetingDate,
 
     place: data.place,
 

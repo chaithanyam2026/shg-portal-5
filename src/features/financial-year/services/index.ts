@@ -26,4 +26,5 @@ export * from "./generate-opening-balances";
 
 export * from "./internal/validate-opening-balance-source";
 export * from "./list-closed";
+export * from "./list-opening-balance-sources";
 export * from "./validate-create";

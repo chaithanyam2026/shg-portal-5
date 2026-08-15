@@ -5,6 +5,7 @@ import Loan from "@/models/Loan";
 import type { LoanDetails } from "../types";
 
 import { ObjectIdSchema, type UpdateLoanInput, UpdateLoanSchema } from "../validation";
+import { ensureLoanSanctionedDate } from "./internal/ensure-loan-sanctioned-date";
 import { getLoan } from "./get";
 
 export async function updateLoan(loanId: string, input: UpdateLoanInput): Promise<LoanDetails> {
@@ -33,8 +34,10 @@ export async function updateLoan(loanId: string, input: UpdateLoanInput): Promis
   }
 
   if (data.status) {
-  loan.status = data.status;
-}
+    loan.status = data.status;
+  }
+
+  ensureLoanSanctionedDate(loan);
 
   await loan.save();
 

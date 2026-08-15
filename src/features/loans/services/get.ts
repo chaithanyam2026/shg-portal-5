@@ -4,11 +4,15 @@ import FinancialYear from "@/models/FinancialYear";
 import Loan from "@/models/Loan";
 import Member from "@/models/Member";
 
+import { toIsoString } from "@/lib/utils/date";
+
 import type { LoanDetails } from "../types";
 
 import { LoanIdInput, LoanIdSchema } from "../validation";
 
-import { getLoanSummary } from "./summary";
+import { buildFineWaiverSnapshot, calculateLoanSummary, canCloseLoan, calculateLoanCloseTotal } from "../domain";
+import { getLoanPassbook } from "./get-passbook";
+import { getLoanMemberCloseBalances } from "./internal/get-loan-member-close-balances";
 
 /**
  * Returns complete loan details.
@@ -29,8 +33,8 @@ export async function getLoan(loanId: LoanIdInput): Promise<LoanDetails> {
     throw new Error("Loan not found.");
   }
 
-  const [financialYear, member, summary] = await Promise.all([
-    FinancialYear.findById(loan.financialYearId).select("name").lean(),
+  const [financialYear, member, passbook, memberCloseBalances] = await Promise.all([
+    FinancialYear.findById(loan.financialYearId).select("name status").lean(),
 
     Member.findById(loan.memberId)
       .select({
@@ -39,12 +43,17 @@ export async function getLoan(loanId: LoanIdInput): Promise<LoanDetails> {
       })
       .lean(),
 
-    getLoanSummary(id),
+    getLoanPassbook(id),
+
+    getLoanMemberCloseBalances(loan.memberId.toString(), loan.financialYearId.toString()),
   ]);
 
   if (!financialYear || !member) {
     throw new Error("Loan references are invalid.");
   }
+
+  const summary = calculateLoanSummary(passbook);
+  const fineWaiver = buildFineWaiverSnapshot(passbook);
 
   return {
     _id: loan._id.toString(),
@@ -58,6 +67,8 @@ export async function getLoan(loanId: LoanIdInput): Promise<LoanDetails> {
     financialYearId: loan.financialYearId.toString(),
 
     financialYearName: financialYear.name,
+
+    financialYearStatus: financialYear.status,
 
     memberId: loan.memberId.toString(),
 
@@ -73,7 +84,12 @@ export async function getLoan(loanId: LoanIdInput): Promise<LoanDetails> {
 
     expectedMonthlyRepayment: loan.expectedMonthlyRepayment,
 
-    disbursedDate: loan.disbursedDate.toISOString(),
+    sanctionedDate:
+      toIsoString(loan.sanctionedDate) ?? toIsoString(loan.disbursedDate) ?? "",
+
+    disbursedDate: toIsoString(loan.disbursedDate) ?? "",
+
+    expiryDate: toIsoString(loan.expiryDate),
 
     remarks: loan.remarks ?? "",
 
@@ -93,6 +109,28 @@ export async function getLoan(loanId: LoanIdInput): Promise<LoanDetails> {
 
     effectiveInterestPercentage: summary.effectiveInterestPercentage,
 
+    effectiveInterestWithFinesPercentage: summary.effectiveInterestWithFinesPercentage,
+
     isClosable: summary.isClosable,
+
+    canBeClosed: canCloseLoan({
+      loanStatus: loan.status,
+      financialYearStatus: financialYear.status,
+      isClosable: summary.isClosable,
+    }),
+
+    pendingAbsentFine: memberCloseBalances.pendingAbsentFine,
+
+    pendingContribution: memberCloseBalances.pendingContribution,
+
+    closeTotal: calculateLoanCloseTotal({
+      outstandingPrincipal: summary.outstandingPrincipal,
+      pendingInterest: summary.pendingInterest,
+      pendingLoanFine: summary.pendingLoanFine,
+      pendingAbsentFine: memberCloseBalances.pendingAbsentFine,
+      pendingContribution: memberCloseBalances.pendingContribution,
+    }),
+
+    fineWaiver,
   };
 }

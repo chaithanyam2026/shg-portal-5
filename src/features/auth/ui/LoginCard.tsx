@@ -2,7 +2,11 @@ import { Card, CardContent, Divider, Stack, Typography } from "@mui/material";
 
 import LoginForm from "./LoginForm";
 
-export default function LoginCard() {
+type Props = {
+  callbackUrl?: string;
+};
+
+export default function LoginCard({ callbackUrl }: Props) {
   return (
     <Card
       elevation={4}
@@ -20,18 +24,18 @@ export default function LoginCard() {
       >
         <Stack spacing={3}>
           <Stack
-  spacing={1}
-  sx={{
-    textAlign: "center",
-  }}
->
-    <Typography
-  component="h1"
-  variant="h4"
-  sx={{
-    fontWeight: 700,
-  }}
->
+            spacing={1}
+            sx={{
+              textAlign: "center",
+            }}
+          >
+            <Typography
+              component="h1"
+              variant="h4"
+              sx={{
+                fontWeight: 700,
+              }}
+            >
               SHG Portal
             </Typography>
 
@@ -42,7 +46,7 @@ export default function LoginCard() {
 
           <Divider />
 
-          <LoginForm />
+          <LoginForm callbackUrl={callbackUrl} />
         </Stack>
       </CardContent>
     </Card>

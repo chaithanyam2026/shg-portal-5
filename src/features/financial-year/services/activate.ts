@@ -1,10 +1,15 @@
 import { Types } from "mongoose";
 
 import { validateFinancialYear } from "@/features/financial-year/services/validate";
-import { createOpeningLoans } from "@/features/loans/services";
+import {
+  closeFinancialYearLoans,
+  countActiveLoansOutsideFinancialYear,
+  createOpeningLoans,
+} from "@/features/loans/services";
 import connectMongo from "@/lib/db/mongodb";
 import { AppError } from "@/lib/errors";
 import FinancialYear from "@/models/FinancialYear";
+import { assertFinancialYearActivationAllowed } from "./internal/assert-financial-year-lifecycle";
 import { mapFinancialYearDetails } from "./internal";
 import { populateFinancialYear } from "./internal/populate-financial-year";
 
@@ -33,17 +38,21 @@ export async function activate(id: string) {
     throw new AppError("Financial year is not ready to start.", 400);
   }
 
-  const activeFinancialYear = await FinancialYear.findOne({
-    _id: {
-      $ne: financialYear._id,
-    },
-    status: "IN_PROGRESS",
-  })
-    .select("_id name")
-    .lean();
+  await assertFinancialYearActivationAllowed(financialYear._id.toString());
 
-  if (activeFinancialYear) {
-    throw new AppError("Another financial year is already active.", 400);
+  if (financialYear.sourceFinancialYearId) {
+    await closeFinancialYearLoans(financialYear.sourceFinancialYearId.toString());
+  }
+
+  const remainingActiveLoans = await countActiveLoansOutsideFinancialYear(
+    financialYear._id.toString(),
+  );
+
+  if (remainingActiveLoans > 0) {
+    throw new AppError(
+      `${remainingActiveLoans} active loan(s) exist outside this financial year. Close them before starting.`,
+      400,
+    );
   }
 
   financialYear.status = "IN_PROGRESS";

@@ -8,7 +8,11 @@ import { Box, IconButton, useMediaQuery, useTheme } from "@mui/material";
 
 import Sidebar from "./Sidebar";
 
-export default function MobileNavigation() {
+type Props = {
+  userRole?: string;
+};
+
+export default function MobileNavigation({ userRole }: Props) {
   const theme = useTheme();
 
   const mobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -25,7 +29,7 @@ export default function MobileNavigation() {
         <MenuIcon />
       </IconButton>
 
-      <Sidebar mobile mobileOpen={open} onClose={() => setOpen(false)} />
+      <Sidebar mobile mobileOpen={open} onClose={() => setOpen(false)} userRole={userRole} />
     </Box>
   );
 }

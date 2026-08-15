@@ -144,6 +144,8 @@ async function createLoan({
 
     expectedMonthlyRepayment: 0,
 
+    sanctionedDate: financialYear.startDate,
+
     disbursedDate: financialYear.startDate,
 
     expiryDate,

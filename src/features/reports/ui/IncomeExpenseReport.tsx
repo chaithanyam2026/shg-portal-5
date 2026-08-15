@@ -1,6 +1,7 @@
-import { Alert, Stack } from "@mui/material";
+import { Alert, Stack, Typography } from "@mui/material";
 
 import type { IncomeExpenseReport as IncomeExpenseReportModel } from "../types";
+import { IncomeExpenseStatementView } from "./IncomeExpenseStatementView";
 import { IncomeExpenseSummary } from "./IncomeExpenseSummary";
 import { MonthlyLedgerSection } from "./MonthlyLedgerSection";
 
@@ -9,22 +10,36 @@ type Props = {
 };
 
 export function IncomeExpenseReport({ report }: Props) {
-  if (report.months.length === 0) {
-    return <Alert severity="info">No transactions found.</Alert>;
-  }
+  const netSurplus = report.statement.income.total - report.statement.expense.total;
 
   return (
     <Stack spacing={3}>
       <IncomeExpenseSummary
         openingBalance={report.openingBalance}
         closingBalance={report.closingBalance}
-        totalIncome={report.totalIncome}
-        totalExpense={report.totalExpense}
+        totalIncome={report.statement.income.total}
+        totalExpense={report.statement.expense.total}
+        netSurplus={netSurplus}
       />
 
-      {report.months.map((ledger) => (
-        <MonthlyLedgerSection key={`${ledger.year}-${ledger.month}`} ledger={ledger} />
-      ))}
+      <IncomeExpenseStatementView statement={report.statement} />
+
+      <Stack spacing={2}>
+        <Typography variant="h6">Cash Book</Typography>
+
+        <Typography variant="body2" color="text.secondary">
+          Monthly cash and bank movement including contributions, loan repayments, and bank
+          transfers from closed meetings.
+        </Typography>
+
+        {report.months.length === 0 ? (
+          <Alert severity="info">No cash book transactions found for this financial year.</Alert>
+        ) : (
+          report.months.map((ledger) => (
+            <MonthlyLedgerSection key={`${ledger.year}-${ledger.month}`} ledger={ledger} />
+          ))
+        )}
+      </Stack>
     </Stack>
   );
 }
