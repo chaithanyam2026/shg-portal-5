@@ -20,6 +20,7 @@ import {
 
 import { logoutAction } from "@/app/logout/actions";
 import { ROLE_LABELS, type UserRole } from "@/lib/auth/roles";
+import { PWA_APP_NAME } from "@/lib/pwa/app-metadata";
 
 import MobileNavigation from "./MobileNavigation";
 import Sidebar, { DRAWER_WIDTH } from "./Sidebar";
@@ -69,7 +70,7 @@ export default function AppLayout({ children, username, userRole = "MEMBER" }: P
               flexGrow: 1,
             }}
           >
-            SHG Portal
+            {PWA_APP_NAME}
           </Typography>
 
           <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>

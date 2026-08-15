@@ -1,5 +1,7 @@
 import { Card, CardContent, Divider, Stack, Typography } from "@mui/material";
 
+import { PWA_APP_NAME } from "@/lib/pwa/app-metadata";
+
 import LoginForm from "./LoginForm";
 
 type Props = {
@@ -36,7 +38,7 @@ export default function LoginCard({ callbackUrl }: Props) {
                 fontWeight: 700,
               }}
             >
-              SHG Portal
+              {PWA_APP_NAME}
             </Typography>
 
             <Typography variant="body2" color="text.secondary">
