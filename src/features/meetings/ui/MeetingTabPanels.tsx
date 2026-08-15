@@ -27,6 +27,7 @@ import SummaryView from "./SummaryView";
 type LoaderProps = {
   meetingId: string;
   refreshKey?: number;
+  readOnly?: boolean;
 };
 
 function TabLoader({ label }: { label: string }) {
@@ -86,7 +87,7 @@ function TabError({ message }: { message: string }) {
   return <Alert severity="error">{message}</Alert>;
 }
 
-export function AttendanceTabPanel({ meetingId }: LoaderProps) {
+export function AttendanceTabPanel({ meetingId, readOnly = false }: LoaderProps) {
   const { data, loading, error } = useMeetingTabData<AttendanceSummary>(meetingId, "attendance");
 
   if (loading) {
@@ -101,10 +102,10 @@ export function AttendanceTabPanel({ meetingId }: LoaderProps) {
     return null;
   }
 
-  return <AttendanceForm meetingId={meetingId} initialRecords={data.records} />;
+  return <AttendanceForm meetingId={meetingId} initialRecords={data.records} readOnly={readOnly} />;
 }
 
-export function PaymentsTabPanel({ meetingId }: LoaderProps) {
+export function PaymentsTabPanel({ meetingId, readOnly = false }: LoaderProps) {
   const { data, loading, error } = useMeetingTabData<PaymentSummary>(meetingId, "payments");
 
   if (loading) {
@@ -119,10 +120,10 @@ export function PaymentsTabPanel({ meetingId }: LoaderProps) {
     return null;
   }
 
-  return <PaymentForm meetingId={meetingId} initialRecords={data.records} />;
+  return <PaymentForm meetingId={meetingId} initialRecords={data.records} readOnly={readOnly} />;
 }
 
-export function LoansTabPanel({ meetingId }: LoaderProps) {
+export function LoansTabPanel({ meetingId, readOnly = false }: LoaderProps) {
   const { data, loading, error } = useMeetingTabData<MeetingLoansSummary>(meetingId, "loans");
 
   if (loading) {
@@ -137,10 +138,10 @@ export function LoansTabPanel({ meetingId }: LoaderProps) {
     return null;
   }
 
-  return <MeetingLoanForm initialSummary={data} />;
+  return <MeetingLoanForm initialSummary={data} readOnly={readOnly} />;
 }
 
-export function BankTabPanel({ meetingId }: LoaderProps) {
+export function BankTabPanel({ meetingId, readOnly = false }: LoaderProps) {
   const { data, loading, error } = useMeetingTabData<BankTransactionSummary>(meetingId, "bank");
 
   if (loading) {
@@ -155,10 +156,10 @@ export function BankTabPanel({ meetingId }: LoaderProps) {
     return null;
   }
 
-  return <BankTransactionForm meetingId={meetingId} initialSummary={data} />;
+  return <BankTransactionForm meetingId={meetingId} initialSummary={data} readOnly={readOnly} />;
 }
 
-export function IncomeTabPanel({ meetingId }: LoaderProps) {
+export function IncomeTabPanel({ meetingId, readOnly = false }: LoaderProps) {
   const { data, loading, error } = useMeetingTabData<IncomeSummary>(meetingId, "income");
 
   if (loading) {
@@ -173,10 +174,10 @@ export function IncomeTabPanel({ meetingId }: LoaderProps) {
     return null;
   }
 
-  return <IncomeForm meetingId={meetingId} initialSummary={data} />;
+  return <IncomeForm meetingId={meetingId} initialSummary={data} readOnly={readOnly} />;
 }
 
-export function ExpensesTabPanel({ meetingId }: LoaderProps) {
+export function ExpensesTabPanel({ meetingId, readOnly = false }: LoaderProps) {
   const { data, loading, error } = useMeetingTabData<ExpenseSummary>(meetingId, "expenses");
 
   if (loading) {
@@ -191,7 +192,7 @@ export function ExpensesTabPanel({ meetingId }: LoaderProps) {
     return null;
   }
 
-  return <ExpenseForm meetingId={meetingId} initialSummary={data} />;
+  return <ExpenseForm meetingId={meetingId} initialSummary={data} readOnly={readOnly} />;
 }
 
 export function MembersTabPanel({ meetingId, refreshKey = 0 }: LoaderProps) {
@@ -216,7 +217,7 @@ export function MembersTabPanel({ meetingId, refreshKey = 0 }: LoaderProps) {
   return <MemberTransactionsView summary={data} />;
 }
 
-export function SummaryTabPanel({ meetingId, refreshKey = 0 }: LoaderProps) {
+export function SummaryTabPanel({ meetingId, refreshKey = 0, readOnly = false }: LoaderProps) {
   const { data, loading, error } = useMeetingTabData<MeetingDashboardSummary>(
     meetingId,
     "summary",
@@ -235,5 +236,5 @@ export function SummaryTabPanel({ meetingId, refreshKey = 0 }: LoaderProps) {
     return null;
   }
 
-  return <SummaryView meetingId={meetingId} summary={data} />;
+  return <SummaryView meetingId={meetingId} summary={data} readOnly={readOnly} />;
 }

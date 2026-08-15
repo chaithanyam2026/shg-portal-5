@@ -14,9 +14,10 @@ import { useMeetingDataRefresh } from "./MeetingDataRefresh";
 type Props = {
   meetingId: string;
   initialSummary: ExpenseSummary;
+  readOnly?: boolean;
 };
 
-export default function ExpenseForm({ meetingId, initialSummary }: Props) {
+export default function ExpenseForm({ meetingId, initialSummary, readOnly = false }: Props) {
   const router = useRouter();
   const { refreshMeetingData } = useMeetingDataRefresh();
 
@@ -72,7 +73,7 @@ export default function ExpenseForm({ meetingId, initialSummary }: Props) {
 
       {success && <Alert severity="success">{success}</Alert>}
 
-      <ExpenseTable records={records} disabled={saving} onChange={setRecords} />
+      <ExpenseTable records={records} disabled={readOnly || saving} onChange={setRecords} />
 
       <Card>
         <CardContent>
@@ -80,9 +81,11 @@ export default function ExpenseForm({ meetingId, initialSummary }: Props) {
         </CardContent>
       </Card>
 
-      <Button variant="contained" disabled={saving} onClick={save}>
-        Save Expenses
-      </Button>
+      {!readOnly && (
+        <Button variant="contained" disabled={saving} onClick={save}>
+          Save Expenses
+        </Button>
+      )}
     </Stack>
   );
 }

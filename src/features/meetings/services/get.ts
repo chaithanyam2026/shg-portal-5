@@ -1,5 +1,7 @@
 import connectMongo from "@/lib/db/mongodb";
 
+import type { FinancialYearStatus } from "@/features/financial-year/domain/financial-year-status";
+import FinancialYear from "@/models/FinancialYear";
 import Meeting from "@/models/Meeting";
 
 import type { MeetingDetails } from "../types";
@@ -13,10 +15,18 @@ export async function getMeeting(id: string): Promise<MeetingDetails> {
     throw new Error("Meeting not found.");
   }
 
+  const financialYear = await FinancialYear.findById(meeting.financialYearId).select("status").lean();
+
+  if (!financialYear) {
+    throw new Error("Financial year not found.");
+  }
+
   return {
     id: meeting._id.toString(),
 
     financialYearId: meeting.financialYearId.toString(),
+
+    financialYearStatus: financialYear.status as FinancialYearStatus,
 
     meetingDate: meeting.meetingDate.toISOString(),
 

@@ -17,6 +17,7 @@ type MeetingFormValues = {
 type Props = {
   initialValues?: MeetingFormValues;
   loading?: boolean;
+  disabled?: boolean;
   onSubmit(values: CreateMeetingInput): Promise<void>;
 };
 
@@ -30,6 +31,7 @@ const defaultValues: MeetingFormValues = {
 export default function MeetingForm({
   initialValues = defaultValues,
   loading = false,
+  disabled = false,
   onSubmit,
 }: Props) {
   const [values, setValues] = useState<MeetingFormValues>(initialValues);
@@ -59,6 +61,7 @@ export default function MeetingForm({
         type="date"
         required
         fullWidth
+        disabled={disabled}
         slotProps={{
           inputLabel: {
             shrink: true,
@@ -71,6 +74,7 @@ export default function MeetingForm({
       <TextField
         label="Place"
         fullWidth
+        disabled={disabled}
         value={values.place}
         onChange={(event) => update("place", event.target.value)}
       />
@@ -78,6 +82,7 @@ export default function MeetingForm({
       <TextField
         label="Agenda"
         fullWidth
+        disabled={disabled}
         multiline
         minRows={3}
         value={values.agenda}
@@ -87,13 +92,14 @@ export default function MeetingForm({
       <TextField
         label="Remarks"
         fullWidth
+        disabled={disabled}
         multiline
         minRows={3}
         value={values.remarks}
         onChange={(event) => update("remarks", event.target.value)}
       />
 
-      <Button type="submit" variant="contained" disabled={loading}>
+      <Button type="submit" variant="contained" disabled={disabled || loading}>
         Save Meeting
       </Button>
     </Stack>

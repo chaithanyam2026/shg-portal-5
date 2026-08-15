@@ -32,6 +32,10 @@ export default function MeetingGeneralPanel({ meeting }: Props) {
         <Alert severity="info">This meeting is closed and cannot be edited.</Alert>
       )}
 
+      {meeting.status !== "CLOSED" && meeting.financialYearStatus === "CLOSED" && (
+        <Alert severity="info">This financial year is closed and cannot be edited.</Alert>
+      )}
+
       <Card>
         <CardContent>
           <Stack spacing={2}>

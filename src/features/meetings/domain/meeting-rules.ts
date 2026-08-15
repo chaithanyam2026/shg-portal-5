@@ -1,3 +1,5 @@
+import { FINANCIAL_YEAR_STATUS } from "@/features/financial-year/domain/financial-year-status";
+
 import { MEETING_STATUS } from "./meeting-status";
 
 export function canStartMeeting(status: string) {
@@ -12,8 +14,16 @@ export function canCloseMeeting(status: string) {
   return status === MEETING_STATUS.APPROVED;
 }
 
-export function isEditable(status: string) {
-  return status !== MEETING_STATUS.CLOSED;
+export function isEditable(meetingStatus: string, financialYearStatus?: string) {
+  if (meetingStatus === MEETING_STATUS.CLOSED) {
+    return false;
+  }
+
+  if (financialYearStatus === FINANCIAL_YEAR_STATUS.CLOSED) {
+    return false;
+  }
+
+  return true;
 }
 
 export function isDeletable(status: string) {

@@ -1,3 +1,5 @@
+import type { FinancialYearStatus } from "@/features/financial-year/domain/financial-year-status";
+
 import type { AttendanceStatus } from "./domain/attendance-status";
 import type { BankTransactionType } from "./domain/bank-transaction";
 import type { ExpenseCategory } from "./domain/expense";
@@ -16,6 +18,7 @@ export type MeetingSummary = {
 export type MeetingDetails = {
   id: string;
   financialYearId: string;
+  financialYearStatus: FinancialYearStatus;
 
   meetingDate: string;
 
