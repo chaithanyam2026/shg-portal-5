@@ -9,10 +9,12 @@ type Props = {
 
 export default function SummaryCard({ title, children }: Props) {
   return (
-    <Card>
-      <CardContent>
-        <Stack spacing={2}>
-          <Typography variant="h6">{title}</Typography>
+    <Card variant="outlined" sx={{ height: "100%" }}>
+      <CardContent sx={{ p: 1.5, "&:last-child": { pb: 1.5 } }}>
+        <Stack spacing={1.25}>
+          <Typography variant="subtitle2" color="text.secondary">
+            {title}
+          </Typography>
 
           {children}
         </Stack>
