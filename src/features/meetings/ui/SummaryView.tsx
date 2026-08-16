@@ -163,7 +163,7 @@ export default function SummaryView({ meetingId, summary, readOnly = false }: Pr
                 action="close"
                 label="Close Meeting"
                 color="warning"
-                disabled={readOnly || summary.status !== "IN_PROGRESS"}
+                disabled={readOnly || summary.status !== "IN_PROGRESS" || !summary.canClose}
               />
             </Stack>
           </SummaryCard>

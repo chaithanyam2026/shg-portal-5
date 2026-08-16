@@ -1,10 +1,11 @@
 "use client";
 
-import { TableCell, TableRow, TextField } from "@mui/material";
+import { Stack, TableCell, TableRow, TextField } from "@mui/material";
 
 import type { PaymentRecord } from "../types";
 
 import AmountField from "./AmountField";
+import PaymentBalanceHint from "./PaymentBalanceHint";
 
 type Props = {
   serialNumber: number;
@@ -31,24 +32,27 @@ export default function PaymentRow({ serialNumber, record, disabled = false, onC
 
       <TableCell>{record.memberName}</TableCell>
 
-      <TableCell width={120}>
-        <AmountField
-          fullWidth
-          size="small"
-          disabled={disabled}
-          value={record.contribution}
-          slotProps={{
-            input: {
-              inputProps: {
-                min: 0,
+      <TableCell width={150} sx={{ verticalAlign: "top" }}>
+        <Stack spacing={0}>
+          <AmountField
+            fullWidth
+            size="small"
+            disabled={disabled}
+            value={record.contribution}
+            slotProps={{
+              input: {
+                inputProps: {
+                  min: 0,
+                },
               },
-            },
-          }}
-          onChange={(value) => update("contribution", value)}
-        />
+            }}
+            onChange={(value) => update("contribution", value)}
+          />
+          <PaymentBalanceHint due={record.contributionDue} entered={record.contribution} />
+        </Stack>
       </TableCell>
 
-      <TableCell width={120}>
+      <TableCell width={120} sx={{ verticalAlign: "top" }}>
         <AmountField
           fullWidth
           size="small"
@@ -58,17 +62,20 @@ export default function PaymentRow({ serialNumber, record, disabled = false, onC
         />
       </TableCell>
 
-      <TableCell width={120}>
-        <AmountField
-          fullWidth
-          size="small"
-          disabled={disabled}
-          value={record.absentFine}
-          onChange={(value) => update("absentFine", value)}
-        />
+      <TableCell width={150} sx={{ verticalAlign: "top" }}>
+        <Stack spacing={0}>
+          <AmountField
+            fullWidth
+            size="small"
+            disabled={disabled}
+            value={record.absentFine}
+            onChange={(value) => update("absentFine", value)}
+          />
+          <PaymentBalanceHint due={record.absentFineDue} entered={record.absentFine} />
+        </Stack>
       </TableCell>
 
-      <TableCell width={150}>
+      <TableCell width={150} sx={{ verticalAlign: "top" }}>
         <AmountField
           fullWidth
           size="small"
@@ -78,9 +85,11 @@ export default function PaymentRow({ serialNumber, record, disabled = false, onC
         />
       </TableCell>
 
-      <TableCell width={120}>{record.total}</TableCell>
+      <TableCell width={120} sx={{ verticalAlign: "top" }}>
+        {record.total}
+      </TableCell>
 
-      <TableCell>
+      <TableCell sx={{ verticalAlign: "top" }}>
         <TextField
           fullWidth
           size="small"

@@ -28,11 +28,16 @@ export default function MeetingActionButton({
   confirm = false,
 }: Props) {
   const router = useRouter();
-  const { refreshMeetingData } = useMeetingDataRefresh();
+  const { refreshMeetingData, unsavedSectionLabels } = useMeetingDataRefresh();
 
   const [loading, setLoading] = useState(false);
 
   async function handleClick() {
+    if (action === "close" && unsavedSectionLabels.length > 0) {
+      alert(`Save ${unsavedSectionLabels.join(", ")} before closing the meeting.`);
+      return;
+    }
+
     if (confirm) {
       const ok = window.confirm(`Are you sure you want to ${label.toLowerCase()}?`);
 

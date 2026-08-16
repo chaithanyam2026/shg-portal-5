@@ -9,7 +9,7 @@ import { Alert, Button, Card, CardContent, Stack, Typography } from "@mui/materi
 import type { BankTransactionSummary } from "../types";
 
 import BankTransactionTable from "./BankTransactionTable";
-import { useMeetingDataRefresh } from "./MeetingDataRefresh";
+import { useMeetingDataRefresh, useMeetingUnsavedSection } from "./MeetingDataRefresh";
 
 type Props = {
   meetingId: string;
@@ -26,6 +26,7 @@ export default function BankTransactionForm({
   const { refreshMeetingData } = useMeetingDataRefresh();
 
   const [records, setRecords] = useState(initialSummary.records);
+  const [baseline, setBaseline] = useState(initialSummary.records);
 
   const totals = useMemo(() => {
     let totalDeposits = 0;
@@ -59,6 +60,11 @@ export default function BankTransactionForm({
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  useMeetingUnsavedSection(
+    "bank",
+    !readOnly && JSON.stringify(records) !== JSON.stringify(baseline),
+  );
+
   async function save() {
     try {
       setSaving(true);
@@ -82,6 +88,7 @@ export default function BankTransactionForm({
       }
 
       setSuccess("Bank transactions saved successfully.");
+      setBaseline(records);
 
       refreshMeetingData();
       router.refresh();

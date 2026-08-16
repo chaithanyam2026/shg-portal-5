@@ -83,6 +83,8 @@ export type AttendanceSummary = {
   status: MeetingStatus;
 
   records: AttendanceRecord[];
+
+  saved: boolean;
 };
 
 export type PaymentRecord = {
@@ -103,6 +105,12 @@ export type PaymentRecord = {
   remarks: string;
 
   total: number;
+
+  /** Weekly contribution still owed before this meeting's entered amount. Negative = prepaid. */
+  contributionDue: number;
+
+  /** Absent fine still owed before this meeting's entered amount. Negative = overpaid. */
+  absentFineDue: number;
 };
 
 export type PaymentSummary = {
@@ -121,6 +129,8 @@ export type PaymentSummary = {
   totalSpecialLoanFine: number;
 
   grandTotal: number;
+
+  saved: boolean;
 };
 
 export type MemberMeetingTransactions = {

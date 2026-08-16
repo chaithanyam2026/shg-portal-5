@@ -9,7 +9,7 @@ import { Alert, Button, Card, CardContent, Stack, Typography } from "@mui/materi
 import type { ExpenseSummary } from "../types";
 
 import ExpenseTable from "./ExpenseTable";
-import { useMeetingDataRefresh } from "./MeetingDataRefresh";
+import { useMeetingDataRefresh, useMeetingUnsavedSection } from "./MeetingDataRefresh";
 
 type Props = {
   meetingId: string;
@@ -22,11 +22,17 @@ export default function ExpenseForm({ meetingId, initialSummary, readOnly = fals
   const { refreshMeetingData } = useMeetingDataRefresh();
 
   const [records, setRecords] = useState(initialSummary.records);
+  const [baseline, setBaseline] = useState(initialSummary.records);
 
   const [saving, setSaving] = useState(false);
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  useMeetingUnsavedSection(
+    "expenses",
+    !readOnly && JSON.stringify(records) !== JSON.stringify(baseline),
+  );
 
   const totalExpense = useMemo(
     () => records.reduce((sum, record) => sum + record.amount, 0),
@@ -56,6 +62,7 @@ export default function ExpenseForm({ meetingId, initialSummary, readOnly = fals
       }
 
       setSuccess("Expenses saved successfully.");
+      setBaseline(records);
 
       refreshMeetingData();
       router.refresh();

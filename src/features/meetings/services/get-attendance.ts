@@ -33,6 +33,7 @@ export async function getAttendance(meetingId: string): Promise<AttendanceSummar
     return {
       meetingId,
       status: meeting.status,
+      saved: false,
       records: members.map((member) => ({
         memberId: member._id.toString(),
 
@@ -54,6 +55,7 @@ export async function getAttendance(meetingId: string): Promise<AttendanceSummar
   return {
     meetingId,
     status: meeting.status,
+    saved: true,
     records: meeting.attendance.map((record) => {
       const member = memberMap.get(record.memberId.toString());
 

@@ -7,6 +7,7 @@ import { MEETING_STATUS } from "../domain/meeting-status";
 
 import type { MeetingDetails } from "../types";
 import { getMeeting } from "./get";
+import { assertMeetingReadyToClose } from "./internal/assert-meeting-ready-to-close";
 
 export async function closeMeeting(id: string, userId?: string | null): Promise<MeetingDetails> {
   await connectMongo();
@@ -20,6 +21,8 @@ export async function closeMeeting(id: string, userId?: string | null): Promise<
   if (meeting.status !== MEETING_STATUS.IN_PROGRESS) {
     throw new Error("Only meetings in progress can be closed.");
   }
+
+  await assertMeetingReadyToClose(meeting);
 
   meeting.status = MEETING_STATUS.CLOSED;
   meeting.closedAt = new Date();
