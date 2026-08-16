@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 
 import type { PropsWithChildren } from "react";
 
@@ -13,7 +13,7 @@ import AppLogo from "@/components/layout/AppLogo";
 import type { DashboardNavLink } from "@/lib/navigation";
 
 import MobileNavigation from "./MobileNavigation";
-import Sidebar, { DRAWER_WIDTH } from "./Sidebar";
+import Sidebar, { COLLAPSED_DRAWER_WIDTH, DRAWER_WIDTH } from "./Sidebar";
 
 type Props = PropsWithChildren<{
   displayName?: string;
@@ -22,6 +22,8 @@ type Props = PropsWithChildren<{
 
 export default function AppLayout({ children, displayName, navItems }: Props) {
   const [isPending, startTransition] = useTransition();
+  const [collapsed, setCollapsed] = useState(false);
+  const drawerWidth = collapsed ? COLLAPSED_DRAWER_WIDTH : DRAWER_WIDTH;
 
   function handleLogout() {
     startTransition(async () => {
@@ -41,11 +43,16 @@ export default function AppLayout({ children, displayName, navItems }: Props) {
         elevation={1}
         color="inherit"
         sx={{
-          width: { xs: "100%", md: `calc(100% - ${DRAWER_WIDTH}px)` },
-          ml: { xs: 0, md: `${DRAWER_WIDTH}px` },
+          width: { xs: "100%", md: `calc(100% - ${drawerWidth}px)` },
+          ml: { xs: 0, md: `${drawerWidth}px` },
           bgcolor: "background.paper",
           borderBottom: 1,
           borderColor: "divider",
+          transition: (theme) =>
+            theme.transitions.create(["width", "margin"], {
+              easing: theme.transitions.easing.sharp,
+              duration: theme.transitions.duration.enteringScreen,
+            }),
         }}
       >
         <Toolbar sx={{ gap: 1 }}>
@@ -89,15 +96,24 @@ export default function AppLayout({ children, displayName, navItems }: Props) {
         </Toolbar>
       </AppBar>
 
-      <Sidebar navItems={navItems} />
+      <Sidebar
+        navItems={navItems}
+        collapsed={collapsed}
+        onToggleCollapse={() => setCollapsed((isCollapsed) => !isCollapsed)}
+      />
 
       <Box
         component="main"
         sx={{
           flexGrow: 1,
           minWidth: 0,
-          width: { xs: "100%", md: `calc(100% - ${DRAWER_WIDTH}px)` },
+          width: { xs: "100%", md: `calc(100% - ${drawerWidth}px)` },
           bgcolor: "background.default",
+          transition: (theme) =>
+            theme.transitions.create("width", {
+              easing: theme.transitions.easing.sharp,
+              duration: theme.transitions.duration.enteringScreen,
+            }),
         }}
       >
         <Toolbar />
