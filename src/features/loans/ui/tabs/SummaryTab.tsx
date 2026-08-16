@@ -150,8 +150,8 @@ export default function SummaryTab({ loan, summary }: Props) {
             : loan.canBeClosed
               ? loan.isClosable
                 ? "This loan is fully repaid and can be closed."
-                : "This loan can be closed because the financial year is approved."
-              : "This loan still has outstanding balances. It can be closed once fully repaid or when the financial year is approved."}
+                : "This loan can be closed with outstanding principal because the financial year end date has passed."
+              : "This loan still has outstanding balances. It can be closed once fully repaid, or after the financial year end date by the president, secretary, treasurer, or an administrator."}
         </Alert>
       </Stack>
     </Box>

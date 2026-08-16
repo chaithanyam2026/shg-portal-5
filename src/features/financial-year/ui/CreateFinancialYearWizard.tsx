@@ -25,7 +25,6 @@ import type { OpeningBalanceResult } from "../domain";
 import OpeningBalancePreview from "./OpeningBalancePreview";
 
 import MemberOpeningBalanceTable from "./MemberOpeningBalanceTable";
-import { createEmptyOpeningBalance } from "../domain/create-empty-opening-balance";
 
 import type { CreateFinancialYearDraft, OpeningBalanceSourceFinancialYearLookup } from "../types";
 
@@ -62,40 +61,55 @@ export default function CreateFinancialYearWizard({ financialYears, isFirstFinan
   const [openingError, setOpeningError] = useState("");
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [stepError, setStepError] = useState("");
 
   const selectedFinancialYear = useMemo(
     () => financialYears.find((fy) => fy._id === sourceFinancialYearId) ?? null,
     [financialYears, sourceFinancialYearId],
   );
 
+  useEffect(() => {
+    if (isFirstFinancialYear || sourceFinancialYearId || financialYears.length === 0) {
+      return;
+    }
+
+    setSourceFinancialYearId(financialYears[0]?._id ?? "");
+  }, [financialYears, isFirstFinancialYear, sourceFinancialYearId]);
+
   function handleNext() {
-    console.log('handleNext', { activeStep, isFirstFinancialYear, sourceFinancialYearId, })
+    setStepError("");
+
     switch (activeStep) {
       case 0:
-        if (
-          !isFirstFinancialYear &&
-          !sourceFinancialYearId
-        ) {
+        if (!isFirstFinancialYear && !sourceFinancialYearId) {
+          setStepError("Select a source financial year to continue.");
           return;
         }
         break;
 
       case 1:
         if (!financialYear.name || !financialYear.startDate || !financialYear.endDate) {
+          setStepError("Enter the financial year name, start date, and end date.");
           return;
         }
         break;
 
       case 2:
+        if (loadingOpening) {
+          setStepError("Opening balances are still loading.");
+          return;
+        }
+
         if (!openingBalance) {
+          setStepError(openingError || "Unable to load opening balances. Go back and try again.");
           return;
         }
 
         break;
 
       case 3:
-        console.log('Case 3', { openingBalance })
         if (!openingBalance || openingBalance.summary.members.length === 0) {
+          setStepError("Member opening balances are not available yet.");
           return;
         }
 
@@ -109,6 +123,7 @@ export default function CreateFinancialYearWizard({ financialYears, isFirstFinan
   }
 
   function handleBack() {
+    setStepError("");
     setActiveStep((step) => Math.max(step - 1, 0));
   }
 
@@ -276,8 +291,17 @@ export default function CreateFinancialYearWizard({ financialYears, isFirstFinan
               <FinancialYearSourceSelector
                 financialYears={financialYears}
                 value={sourceFinancialYearId}
-                onChange={setSourceFinancialYearId}
+                onChange={(id) => {
+                  setStepError("");
+                  setSourceFinancialYearId(id);
+                }}
               />
+
+              {financialYears.length === 0 && (
+                <Alert severity="warning">
+                  No closed, validated, or approved financial year is available as a source.
+                </Alert>
+              )}
             </Stack>
           )}
 
@@ -398,6 +422,8 @@ export default function CreateFinancialYearWizard({ financialYears, isFirstFinan
           )}
         </CardContent>
       </Card>
+
+      {stepError && <Alert severity="warning">{stepError}</Alert>}
 
       <Stack
         direction="row"

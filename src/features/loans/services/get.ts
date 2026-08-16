@@ -45,7 +45,9 @@ export async function getLoan(loanId: LoanIdInput): Promise<LoanDetails> {
   }
 
   const [financialYear, member, passbook, memberCloseBalances] = await Promise.all([
-    FinancialYear.findById(loan.financialYearId).select("name status executiveCommittee").lean(),
+    FinancialYear.findById(loan.financialYearId)
+      .select("name status endDate executiveCommittee")
+      .lean(),
 
     Member.findById(loan.memberId)
       .select({
@@ -67,6 +69,11 @@ export async function getLoan(loanId: LoanIdInput): Promise<LoanDetails> {
   const fineWaiver = buildFineWaiverSnapshot(passbook);
 
   const [actorMemberId, session] = await Promise.all([getCurrentMemberId(), auth()]);
+  const isOfficeBearer = isFinancialYearOfficeBearer(
+    financialYear.executiveCommittee,
+    actorMemberId,
+  );
+  const isAdmin = isAdminRole(session?.user?.role);
 
   return {
     _id: loan._id.toString(),
@@ -130,16 +137,18 @@ export async function getLoan(loanId: LoanIdInput): Promise<LoanDetails> {
 
     canBeClosed: canCloseLoan({
       loanStatus: loan.status,
-      financialYearStatus: financialYear.status,
       isClosable: summary.isClosable,
+      financialYearEndDate: financialYear.endDate,
+      isOfficeBearer,
+      isAdmin,
     }),
 
-    canReopen: canReopenLoan(loan.status) && isAdminRole(session?.user?.role),
+    canReopen: canReopenLoan(loan.status) && isAdmin,
 
     canUpdateExpectedMonthlyRepayment: canUpdateExpectedMonthlyRepayment({
       loanStatus: loan.status,
       financialYearStatus: financialYear.status,
-      isOfficeBearer: isFinancialYearOfficeBearer(financialYear.executiveCommittee, actorMemberId),
+      isOfficeBearer,
     }),
 
     pendingAbsentFine: memberCloseBalances.pendingAbsentFine,

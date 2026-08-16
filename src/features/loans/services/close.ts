@@ -1,4 +1,8 @@
+import { isFinancialYearOfficeBearer } from "@/features/financial-year/domain/office-bearers";
+import { auth } from "@/auth";
 import connectMongo from "@/lib/db/mongodb";
+import { getCurrentMemberId } from "@/lib/auth/current-member";
+import { isAdminRole } from "@/lib/auth/roles";
 import { AppError } from "@/lib/errors";
 import { compareCalendarDates, toCalendarDate } from "@/lib/utils/date";
 import FinancialYear from "@/models/FinancialYear";
@@ -28,7 +32,9 @@ export async function closeLoan(loanId: string, input: unknown): Promise<LoanDet
     throw new AppError("Loan not found.", 404);
   }
 
-  const financialYear = await FinancialYear.findById(loan.financialYearId).select("status").lean();
+  const financialYear = await FinancialYear.findById(loan.financialYearId)
+    .select("status endDate executiveCommittee")
+    .lean();
 
   if (!financialYear) {
     throw new AppError("Financial year not found.", 404);
@@ -36,16 +42,22 @@ export async function closeLoan(loanId: string, input: unknown): Promise<LoanDet
 
   const passbook = await getLoanPassbook(id);
   const summary = calculateLoanSummary(passbook);
+  const [actorMemberId, session] = await Promise.all([getCurrentMemberId(), auth()]);
 
   if (
     !canCloseLoan({
       loanStatus: loan.status,
-      financialYearStatus: financialYear.status,
       isClosable: summary.isClosable,
+      financialYearEndDate: financialYear.endDate,
+      isOfficeBearer: isFinancialYearOfficeBearer(
+        financialYear.executiveCommittee,
+        actorMemberId,
+      ),
+      isAdmin: isAdminRole(session?.user?.role),
     })
   ) {
     throw new AppError(
-      "Loan cannot be closed. Repay all outstanding amounts or wait until the financial year is approved.",
+      "Loan cannot be closed. Repay all outstanding amounts, or wait until the financial year end date has passed and close it as president, secretary, treasurer, or administrator.",
       400,
     );
   }
