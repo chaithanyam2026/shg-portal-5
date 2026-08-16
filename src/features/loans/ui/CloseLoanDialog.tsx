@@ -145,8 +145,7 @@ export default function CloseLoanDialog({ loan, onClose, onSuccess }: Props) {
     }
   }
 
-  const requiresApprovalNote =
-    loan && !loan.isClosable && loan.financialYearStatus === "APPROVED";
+  const requiresOutstandingCloseNote = Boolean(loan && !loan.isClosable && loan.canBeClosed);
 
   const summaryRows: CloseSummaryRow[] = loan
     ? [
@@ -196,10 +195,10 @@ export default function CloseLoanDialog({ loan, onClose, onSuccess }: Props) {
             </Stack>
           )}
 
-          {requiresApprovalNote && (
+          {requiresOutstandingCloseNote && (
             <Alert severity="warning">
-              This loan still has outstanding balances. It can be closed because the financial year
-              is approved. Add a comment explaining why it is being closed.
+              This loan still has outstanding principal. It can be closed because the financial
+              year end date has passed. Add a comment explaining why it is being closed.
             </Alert>
           )}
 
