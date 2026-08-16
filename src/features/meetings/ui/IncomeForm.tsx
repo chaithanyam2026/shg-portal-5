@@ -9,7 +9,7 @@ import { Alert, Button, Card, CardContent, Stack, Typography } from "@mui/materi
 import type { IncomeSummary } from "../types";
 
 import IncomeTable from "./IncomeTable";
-import { useMeetingDataRefresh } from "./MeetingDataRefresh";
+import { useMeetingDataRefresh, useMeetingUnsavedSection } from "./MeetingDataRefresh";
 
 type Props = {
   meetingId: string;
@@ -22,11 +22,17 @@ export default function IncomeForm({ meetingId, initialSummary, readOnly = false
   const { refreshMeetingData } = useMeetingDataRefresh();
 
   const [records, setRecords] = useState(initialSummary.records);
+  const [baseline, setBaseline] = useState(initialSummary.records);
 
   const [saving, setSaving] = useState(false);
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  useMeetingUnsavedSection(
+    "income",
+    !readOnly && JSON.stringify(records) !== JSON.stringify(baseline),
+  );
 
   const totalIncome = useMemo(
     () => records.reduce((sum, record) => sum + record.amount, 0),
@@ -56,6 +62,7 @@ export default function IncomeForm({ meetingId, initialSummary, readOnly = false
       }
 
       setSuccess("Income saved successfully.");
+      setBaseline(records);
 
       refreshMeetingData();
       router.refresh();

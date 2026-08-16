@@ -9,12 +9,14 @@ import { Alert, Button, Stack } from "@mui/material";
 import type { AttendanceRecord } from "../types";
 
 import AttendanceTable from "./AttendanceTable";
-import { useMeetingDataRefresh } from "./MeetingDataRefresh";
+import { useMeetingDataRefresh, useMeetingUnsavedSection } from "./MeetingDataRefresh";
 
 type Props = {
   meetingId: string;
 
   initialRecords: AttendanceRecord[];
+
+  initialSaved?: boolean;
 
   readOnly?: boolean;
 };
@@ -22,18 +24,26 @@ type Props = {
 export default function AttendanceForm({
   meetingId,
   initialRecords,
+  initialSaved = false,
   readOnly = false,
 }: Props) {
   const router = useRouter();
   const { refreshMeetingData } = useMeetingDataRefresh();
 
   const [records, setRecords] = useState(initialRecords);
+  const [baseline, setBaseline] = useState(initialRecords);
+  const [saved, setSaved] = useState(initialSaved);
 
   const [saving, setSaving] = useState(false);
 
   const [message, setMessage] = useState("");
 
   const [error, setError] = useState("");
+
+  useMeetingUnsavedSection(
+    "attendance",
+    !readOnly && (!saved || JSON.stringify(records) !== JSON.stringify(baseline)),
+  );
 
   async function save() {
     try {
@@ -60,6 +70,8 @@ export default function AttendanceForm({
       }
 
       setMessage("Attendance saved successfully.");
+      setSaved(true);
+      setBaseline(records);
 
       refreshMeetingData();
       router.refresh();

@@ -104,7 +104,7 @@ export function AttendanceTabPanel({ meetingId, readOnly = false }: LoaderProps)
     return null;
   }
 
-  return <AttendanceForm meetingId={meetingId} initialRecords={data.records} readOnly={readOnly} />;
+  return <AttendanceForm meetingId={meetingId} initialRecords={data.records} initialSaved={data.saved} readOnly={readOnly} />;
 }
 
 export function PaymentsTabPanel({ meetingId, readOnly = false }: LoaderProps) {
@@ -122,7 +122,7 @@ export function PaymentsTabPanel({ meetingId, readOnly = false }: LoaderProps) {
     return null;
   }
 
-  return <PaymentForm meetingId={meetingId} initialRecords={data.records} readOnly={readOnly} />;
+  return <PaymentForm meetingId={meetingId} initialRecords={data.records} initialSaved={data.saved} readOnly={readOnly} />;
 }
 
 export function LoansTabPanel({

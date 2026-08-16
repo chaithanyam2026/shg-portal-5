@@ -8,25 +8,38 @@ import { Alert, Button, Card, CardContent, Stack, Typography } from "@mui/materi
 
 import type { PaymentRecord } from "../types";
 
-import { useMeetingDataRefresh } from "./MeetingDataRefresh";
+import { useMeetingDataRefresh, useMeetingUnsavedSection } from "./MeetingDataRefresh";
 import PaymentTable from "./PaymentTable";
 
 type Props = {
   meetingId: string;
   initialRecords: PaymentRecord[];
+  initialSaved?: boolean;
   readOnly?: boolean;
 };
 
-export default function PaymentForm({ meetingId, initialRecords, readOnly = false }: Props) {
+export default function PaymentForm({
+  meetingId,
+  initialRecords,
+  initialSaved = false,
+  readOnly = false,
+}: Props) {
   const router = useRouter();
   const { refreshMeetingData } = useMeetingDataRefresh();
 
   const [records, setRecords] = useState(initialRecords);
+  const [baseline, setBaseline] = useState(initialRecords);
+  const [saved, setSaved] = useState(initialSaved);
 
   const [saving, setSaving] = useState(false);
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  useMeetingUnsavedSection(
+    "payments",
+    !readOnly && (!saved || JSON.stringify(records) !== JSON.stringify(baseline)),
+  );
 
   const totals = useMemo(() => {
     const contribution = records.reduce((sum, record) => sum + record.contribution, 0);
@@ -69,6 +82,8 @@ export default function PaymentForm({ meetingId, initialRecords, readOnly = fals
       }
 
       setSuccess("Payments saved successfully.");
+      setSaved(true);
+      setBaseline(records);
 
       refreshMeetingData();
       router.refresh();

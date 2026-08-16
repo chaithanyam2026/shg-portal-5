@@ -4,9 +4,10 @@ import Meeting from "@/models/Meeting";
 
 import { BANK_TRANSACTION_TYPE } from "../domain/bank-transaction";
 import { normalizeAttendanceStatus } from "../domain/attendance-status";
-
-import { VALIDATION_CODE, VALIDATION_SEVERITY } from "../domain/summary";
-import type { MeetingDashboardSummary, SummaryValidation } from "../types";
+import { getMeetingCloseValidations } from "../domain/meeting-close";
+import { VALIDATION_SEVERITY } from "../domain/summary";
+import type { MeetingDashboardSummary } from "../types";
+import { loadFinancialYearMembers } from "./internal/load-financial-year-members";
 
 export async function getSummary(meetingId: string): Promise<MeetingDashboardSummary> {
   await connectMongo();
@@ -73,73 +74,17 @@ export async function getSummary(meetingId: string): Promise<MeetingDashboardSum
 
   const totalExpense = expenses.reduce((s, x) => s + x.amount, 0);
 
-  const validations: SummaryValidation[] = [];
+  const members = await loadFinancialYearMembers(meeting.financialYearId.toString());
 
-  validations.push({
-    code: VALIDATION_CODE.ATTENDANCE,
-
-    title: "Attendance",
-
-    severity: attendance.length > 0 ? VALIDATION_SEVERITY.SUCCESS : VALIDATION_SEVERITY.ERROR,
-
-    message: attendance.length > 0 ? "Attendance completed." : "Attendance is missing.",
-  });
-
-  validations.push({
-    code: VALIDATION_CODE.PAYMENTS,
-
-    title: "Payments",
-
-    severity: payments.length > 0 ? VALIDATION_SEVERITY.SUCCESS : VALIDATION_SEVERITY.ERROR,
-
-    message: payments.length > 0 ? "Payments completed." : "Payments are missing.",
-  });
-
-  validations.push({
-    code: VALIDATION_CODE.BANK,
-
-    title: "Bank Transactions",
-
-    severity: VALIDATION_SEVERITY.SUCCESS,
-
-    message: "Bank transactions reviewed.",
-  });
-
-  validations.push({
-    code: VALIDATION_CODE.INCOME,
-
-    title: "Other Income",
-
-    severity: VALIDATION_SEVERITY.SUCCESS,
-
-    message: "Other income reviewed.",
-  });
-
-  validations.push({
-    code: VALIDATION_CODE.EXPENSES,
-
-    title: "Expenses",
-
-    severity: VALIDATION_SEVERITY.SUCCESS,
-
-    message: "Expenses reviewed.",
+  const validations = getMeetingCloseValidations({
+    expectedMemberCount: members.length,
+    attendanceCount: attendance.length,
+    paymentCount: payments.length,
   });
 
   const canClose = validations.every(
     (validation) => validation.severity !== VALIDATION_SEVERITY.ERROR,
   );
-
-  validations.push({
-    code: VALIDATION_CODE.READY_TO_CLOSE,
-
-    title: "Meeting",
-
-    severity: canClose ? VALIDATION_SEVERITY.SUCCESS : VALIDATION_SEVERITY.ERROR,
-
-    message: canClose
-      ? "Meeting is ready to close."
-      : "Meeting cannot be closed until all required sections are complete.",
-  });
 
   return {
     meetingId: meeting._id.toString(),
