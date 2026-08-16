@@ -1,3 +1,5 @@
+import { cache } from "react";
+
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 
@@ -9,7 +11,7 @@ import User from "@/models/User";
 
 import { LoginSchema } from "@/features/auth/validation";
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+const nextAuth = NextAuth({
     ...authConfig,
 
     providers: [
@@ -86,3 +88,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }),
     ],
 });
+
+export const { handlers, signIn, signOut } = nextAuth;
+
+export const auth = cache(nextAuth.auth);

@@ -6,7 +6,11 @@ export async function GET() {
   try {
     const financialYears = await listFinancialYears();
 
-    return NextResponse.json(financialYears);
+    return NextResponse.json(financialYears, {
+      headers: {
+        "Cache-Control": "private, max-age=30, stale-while-revalidate=60",
+      },
+    });
   } catch (error) {
     return NextResponse.json(
       {

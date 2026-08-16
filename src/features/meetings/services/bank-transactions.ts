@@ -31,6 +31,9 @@ export async function updateBankTransactions(
 
   await meeting.save();
 
+  const { revalidateMeetings } = await import("@/lib/cache");
+  revalidateMeetings();
+
   await Meeting.findById(meetingId).lean();
 
   return createResponse("Bank transactions updated successfully.");

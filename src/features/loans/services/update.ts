@@ -77,5 +77,8 @@ export async function updateLoan(loanId: string, input: UpdateLoanInput): Promis
 
   await loan.save();
 
+  const { revalidateLoans } = await import("@/lib/cache");
+  revalidateLoans();
+
   return getLoan(id);
 }

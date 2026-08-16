@@ -36,6 +36,9 @@ export async function updatePayments(meetingId: string, input: UpdatePaymentsInp
 
   await meeting.save();
 
+  const { revalidateMeetingWrites } = await import("@/lib/cache");
+  revalidateMeetingWrites();
+
   return {
     message: "Payments updated successfully.",
   };

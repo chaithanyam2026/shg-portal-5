@@ -1,10 +1,11 @@
 import connectMongo from "@/lib/db/mongodb";
+import { CACHE_TAGS, remember } from "@/lib/cache";
 
 import Member from "@/models/Member";
 
 import type { MemberLookup } from "../types";
 
-export async function listMembers(): Promise<MemberLookup[]> {
+async function queryFinancialYearMembers(): Promise<MemberLookup[]> {
   await connectMongo();
 
   const members = await Member.find()
@@ -23,3 +24,9 @@ export async function listMembers(): Promise<MemberLookup[]> {
     name: member.name,
   }));
 }
+
+export const listMembers = remember(queryFinancialYearMembers, {
+  key: "financial-year-member-lookup",
+  tags: [CACHE_TAGS.members],
+  revalidate: 60,
+});

@@ -1,14 +1,11 @@
 import connectMongo from "@/lib/db/mongodb";
+import { CACHE_TAGS, remember } from "@/lib/cache";
 
 import FinancialYear from "@/models/FinancialYear";
 
 import type { FinancialYearOption } from "../domain/financial-year-option";
 
-/**
- * Returns financial years for the
- * selector.
- */
-export async function listFinancialYearOptions(): Promise<FinancialYearOption[]> {
+async function queryFinancialYearOptions(): Promise<FinancialYearOption[]> {
   await connectMongo();
 
   const years = await FinancialYear.find({})
@@ -26,3 +23,13 @@ export async function listFinancialYearOptions(): Promise<FinancialYearOption[]>
     status: year.status,
   }));
 }
+
+/**
+ * Returns financial years for the
+ * selector.
+ */
+export const listFinancialYearOptions = remember(queryFinancialYearOptions, {
+  key: "financial-year-options",
+  tags: [CACHE_TAGS.financialYears],
+  revalidate: 60,
+});

@@ -30,5 +30,8 @@ export async function reopenLoan(loanId: string): Promise<LoanDetails> {
 
   await loan.save();
 
+  const { revalidateLoans } = await import("@/lib/cache");
+  revalidateLoans();
+
   return getLoan(id);
 }

@@ -32,5 +32,8 @@ export async function reopenMeeting(id: string): Promise<MeetingDetails> {
 
   await meeting.save();
 
+  const { revalidateMeetings } = await import("@/lib/cache");
+  revalidateMeetings();
+
   return getMeeting(id);
 }

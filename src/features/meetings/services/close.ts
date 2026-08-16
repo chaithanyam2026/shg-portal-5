@@ -30,5 +30,8 @@ export async function closeMeeting(id: string, userId?: string | null): Promise<
 
   await meeting.save();
 
+  const { revalidateMeetings } = await import("@/lib/cache");
+  revalidateMeetings();
+
   return getMeeting(id);
 }

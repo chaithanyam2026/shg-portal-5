@@ -68,6 +68,9 @@ export async function createMeeting(
     updatedBy: userObjectId,
   });
 
+  const { revalidateMeetings } = await import("@/lib/cache");
+  revalidateMeetings();
+
   return {
     id: meeting._id.toString(),
 

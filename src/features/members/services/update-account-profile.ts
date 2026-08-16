@@ -48,6 +48,9 @@ export async function updateAccountProfile(
 
   await member.save();
 
+  const { revalidateMembers } = await import("@/lib/cache");
+  revalidateMembers();
+
   return {
     success: true,
     message: "Profile updated successfully.",

@@ -25,4 +25,7 @@ export async function deleteMeeting(id: string): Promise<void> {
   }
 
   await meeting.deleteOne();
+
+  const { revalidateMeetings } = await import("@/lib/cache");
+  revalidateMeetings();
 }

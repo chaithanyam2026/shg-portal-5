@@ -37,5 +37,8 @@ export async function deactivateMember(memberId: string): Promise<MemberDetails>
     status: USER_STATUS.INACTIVE,
   });
 
+  const { revalidateMembers } = await import("@/lib/cache");
+  revalidateMembers();
+
   return getMember(memberId);
 }

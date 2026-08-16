@@ -2,6 +2,7 @@ import Meeting from "@/models/Meeting";
 
 import connectMongo from "@/lib/db/mongodb";
 import { Types } from "mongoose";
+import { CACHE_TAGS, remember } from "@/lib/cache";
 
 import type { MeetingStatus } from "../domain/meeting-status";
 import type { MeetingListFilter, MeetingListResult } from "../types";
@@ -14,7 +15,7 @@ export type MeetingSummary = {
   createdAt: string;
 };
 
-export async function listMeetings(filter: MeetingListFilter): Promise<MeetingListResult> {
+async function queryMeetings(filter: MeetingListFilter): Promise<MeetingListResult> {
   await connectMongo();
 
   const page = filter.page > 0 ? filter.page : 1;
@@ -74,3 +75,9 @@ export async function listMeetings(filter: MeetingListFilter): Promise<MeetingLi
     pageSize,
   };
 }
+
+export const listMeetings = remember(queryMeetings, {
+  key: "meetings-list",
+  tags: [CACHE_TAGS.meetings],
+  revalidate: 30,
+});
