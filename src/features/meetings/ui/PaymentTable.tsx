@@ -37,9 +37,9 @@ export default function PaymentTable({ records, disabled = false, onChange }: Pr
             </TableCell>
             <TableCell>Member</TableCell>
             <TableCell>Contribution</TableCell>
-            <TableCell>Loan</TableCell>
+            <TableCell>Loan Repayment</TableCell>
             <TableCell>Absent Fine</TableCell>
-            <TableCell>Special Fine</TableCell>
+            <TableCell>Special Loan</TableCell>
             <TableCell>Total</TableCell>
             <TableCell>Remarks</TableCell>
           </TableRow>
