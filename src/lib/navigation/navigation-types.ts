@@ -11,5 +11,7 @@ export type NavigationItem = {
 
   roles?: readonly UserRole[];
 
+  allowOfficeBearers?: boolean;
+
   children?: NavigationItem[];
 };

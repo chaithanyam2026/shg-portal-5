@@ -27,9 +27,11 @@ type Props = {
   loans: LoanSummary[];
 
   financialYears: FinancialYearLookup[];
+
+  ownLoansOnly?: boolean;
 };
 
-export default function LoanList({ loans, financialYears }: Props) {
+export default function LoanList({ loans, financialYears, ownLoansOnly = false }: Props) {
   // const [search, setSearch] =
   //   useState("");
 
@@ -187,7 +189,9 @@ export default function LoanList({ loans, financialYears }: Props) {
         {filteredLoans.length === 0 ? (
           <Alert severity="info">
             {loans.length === 0
-              ? "No loans have been created yet."
+              ? ownLoansOnly
+                ? "You do not have any loans."
+                : "No loans have been created yet."
               : hasActiveFilters
                 ? "No loans match the current filters. Try adjusting your search or filters."
                 : "No loans found."}
@@ -195,7 +199,7 @@ export default function LoanList({ loans, financialYears }: Props) {
         ) : (
           <Stack spacing={2}>
             {filteredLoans.map((loan) => (
-              <LoanCard key={loan._id} loan={loan} />
+              <LoanCard key={loan._id} loan={loan} canViewDetails />
             ))}
           </Stack>
         )}

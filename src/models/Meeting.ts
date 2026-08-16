@@ -5,7 +5,7 @@ import { createSchemaOptions } from "@/lib/db/schema-options";
 
 import {
   ATTENDANCE_STATUS,
-  ATTENDANCE_STATUS_VALUES,
+  ATTENDANCE_STATUS_STORED_VALUES,
 } from "@/features/meetings/domain/attendance-status";
 import { MEETING_STATUS, MEETING_STATUS_VALUES } from "@/features/meetings/domain/meeting-status";
 
@@ -133,7 +133,7 @@ const meetingSchema =
 
         status: {
           type: String,
-          enum: ATTENDANCE_STATUS_VALUES,
+          enum: ATTENDANCE_STATUS_STORED_VALUES,
           default: ATTENDANCE_STATUS.PRESENT,
           required: true,
         },

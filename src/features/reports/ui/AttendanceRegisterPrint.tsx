@@ -179,7 +179,7 @@ export default function AttendanceRegisterPrint({
 
         <Typography variant="body2">✓ — Present</Typography>
 
-        <Typography variant="body2">L — Approved Leave</Typography>
+        <Typography variant="body2">L — Leave</Typography>
 
         <Typography variant="body2">A10 — First Consecutive Absence (₹10)</Typography>
 

@@ -7,8 +7,8 @@ import type { Types } from "mongoose";
 
 import { buildAttendanceRegister } from "./internal";
 
+import { normalizeAttendanceStatus } from "@/features/meetings/domain/attendance-status";
 import type { AttendanceRegister } from "../domain";
-import type { AttendanceStatus } from "../domain";
 
 type PopulatedFinancialYearMember = {
   memberId: {
@@ -22,10 +22,6 @@ type PopulatedFinancialYearMember = {
 type PopulatedFinancialYear = Omit<FinancialYearDocument, "members"> & {
   members: PopulatedFinancialYearMember[];
 };
-
-function toReportAttendanceStatus(status: string): AttendanceStatus {
-  return status === "EXCUSED" ? "LEAVE" : (status as AttendanceStatus);
-}
 
 /**
  * Returns the attendance register
@@ -76,7 +72,7 @@ export async function getAttendanceRegister(financialYearId: string): Promise<At
       attendance: meeting.attendance.map((record) => ({
         memberId: record.memberId.toString(),
 
-        status: toReportAttendanceStatus(record.status),
+        status: normalizeAttendanceStatus(record.status),
       })),
     })),
   });

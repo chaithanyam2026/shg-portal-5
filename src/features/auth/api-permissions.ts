@@ -7,10 +7,6 @@ export type ApiPermission = {
 
 export const API_PERMISSIONS: readonly ApiPermission[] = [
   {
-    path: "/api/reports",
-    roles: ["ADMIN", "SUPER_ADMIN", "TREASURER"],
-  },
-  {
     path: "/api/users",
     roles: ["ADMIN", "SUPER_ADMIN"],
   },

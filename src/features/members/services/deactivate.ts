@@ -11,9 +11,11 @@ import User from "@/models/User";
 import type { MemberDetails } from "../types";
 
 import { getMember } from "./get";
+import { assertCanAccessFinancialStewardArea } from "@/features/financial-year/services";
 
 export async function deactivateMember(memberId: string): Promise<MemberDetails> {
   await connectMongo();
+  await assertCanAccessFinancialStewardArea();
 
   if (!Types.ObjectId.isValid(memberId)) {
     throw new AppError("Invalid member id.", 400);

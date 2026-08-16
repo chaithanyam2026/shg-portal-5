@@ -10,9 +10,11 @@ import User from "@/models/User";
 
 import type { MemberDetails } from "../types";
 import { CreateMemberInput, CreateMemberSchema } from "../validation";
+import { assertCanAccessFinancialStewardArea } from "@/features/financial-year/services";
 
 export async function createMember(input: CreateMemberInput): Promise<MemberDetails> {
   await connectMongo();
+  await assertCanAccessFinancialStewardArea();
 
   const data = CreateMemberSchema.parse(input);
 

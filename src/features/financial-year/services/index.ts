@@ -23,6 +23,7 @@ export * from "./mark-validated";
 
 export * from "./assert-editable";
 export * from "./assert-can-edit-fields";
+export * from "./assert-can-access-steward-area";
 export * from "./can-edit-fields";
 
 export * from "./generate-opening-balances";

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { createFinancialYear, listFinancialYears } from "@/features/financial-year/services";
+import { AppError } from "@/lib/errors";
 
 export async function GET() {
   try {
@@ -33,6 +34,17 @@ export async function POST(request: NextRequest) {
       status: 201,
     });
   } catch (error) {
+    if (error instanceof AppError) {
+      return NextResponse.json(
+        {
+          message: error.message,
+        },
+        {
+          status: error.status,
+        },
+      );
+    }
+
     return NextResponse.json(
       {
         message: error instanceof Error ? error.message : "Unable to create financial year.",

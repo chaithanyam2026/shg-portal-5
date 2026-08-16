@@ -20,8 +20,19 @@ export const ROLE_LABELS: Record<UserRole, string> = {
 
 export const ADMIN_ROLES = [USER_ROLES.SUPER_ADMIN, USER_ROLES.ADMIN] as const;
 
+export const FINANCIAL_STEWARD_ROLES = [
+  USER_ROLES.SUPER_ADMIN,
+  USER_ROLES.ADMIN,
+  USER_ROLES.SECRETARY,
+  USER_ROLES.TREASURER,
+] as const;
+
 export function isAdminRole(role?: string | null): boolean {
   return role === USER_ROLES.SUPER_ADMIN || role === USER_ROLES.ADMIN;
+}
+
+export function isFinancialStewardRole(role?: string | null): boolean {
+  return FINANCIAL_STEWARD_ROLES.includes(role as (typeof FINANCIAL_STEWARD_ROLES)[number]);
 }
 
 export function canResetUserPassword(actorRole?: string | null, targetRole?: string | null): boolean {

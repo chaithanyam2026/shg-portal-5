@@ -28,6 +28,8 @@ type LoaderProps = {
   meetingId: string;
   refreshKey?: number;
   readOnly?: boolean;
+  canViewAllLoans?: boolean;
+  currentMemberId?: string | null;
 };
 
 function TabLoader({ label }: { label: string }) {
@@ -123,7 +125,12 @@ export function PaymentsTabPanel({ meetingId, readOnly = false }: LoaderProps) {
   return <PaymentForm meetingId={meetingId} initialRecords={data.records} readOnly={readOnly} />;
 }
 
-export function LoansTabPanel({ meetingId, readOnly = false }: LoaderProps) {
+export function LoansTabPanel({
+  meetingId,
+  readOnly = false,
+  canViewAllLoans = false,
+  currentMemberId = null,
+}: LoaderProps) {
   const { data, loading, error } = useMeetingTabData<MeetingLoansSummary>(meetingId, "loans");
 
   if (loading) {
@@ -138,7 +145,14 @@ export function LoansTabPanel({ meetingId, readOnly = false }: LoaderProps) {
     return null;
   }
 
-  return <MeetingLoanForm initialSummary={data} readOnly={readOnly} />;
+  return (
+    <MeetingLoanForm
+      initialSummary={data}
+      readOnly={readOnly}
+      canViewAllLoans={canViewAllLoans}
+      currentMemberId={currentMemberId}
+    />
+  );
 }
 
 export function BankTabPanel({ meetingId, readOnly = false }: LoaderProps) {

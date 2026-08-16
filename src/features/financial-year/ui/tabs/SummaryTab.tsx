@@ -22,10 +22,16 @@ import ValidationItem from "./ValidationItem";
 type Props = {
   financialYear: FinancialYearDetails;
   canEdit?: boolean;
+  canManage?: boolean;
   canReopen?: boolean;
 };
 
-export default function SummaryTab({ financialYear, canEdit = true, canReopen = false }: Props) {
+export default function SummaryTab({
+  financialYear,
+  canEdit = true,
+  canManage = true,
+  canReopen = false,
+}: Props) {
   const router = useRouter();
 
   const validation = validateFinancialYear(financialYear);
@@ -228,7 +234,7 @@ export default function SummaryTab({ financialYear, canEdit = true, canReopen = 
             <Button
               variant="contained"
               onClick={activate}
-              disabled={!validation.valid || loading}
+              disabled={!canManage || !validation.valid || loading}
               startIcon={
                 loading ? <CircularProgress size={18} color="inherit" /> : undefined
               }
@@ -250,7 +256,7 @@ export default function SummaryTab({ financialYear, canEdit = true, canReopen = 
             <Button
               variant="contained"
               color="warning"
-              disabled={!canEdit}
+              disabled={!canManage}
               onClick={() => setValidateDialogOpen(true)}
             >
               Validate Financial Year
@@ -264,7 +270,12 @@ export default function SummaryTab({ financialYear, canEdit = true, canReopen = 
               Validation completed. Review and approve reports before closing the financial year.
             </Alert>
 
-            <Button variant="contained" color="success" onClick={() => setApproveDialogOpen(true)}>
+            <Button
+              variant="contained"
+              color="success"
+              disabled={!canManage}
+              onClick={() => setApproveDialogOpen(true)}
+            >
               Approve Financial Year
             </Button>
           </>
@@ -276,7 +287,12 @@ export default function SummaryTab({ financialYear, canEdit = true, canReopen = 
               Financial year has been approved and can now be permanently closed.
             </Alert>
 
-            <Button variant="contained" color="error" onClick={() => setCloseDialogOpen(true)}>
+            <Button
+              variant="contained"
+              color="error"
+              disabled={!canManage}
+              onClick={() => setCloseDialogOpen(true)}
+            >
               Close Financial Year
             </Button>
           </>

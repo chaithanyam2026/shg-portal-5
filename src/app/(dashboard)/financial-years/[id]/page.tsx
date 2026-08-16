@@ -7,7 +7,10 @@ import PageHeader from "@/components/layout/PageHeader";
 import type { FinancialYearStatus } from "@/features/financial-year/domain/financial-year-status";
 import { canReopenFinancialYear } from "@/features/financial-year/domain/financial-year-lifecycle";
 import { get } from "@/features/financial-year/services/get";
-import { canCurrentUserEditFinancialYear } from "@/features/financial-year/services/can-edit-fields";
+import {
+  canCurrentUserEditFinancialYear,
+  canCurrentUserManageFinancialYear,
+} from "@/features/financial-year/services/can-edit-fields";
 import FinancialYearTabs from "@/features/financial-year/ui/FinancialYearTabs";
 import { list as listMembers } from "@/features/member/services/list";
 import { buildIncomeExpenseReport } from "@/features/reports/services";
@@ -54,6 +57,7 @@ export default async function FinancialYearDetailsPage({ params }: PageProps) {
     const financialYear = await get(id);
     const session = await auth();
     const canEdit = await canCurrentUserEditFinancialYear(financialYear);
+    const canManage = await canCurrentUserManageFinancialYear(financialYear);
     const canReopen =
       isAdminRole(session?.user?.role) && canReopenFinancialYear(financialYear.status);
 
@@ -74,6 +78,7 @@ export default async function FinancialYearDetailsPage({ params }: PageProps) {
           members={members}
           report={report}
           canEdit={canEdit}
+          canManage={canManage}
           canReopen={canReopen}
         />
       </Stack>

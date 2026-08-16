@@ -18,6 +18,7 @@ type Props = {
   members: MemberLookup[];
   report: IncomeExpenseReportModel;
   canEdit: boolean;
+  canManage?: boolean;
   canReopen?: boolean;
 };
 
@@ -26,6 +27,7 @@ export default function FinancialYearTabs({
   members,
   report,
   canEdit,
+  canManage = false,
   canReopen = false,
 }: Props) {
   const [tab, setTab] = useState(0);
@@ -47,10 +49,9 @@ export default function FinancialYearTabs({
       </Tabs>
 
       <Box sx={{ mt: 3 }}>
-        {financialYear.status === "IN_PROGRESS" && !canEdit && (
+        {financialYear.status !== "APPROVED" && financialYear.status !== "CLOSED" && !canEdit && (
           <Alert severity="info" sx={{ mb: 2 }}>
-            Only the president, secretary, or treasurer of this financial year can edit these
-            fields.
+            Only the president, secretary, treasurer, admin, or super admin can edit these fields.
           </Alert>
         )}
 
@@ -69,7 +70,12 @@ export default function FinancialYearTabs({
         {tab === 4 && <IncomeExpenseReport report={report} />}
 
         {tab === 5 && (
-          <SummaryTab financialYear={financialYear} canEdit={canEdit} canReopen={canReopen} />
+          <SummaryTab
+            financialYear={financialYear}
+            canEdit={canEdit}
+            canManage={canManage}
+            canReopen={canReopen}
+          />
         )}
       </Box>
     </>

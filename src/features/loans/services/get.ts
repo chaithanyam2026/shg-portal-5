@@ -24,6 +24,7 @@ import {
 } from "../domain";
 import { getLoanPassbook } from "./get-passbook";
 import { getLoanMemberCloseBalances } from "./internal/get-loan-member-close-balances";
+import { assertCanViewLoan } from "./internal/loan-access";
 
 /**
  * Returns complete loan details.
@@ -43,6 +44,8 @@ export async function getLoan(loanId: LoanIdInput): Promise<LoanDetails> {
   if (!loan) {
     throw new Error("Loan not found.");
   }
+
+  await assertCanViewLoan(loan.memberId.toString());
 
   const [financialYear, member, passbook, memberCloseBalances] = await Promise.all([
     FinancialYear.findById(loan.financialYearId)

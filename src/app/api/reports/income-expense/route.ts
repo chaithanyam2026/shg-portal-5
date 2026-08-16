@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
 
+import { assertCanAccessFinancialStewardArea } from "@/features/financial-year/services";
 import { IncomeExpenseReportSchema } from "@/features/reports/validation";
 
 import { buildIncomeExpenseReport } from "@/features/reports/services";
+import { AppError } from "@/lib/errors";
 
 export async function GET(request: NextRequest) {
   try {
+    await assertCanAccessFinancialStewardArea();
     const { searchParams } = new URL(request.url);
 
     const input = IncomeExpenseReportSchema.parse({
@@ -26,6 +29,17 @@ export async function GET(request: NextRequest) {
         },
         {
           status: 400,
+        },
+      );
+    }
+
+    if (error instanceof AppError) {
+      return NextResponse.json(
+        {
+          message: error.message,
+        },
+        {
+          status: error.status,
         },
       );
     }

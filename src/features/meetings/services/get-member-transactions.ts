@@ -7,6 +7,7 @@ import Meeting from "@/models/Meeting";
 import { Types } from "mongoose";
 
 import type { MemberMeetingTransactions, MemberTransactionsSummary } from "../types";
+import { normalizeAttendanceStatus } from "../domain/attendance-status";
 import { loadFinancialYearMembers } from "./internal/load-financial-year-members";
 
 export async function getMemberTransactions(
@@ -102,7 +103,7 @@ export async function getMemberTransactions(
       memberId: member._id,
       memberCode: member.memberCode,
       memberName: member.name,
-      attendanceStatus: attendance?.status ?? null,
+      attendanceStatus: attendance ? normalizeAttendanceStatus(attendance.status) : null,
       attendanceRemarks: attendance?.remarks ?? "",
       contribution,
       loanRepayment,

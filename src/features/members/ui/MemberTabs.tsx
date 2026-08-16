@@ -17,7 +17,6 @@ import ContributionsTabLoader from "./tabs/ContributionsTabLoader";
 import GeneralTab from "./tabs/GeneralTab";
 import LoansTab from "./tabs/LoansTab";
 import MemberDeactivateButton from "./MemberDeactivateButton";
-import PassbookTab from "./tabs/PassbookTab";
 
 type Props = {
   financialYearOptions: FinancialYearOption[];
@@ -25,14 +24,20 @@ type Props = {
   initialFinancialYearId: string;
 
   member: MemberDetails;
+
+  canViewLoanDetails?: boolean;
+
+  canManageMembers?: boolean;
 };
 
-const FINANCIAL_YEAR_TABS = new Set([1, 2, 3, 4]);
+const FINANCIAL_YEAR_TABS = new Set([1, 2, 3]);
 
 export default function MemberTabs({
   member,
   financialYearOptions,
   initialFinancialYearId,
+  canViewLoanDetails = false,
+  canManageMembers = false,
 }: Props) {
   const [tab, setTab] = useState(0);
 
@@ -43,11 +48,15 @@ export default function MemberTabs({
   return (
     <Stack spacing={3}>
       <PageHeader title={member.name} subtitle={member.memberCode} backHref="/members">
-        <MemberDeactivateButton member={member} />
+        {canManageMembers && (
+          <>
+            <MemberDeactivateButton member={member} />
 
-        <Button component={Link} href="/members/new" variant="contained">
-          New Member
-        </Button>
+            <Button component={Link} href="/members/new" variant="contained">
+              New Member
+            </Button>
+          </>
+        )}
       </PageHeader>
 
       <Box>
@@ -62,8 +71,6 @@ export default function MemberTabs({
           <Tab label="Loans" />
 
           <Tab label="Passbook" />
-
-          <Tab label="Contributions" />
 
           <Tab label="Attendance Fine" />
         </Tabs>
@@ -87,15 +94,19 @@ export default function MemberTabs({
         <Box sx={{ mt: 3 }}>
           {tab === 0 && <GeneralTab member={member} />}
 
-          {tab === 1 && <LoansTab member={member} financialYearId={financialYearId} />}
+          {tab === 1 && (
+            <LoansTab
+              member={member}
+              financialYearId={financialYearId}
+              canViewLoanDetails={canViewLoanDetails}
+            />
+          )}
 
-          {tab === 2 && <PassbookTab member={member} financialYearId={financialYearId} />}
-
-          {tab === 3 && (
+          {tab === 2 && (
             <ContributionsTabLoader member={member} financialYearId={financialYearId} />
           )}
 
-          {tab === 4 && (
+          {tab === 3 && (
             <AttendanceFineTab member={member} financialYearId={financialYearId} />
           )}
         </Box>

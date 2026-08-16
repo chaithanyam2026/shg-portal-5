@@ -57,7 +57,7 @@ function getStatusLabel(status: "PRESENT" | "ABSENT" | "LEAVE") {
       return "Present";
 
     case "LEAVE":
-      return "Approved Leave";
+      return "Leave";
 
     case "ABSENT":
       return "Absent";
