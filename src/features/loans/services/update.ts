@@ -1,5 +1,7 @@
 import { FINANCIAL_YEAR_STATUS } from "@/features/financial-year/domain/financial-year-status";
+import { isFinancialYearOfficeBearer } from "@/features/financial-year/domain/office-bearers";
 import connectMongo from "@/lib/db/mongodb";
+import { getCurrentMemberId } from "@/lib/auth/current-member";
 import { compareCalendarDates, toCalendarDate } from "@/lib/utils/date";
 
 import FinancialYear from "@/models/FinancialYear";
@@ -47,16 +49,20 @@ export async function updateLoan(loanId: string, input: UpdateLoanInput): Promis
   }
 
   if (data.expectedMonthlyRepayment !== undefined) {
-    const financialYear = await FinancialYear.findById(loan.financialYearId).select("status").lean();
+    const financialYear = await FinancialYear.findById(loan.financialYearId)
+      .select("status executiveCommittee")
+      .lean();
+    const memberId = await getCurrentMemberId();
 
     if (
       !canUpdateExpectedMonthlyRepayment({
         loanStatus: loan.status,
         financialYearStatus: financialYear?.status ?? FINANCIAL_YEAR_STATUS.CLOSED,
+        isOfficeBearer: isFinancialYearOfficeBearer(financialYear?.executiveCommittee, memberId),
       })
     ) {
       throw new Error(
-        "Minimum monthly repayment can only be changed on an active loan in an in-progress financial year.",
+        "Minimum monthly repayment can only be changed by the president, secretary, or treasurer of an in-progress financial year.",
       );
     }
 

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { resetPassword } from "@/features/auth/services/reset-password";
+import { resetPassword } from "@/features/auth/services";
 import { AppError } from "@/lib/errors";
 
 type RouteContext = {

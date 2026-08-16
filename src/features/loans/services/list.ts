@@ -165,6 +165,13 @@ export async function listLoans(filters: ListLoansInput = {}): Promise<LoanSumma
 
         outstandingPrincipal: summary.outstandingPrincipal,
 
+        pendingInterest: summary.pendingInterest,
+
+        pendingLoanFine: summary.pendingLoanFine,
+
+        totalPending:
+          summary.outstandingPrincipal + summary.pendingInterest + summary.pendingLoanFine,
+
         totalPayable: summary.totalPayable,
       };
     }),

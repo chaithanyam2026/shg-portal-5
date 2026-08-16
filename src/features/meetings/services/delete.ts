@@ -1,8 +1,10 @@
+import { auth } from "@/auth";
 import connectMongo from "@/lib/db/mongodb";
+import { AppError } from "@/lib/errors";
 
 import Meeting from "@/models/Meeting";
 
-import { MEETING_STATUS } from "../domain/meeting-status";
+import { isDeletable } from "../domain/meeting-rules";
 
 export async function deleteMeeting(id: string): Promise<void> {
   await connectMongo();
@@ -13,8 +15,13 @@ export async function deleteMeeting(id: string): Promise<void> {
     throw new Error("Meeting not found.");
   }
 
-  if (meeting.status !== MEETING_STATUS.DRAFT) {
-    throw new Error("Only draft meetings can be deleted.");
+  const session = await auth();
+
+  if (!isDeletable(meeting.status, session?.user?.role)) {
+    throw new AppError(
+      "Only draft meetings can be deleted, unless you are an administrator deleting a closed meeting.",
+      403,
+    );
   }
 
   await meeting.deleteOne();

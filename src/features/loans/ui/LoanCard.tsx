@@ -8,6 +8,9 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 import { Button } from "@mui/material";
 
+import { formatCurrency } from "@/lib/utils/currency";
+import { formatDate } from "@/lib/utils/date";
+
 import type { LoanSummary } from "../types";
 
 type Props = {
@@ -47,22 +50,34 @@ export default function LoanCard({ loan }: Props) {
               </Typography>
 
               <Typography variant="body2">
-                <strong>Disbursed:</strong> ₹{loan.disbursedAmount.toLocaleString()}
+                <strong>Disbursed:</strong> {formatCurrency(loan.disbursedAmount)}
               </Typography>
 
               <Typography variant="body2">
                 <strong>Min. Monthly:</strong>{" "}
                 {loan.expectedMonthlyRepayment > 0
-                  ? `₹${loan.expectedMonthlyRepayment.toLocaleString()}`
+                  ? formatCurrency(loan.expectedMonthlyRepayment)
                   : "No minimum"}
               </Typography>
 
               <Typography variant="body2">
-                <strong>Outstanding:</strong> ₹{loan.outstandingPrincipal.toLocaleString()}
+                <strong>Outstanding principal:</strong> {formatCurrency(loan.outstandingPrincipal)}
               </Typography>
 
               <Typography variant="body2">
-                <strong>Date:</strong> {new Date(loan.disbursedDate).toLocaleDateString()}
+                <strong>Pending interest:</strong> {formatCurrency(loan.pendingInterest)}
+              </Typography>
+
+              <Typography variant="body2">
+                <strong>Pending loan fine:</strong> {formatCurrency(loan.pendingLoanFine)}
+              </Typography>
+
+              <Typography variant="body2">
+                <strong>Total pending:</strong> {formatCurrency(loan.totalPending)}
+              </Typography>
+
+              <Typography variant="body2">
+                <strong>Date:</strong> {formatDate(loan.disbursedDate)}
               </Typography>
             </Stack>
             <Stack

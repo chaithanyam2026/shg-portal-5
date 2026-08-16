@@ -10,7 +10,6 @@ import PageHeader from "@/components/layout/PageHeader";
 import { formatDate } from "@/lib/utils/date";
 
 import type { MeetingDetails } from "../types";
-import { isEditable } from "../domain/meeting-rules";
 
 import MeetingActionButton from "./MeetingActionButton";
 import { MeetingDataRefreshProvider, useMeetingDataRefresh } from "./MeetingDataRefresh";
@@ -69,7 +68,7 @@ function MeetingWorkspaceContent({ meeting, initialTab }: Props) {
     [tab],
   );
 
-  const readOnly = !isEditable(meeting.status, meeting.financialYearStatus);
+  const readOnly = !meeting.canEdit;
 
   return (
     <Stack spacing={3}>
@@ -101,8 +100,19 @@ function MeetingWorkspaceContent({ meeting, initialTab }: Props) {
             color="error"
             variant="outlined"
             confirm
-            disabled={meeting.status !== "DRAFT" || readOnly}
+            disabled={!meeting.canDelete}
           />
+
+          {meeting.canReopen && (
+            <MeetingActionButton
+              meetingId={meeting.id}
+              action="reopen"
+              label="Reopen Meeting"
+              color="warning"
+              variant="outlined"
+              confirm
+            />
+          )}
 
           <MeetingActionButton
             meetingId={meeting.id}

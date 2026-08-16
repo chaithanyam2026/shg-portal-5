@@ -6,7 +6,7 @@ import { createLoan } from "@/features/loans/services/create";
 import type { LoanDetails } from "@/features/loans/types";
 import { CreateMeetingLoanInput, CreateMeetingLoanSchema } from "@/features/loans/validation";
 
-import { MEETING_STATUS } from "../domain/meeting-status";
+import { assertCanUpdateMeeting } from "./internal/assert-can-update-meeting";
 
 export async function createMeetingLoan(
   meetingId: string,
@@ -22,9 +22,7 @@ export async function createMeetingLoan(
     throw new Error("Meeting not found.");
   }
 
-  if (meeting.status === MEETING_STATUS.CLOSED) {
-    throw new Error("Loans cannot be created after the meeting is closed.");
-  }
+  await assertCanUpdateMeeting(meeting);
 
   return createLoan({
     ...data,

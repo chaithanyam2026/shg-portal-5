@@ -6,7 +6,7 @@ import FinancialYear from "@/models/FinancialYear";
 
 import type { FinancialYearDocument } from "@/models/FinancialYear";
 import { UpdateFinancialYearInput, validateUpdateFinancialYear } from "../validation";
-import { assertFinancialYearEditable } from "./assert-editable";
+import { assertCanEditFinancialYearFields } from "./assert-can-edit-fields";
 import { mapFinancialYearDetails } from "./internal";
 import { populateFinancialYear } from "./internal/populate-financial-year";
 
@@ -253,7 +253,7 @@ export async function update(id: string, input: unknown) {
     };
   }
 
-  await assertFinancialYearEditable(id);
+  await assertCanEditFinancialYearFields(financialYear);
 
   await financialYear.save();
 

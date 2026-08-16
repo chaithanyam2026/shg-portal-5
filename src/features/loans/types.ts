@@ -60,6 +60,12 @@ export type LoanLookup = Pick<
 export type LoanSummary = LoanBase & {
   outstandingPrincipal: number;
 
+  pendingInterest: number;
+
+  pendingLoanFine: number;
+
+  totalPending: number;
+
   totalPayable: number;
 };
 
@@ -106,6 +112,8 @@ export type LoanDetails = LoanBase & {
   isClosable: boolean;
 
   canBeClosed: boolean;
+
+  canReopen: boolean;
 
   canUpdateExpectedMonthlyRepayment: boolean;
 

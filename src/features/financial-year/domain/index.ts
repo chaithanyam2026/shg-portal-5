@@ -15,3 +15,5 @@ export * from "./opening-balance-summary";
 export * from "./member-opening-balance-schema";
 export * from "./opening-balance-result";
 export * from "./opening-balance-schema";
+export * from "./office-bearers";
+export * from "./financial-year-status";

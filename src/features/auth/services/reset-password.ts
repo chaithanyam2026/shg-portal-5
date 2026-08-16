@@ -1,10 +1,15 @@
+import { Types } from "mongoose";
+import { ZodError } from "zod";
+
+import { requireRole } from "@/lib/auth/guards";
+import { hashPassword } from "@/lib/auth/password";
+import { ADMIN_ROLES, canResetUserPassword } from "@/lib/auth/roles";
 import connectMongo from "@/lib/db/mongodb";
+import { AppError } from "@/lib/errors";
 
 import User from "@/models/User";
 
-import { hashPassword } from "@/lib/auth/password";
-
-import { ResetPasswordInput, ResetPasswordSchema } from "../validation";
+import { ResetPasswordSchema } from "../validation";
 
 export type ResetPasswordResult = {
   success: boolean;
@@ -13,24 +18,42 @@ export type ResetPasswordResult = {
 
 export async function resetPassword(
   userId: string,
-  input: ResetPasswordInput,
+  input: unknown,
 ): Promise<ResetPasswordResult> {
   await connectMongo();
 
-  const data = ResetPasswordSchema.parse(input);
+  const session = await requireRole(ADMIN_ROLES);
+
+  if (!Types.ObjectId.isValid(userId)) {
+    throw new AppError("Invalid user id.", 400);
+  }
+
+  let data;
+
+  try {
+    data = ResetPasswordSchema.parse(input);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw new AppError(error.issues[0]?.message ?? "Invalid password.", 400);
+    }
+
+    throw error;
+  }
 
   const user = await User.findById(userId);
 
   if (!user) {
-    throw new Error("User not found.");
+    throw new AppError("User not found.", 404);
   }
 
-  // Hash the new password.
-  const passwordHash = await hashPassword(data.password);
+  if (!canResetUserPassword(session.user.role, user.role)) {
+    throw new AppError(
+      "Only administrators can reset passwords for members, secretaries, and treasurers.",
+      403,
+    );
+  }
 
-  // Persist the updated password.
-  user.passwordHash = passwordHash;
-
+  user.passwordHash = await hashPassword(data.password);
   await user.save();
 
   return {

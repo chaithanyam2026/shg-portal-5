@@ -10,7 +10,7 @@ import { useMeetingDataRefresh } from "./MeetingDataRefresh";
 
 type Props = {
   meetingId: string;
-  action: "start" | "close" | "delete";
+  action: "start" | "close" | "delete" | "reopen";
   label: string;
   color?: ButtonProps["color"];
   variant?: ButtonProps["variant"];

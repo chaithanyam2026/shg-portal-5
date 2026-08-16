@@ -75,6 +75,12 @@ export async function createMeeting(
 
     financialYearStatus: financialYear.status,
 
+    canEdit: true,
+
+    canReopen: false,
+
+    canDelete: true,
+
     meetingDate: meeting.meetingDate.toISOString(),
 
     place: meeting.place,

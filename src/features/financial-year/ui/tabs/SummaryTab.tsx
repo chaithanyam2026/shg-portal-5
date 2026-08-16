@@ -21,9 +21,11 @@ import ValidationItem from "./ValidationItem";
 
 type Props = {
   financialYear: FinancialYearDetails;
+  canEdit?: boolean;
+  canReopen?: boolean;
 };
 
-export default function SummaryTab({ financialYear }: Props) {
+export default function SummaryTab({ financialYear, canEdit = true, canReopen = false }: Props) {
   const router = useRouter();
 
   const validation = validateFinancialYear(financialYear);
@@ -98,6 +100,33 @@ export default function SummaryTab({ financialYear }: Props) {
         setError(err.message);
       } else {
         setError("Unable to activate financial year.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function reopen() {
+    try {
+      setLoading(true);
+      setError("");
+
+      const response = await fetch(`/api/financial-years/${financialYear._id}/reopen`, {
+        method: "POST",
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message ?? "Unable to reopen financial year.");
+      }
+
+      router.refresh();
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Unable to reopen financial year.");
       }
     } finally {
       setLoading(false);
@@ -218,7 +247,12 @@ export default function SummaryTab({ financialYear }: Props) {
               the financial year.
             </Alert>
 
-            <Button variant="contained" color="warning" onClick={() => setValidateDialogOpen(true)}>
+            <Button
+              variant="contained"
+              color="warning"
+              disabled={!canEdit}
+              onClick={() => setValidateDialogOpen(true)}
+            >
               Validate Financial Year
             </Button>
           </>
@@ -249,9 +283,34 @@ export default function SummaryTab({ financialYear }: Props) {
         )}
 
         {financialYear.status === "CLOSED" && (
-          <Alert severity="info">
-            Financial year has been closed. Historical records are read-only.
-          </Alert>
+          <>
+            <Alert severity="info">
+              Financial year has been closed. Historical records are read-only until an
+              administrator reopens it.
+            </Alert>
+
+            {canReopen && (
+              <>
+                <Alert severity="warning">
+                  Reopening restores this year so members can update it. If another year is already
+                  in progress, this year returns to approved. Reopen individual meetings as well,
+                  then close the year again when corrections are finished.
+                </Alert>
+
+                <Button
+                  variant="contained"
+                  color="warning"
+                  onClick={reopen}
+                  disabled={loading}
+                  startIcon={
+                    loading ? <CircularProgress size={18} color="inherit" /> : undefined
+                  }
+                >
+                  Reopen Financial Year
+                </Button>
+              </>
+            )}
+          </>
         )}
 
         {error && <Alert severity="error">{error}</Alert>}

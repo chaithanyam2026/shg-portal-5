@@ -20,6 +20,10 @@ export type MeetingDetails = {
   financialYearId: string;
   financialYearStatus: FinancialYearStatus;
 
+  canEdit: boolean;
+  canReopen: boolean;
+  canDelete: boolean;
+
   meetingDate: string;
 
   place: string;

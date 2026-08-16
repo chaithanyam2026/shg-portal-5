@@ -16,13 +16,14 @@ import MemberRow, { type MemberRowData } from "./MemberRow";
 type Props = {
   financialYear: FinancialYearDetails;
   members: MemberLookup[];
+  canEdit?: boolean;
 };
 
 function formatDateInputValue(value: Date | string | null) {
   return value ? new Date(value).toISOString().slice(0, 10) : "";
 }
 
-export default function MembersForm({ financialYear, members }: Props) {
+export default function MembersForm({ financialYear, members, canEdit = true }: Props) {
   const router = useRouter();
 
   const [saving, setSaving] = useState(false);
@@ -199,7 +200,12 @@ export default function MembersForm({ financialYear, members }: Props) {
 
             {success && <Alert severity="success">Members updated successfully.</Alert>}
 
-            <Button variant="outlined" startIcon={<AddIcon />} onClick={addMember}>
+            <Button
+              variant="outlined"
+              startIcon={<AddIcon />}
+              onClick={addMember}
+              disabled={!canEdit || saving}
+            >
               Add Member
             </Button>
 
@@ -224,7 +230,7 @@ export default function MembersForm({ financialYear, members }: Props) {
                 <TableBody>
                   {rows.map((row, index) => (
                     <MemberRow
-                      disabled={saving}
+                      disabled={!canEdit || saving}
                       key={index}
                       row={row}
                       members={members}
@@ -240,10 +246,14 @@ export default function MembersForm({ financialYear, members }: Props) {
         </CardContent>
       </Card>
       <Stack direction="row" sx={{ justifyContent: "flex-end" }}>
-        <Button onClick={resetMembers} disabled={!dirty || saving}>
+        <Button onClick={resetMembers} disabled={!canEdit || !dirty || saving}>
           Reset
         </Button>
-        <Button variant="contained" onClick={saveMembers} disabled={saving || rows.length === 0}>
+        <Button
+          variant="contained"
+          onClick={saveMembers}
+          disabled={!canEdit || saving || rows.length === 0}
+        >
           {saving ? "Saving..." : "Save Members"}
         </Button>
       </Stack>

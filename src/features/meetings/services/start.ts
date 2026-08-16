@@ -48,6 +48,12 @@ export async function startMeeting(id: string, userId?: string | null): Promise<
 
     financialYearStatus: await loadFinancialYearStatus(meeting.financialYearId),
 
+    canEdit: true,
+
+    canReopen: false,
+
+    canDelete: false,
+
     meetingDate: meeting.meetingDate.toISOString(),
 
     place: meeting.place,
