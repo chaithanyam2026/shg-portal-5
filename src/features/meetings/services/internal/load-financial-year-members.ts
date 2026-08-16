@@ -1,6 +1,8 @@
+import type { Types } from "mongoose";
+
 import FinancialYear from "@/models/FinancialYear";
 import type { FinancialYearDocument } from "@/models/FinancialYear";
-import type { Types } from "mongoose";
+import "@/models/Member";
 
 type PopulatedFinancialYearMember = {
   memberId: {
