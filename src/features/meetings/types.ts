@@ -111,6 +111,9 @@ export type PaymentRecord = {
 
   /** Absent fine still owed before this meeting's entered amount. Negative = overpaid. */
   absentFineDue: number;
+
+  /** Current outstanding loan principal (last passbook outstanding value). */
+  outstandingPrincipal: number;
 };
 
 export type PaymentSummary = {

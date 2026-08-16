@@ -59,6 +59,18 @@ export default function SummaryTab({ loan, summary }: Props) {
             <Card>
               <CardContent>
                 <Typography variant="caption" color="text.secondary">
+                  Refund Amount
+                </Typography>
+
+                <Typography variant="h6">₹{summary.refundAmount.toLocaleString()}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid size={{ xs: 12, sm: 4 }}>
+            <Card>
+              <CardContent>
+                <Typography variant="caption" color="text.secondary">
                   Paid Interest
                 </Typography>
 

@@ -4,6 +4,7 @@ import Meeting from "@/models/Meeting";
 
 import type { PaymentRecord, PaymentSummary } from "../types";
 import { loadFinancialYearMembers } from "./internal/load-financial-year-members";
+import { loadOutstandingPrincipals } from "./internal/load-outstanding-principals";
 import { loadPaymentDues } from "./internal/load-payment-dues";
 
 function createSummary(
@@ -60,9 +61,10 @@ export async function getPayments(meetingId: string): Promise<PaymentSummary> {
   const financialYearId = meeting.financialYearId.toString();
   const payments = meeting.payments ?? [];
 
-  const [members, dues] = await Promise.all([
+  const [members, dues, outstandingPrincipals] = await Promise.all([
     loadFinancialYearMembers(financialYearId),
     loadPaymentDues(financialYearId, meetingId, meeting.meetingDate),
+    loadOutstandingPrincipals(financialYearId),
   ]);
 
   if (payments.length === 0) {
@@ -91,6 +93,8 @@ export async function getPayments(meetingId: string): Promise<PaymentSummary> {
         contributionDue: memberDues.contributionDue,
 
         absentFineDue: memberDues.absentFineDue,
+
+        outstandingPrincipal: outstandingPrincipals.get(member._id.toString()) ?? 0,
       };
     });
 
@@ -128,6 +132,8 @@ export async function getPayments(meetingId: string): Promise<PaymentSummary> {
       contributionDue: memberDues.contributionDue,
 
       absentFineDue: memberDues.absentFineDue,
+
+      outstandingPrincipal: outstandingPrincipals.get(payment.memberId.toString()) ?? 0,
     };
   });
 

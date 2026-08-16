@@ -19,6 +19,8 @@ export function calculateLoanSummary(
 
   const paidLoanFine = entries.reduce((total, entry) => total + entry.paidLoanFine, 0);
 
+  const refundAmount = entries.reduce((total, entry) => total + entry.remainingAmount, 0);
+
   const latestEntry = entries.at(-1);
 
   const outstandingPrincipal = latestEntry?.outstandingPrincipal ?? passbook.disbursedAmount;
@@ -45,6 +47,8 @@ export function calculateLoanSummary(
     paidLoanFine,
 
     pendingLoanFine,
+
+    refundAmount,
 
     totalPayable,
 

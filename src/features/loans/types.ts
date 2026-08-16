@@ -145,6 +145,8 @@ export type LoanSummaryResult = {
 
   pendingLoanFine: number;
 
+  refundAmount: number;
+
   totalPayable: number;
 
   effectiveInterestPercentage: number;
