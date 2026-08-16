@@ -19,6 +19,9 @@ import { ObjectIdSchema } from "../validation";
 import { buildLoanLedger } from "./internal/loan-ledger";
 import { loadRepaymentsForMembers } from "./internal/meeting-loader";
 import { CACHE_TAGS, remember } from "@/lib/cache";
+import { getCurrentMemberId } from "@/lib/auth/current-member";
+
+import { canCurrentUserViewAllLoans } from "./internal/loan-access";
 
 type ListLoansInput = {
   financialYearId?: string;
@@ -179,8 +182,25 @@ async function queryLoans(filters: ListLoansInput = {}): Promise<LoanSummary[]> 
   );
 }
 
-export const listLoans = remember(queryLoans, {
+const queryLoansCached = remember(queryLoans, {
   key: "loans-list",
   tags: [CACHE_TAGS.loans],
   revalidate: 30,
 });
+
+export async function listLoans(filters: ListLoansInput = {}): Promise<LoanSummary[]> {
+  if (await canCurrentUserViewAllLoans()) {
+    return queryLoansCached(filters);
+  }
+
+  const memberId = await getCurrentMemberId();
+
+  if (!memberId) {
+    return [];
+  }
+
+  return queryLoansCached({
+    ...filters,
+    memberId,
+  });
+}

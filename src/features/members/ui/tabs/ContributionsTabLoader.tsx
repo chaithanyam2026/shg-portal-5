@@ -49,12 +49,12 @@ export default function ContributionsTabLoader({ member, financialYearId }: Prop
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.message ?? "Unable to load contribution payments.");
+          throw new Error(data.message ?? "Unable to load passbook.");
         }
 
         setContributions(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Unable to load contribution payments.");
+        setError(err instanceof Error ? err.message : "Unable to load passbook.");
         setContributions(null);
       } finally {
         setLoading(false);
@@ -65,7 +65,7 @@ export default function ContributionsTabLoader({ member, financialYearId }: Prop
   }, [member._id, financialYearId]);
 
   if (!financialYearId) {
-    return <Alert severity="info">Select a financial year to view contribution payments.</Alert>;
+    return <Alert severity="info">Select a financial year to view the passbook.</Alert>;
   }
 
   if (loading) {
@@ -86,7 +86,7 @@ export default function ContributionsTabLoader({ member, financialYearId }: Prop
   }
 
   if (!contributions) {
-    return <Alert severity="info">Contribution payment information is not available.</Alert>;
+    return <Alert severity="info">Passbook information is not available.</Alert>;
   }
 
   return <ContributionsTab contributions={contributions} />;

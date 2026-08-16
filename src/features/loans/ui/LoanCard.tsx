@@ -15,17 +15,16 @@ import type { LoanSummary } from "../types";
 
 type Props = {
   loan: LoanSummary;
+  canViewDetails?: boolean;
 };
 
-export default function LoanCard({ loan }: Props) {
+export default function LoanCard({ loan, canViewDetails = false }: Props) {
   const statusColor = {
     ACTIVE: "success",
     CLOSED: "default",
   }[loan.status] as "success" | "default";
 
-  return (
-    <Card>
-      <CardActionArea component={Link} href={`/loans/${loan._id}`}>
+  const content = (
         <CardContent>
           <Stack spacing={2}>
             <Stack
@@ -80,19 +79,31 @@ export default function LoanCard({ loan }: Props) {
                 <strong>Date:</strong> {formatDate(loan.disbursedDate)}
               </Typography>
             </Stack>
-            <Stack
-              direction="row"
-              sx={{
-                alignItems: "center",
-                justifyContent: "flex-end",
-              }}
-            >
-              <Button size="small" endIcon={<ArrowForwardIosIcon />}>
-                View Details
-              </Button>
-            </Stack>
+            {canViewDetails && (
+              <Stack
+                direction="row"
+                sx={{
+                  alignItems: "center",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <Button size="small" endIcon={<ArrowForwardIosIcon />}>
+                  View Details
+                </Button>
+              </Stack>
+            )}
           </Stack>
         </CardContent>
+  );
+
+  if (!canViewDetails) {
+    return <Card>{content}</Card>;
+  }
+
+  return (
+    <Card>
+      <CardActionArea component={Link} href={`/loans/${loan._id}`}>
+        {content}
       </CardActionArea>
     </Card>
   );

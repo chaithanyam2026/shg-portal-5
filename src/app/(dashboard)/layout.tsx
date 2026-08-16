@@ -5,16 +5,28 @@ import { auth } from "@/auth";
 import AppLayout from "@/components/layout/AppLayout";
 import PageLayout from "@/components/layout/PageLayout";
 import { getAccountProfile } from "@/features/members/services/get-account-profile";
+import { isCurrentUserFinancialYearOfficeBearer } from "@/features/financial-year/services";
+import { getDashboardNavLinks } from "@/lib/navigation";
 import type { UserRole } from "@/lib/auth/roles";
 
 type Props = PropsWithChildren;
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardLayout({ children }: Props) {
   const session = await auth();
+  const userRole = (session?.user.role as UserRole | undefined) ?? "MEMBER";
 
   let displayName = session?.user.username ?? "";
+  let isOfficeBearer = false;
 
   if (session?.user.id) {
+    try {
+      isOfficeBearer = await isCurrentUserFinancialYearOfficeBearer();
+    } catch {
+      isOfficeBearer = false;
+    }
+
     try {
       const profile = await getAccountProfile(session.user.id);
       displayName = profile.name;
@@ -23,11 +35,10 @@ export default async function DashboardLayout({ children }: Props) {
     }
   }
 
+  const navItems = getDashboardNavLinks(userRole, isOfficeBearer);
+
   return (
-    <AppLayout
-      displayName={displayName}
-      userRole={(session?.user.role as UserRole | undefined) ?? "MEMBER"}
-    >
+    <AppLayout displayName={displayName} navItems={navItems}>
       <PageLayout>{children}</PageLayout>
     </AppLayout>
   );

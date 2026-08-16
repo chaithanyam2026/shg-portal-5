@@ -51,6 +51,7 @@ export async function getMeetingLoans(meetingId: string): Promise<MeetingLoansSu
     })
       .populate<{
         memberId: {
+          _id: Types.ObjectId;
           memberCode: string;
           name: string;
         };
@@ -77,6 +78,7 @@ export async function getMeetingLoans(meetingId: string): Promise<MeetingLoansSu
     loans: loans.map((loan) => ({
       _id: loan._id.toString(),
       loanNumber: loan.loanNumber,
+      memberId: loan.memberId._id.toString(),
       memberCode: loan.memberId.memberCode,
       memberName: loan.memberId.name,
       loanType: loan.loanType,

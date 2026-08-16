@@ -10,9 +10,11 @@ import { populateFinancialYear } from "./internal/populate-financial-year";
 import { validateOpeningBalanceSource } from "./internal/validate-opening-balance-source";
 import { validateCreateFinancialYear } from "./validate-create";
 import { mapFinancialYearDetails, mapMemberOpeningBalancesForPersistence } from "./internal";
+import { assertCanAccessFinancialStewardArea } from "./assert-can-access-steward-area";
 
 export async function createFinancialYear(input: CreateFinancialYearInput) {
   await connectMongo();
+  await assertCanAccessFinancialStewardArea();
 
   const data = CreateFinancialYearSchema.parse(input);
 

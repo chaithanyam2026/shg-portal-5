@@ -28,7 +28,7 @@ export function getCommitteeMemberId(value: unknown): string | null {
 
 /**
  * President, secretary, and treasurer of a financial year
- * may edit in-progress year fields.
+ * may manage that year together with admin and steward roles.
  */
 export function isFinancialYearOfficeBearer(
   committee:
@@ -54,6 +54,21 @@ export function isFinancialYearOfficeBearer(
   return officeBearerIds.includes(memberId);
 }
 
+export function canManageFinancialYear(input: {
+  committee:
+    | {
+        president?: unknown;
+        secretary?: unknown;
+        treasurer?: unknown;
+      }
+    | null
+    | undefined;
+  memberId: string | null | undefined;
+  isSteward?: boolean;
+}): boolean {
+  return Boolean(input.isSteward) || isFinancialYearOfficeBearer(input.committee, input.memberId);
+}
+
 export function canEditFinancialYearFields(input: {
   status: FinancialYearStatus;
   committee:
@@ -65,6 +80,7 @@ export function canEditFinancialYearFields(input: {
     | null
     | undefined;
   memberId: string | null | undefined;
+  isSteward?: boolean;
 }): boolean {
   if (
     input.status === FINANCIAL_YEAR_STATUS.APPROVED ||
@@ -73,9 +89,5 @@ export function canEditFinancialYearFields(input: {
     return false;
   }
 
-  if (input.status !== FINANCIAL_YEAR_STATUS.IN_PROGRESS) {
-    return true;
-  }
-
-  return isFinancialYearOfficeBearer(input.committee, input.memberId);
+  return canManageFinancialYear(input);
 }

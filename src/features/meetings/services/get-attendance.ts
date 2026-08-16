@@ -5,7 +5,7 @@ import Meeting from "@/models/Meeting";
 import type { AttendanceSummary } from "../types";
 import { loadFinancialYearMembers } from "./internal/load-financial-year-members";
 import type { MeetingDocument } from "@/models/Meeting";
-import type { AttendanceStatus } from "../domain/attendance-status";
+import { normalizeAttendanceStatus } from "../domain/attendance-status";
 
 
 export async function getAttendance(meetingId: string): Promise<AttendanceSummary> {
@@ -64,7 +64,7 @@ export async function getAttendance(meetingId: string): Promise<AttendanceSummar
 
         memberName: member?.name ?? "",
 
-        status: record.status as AttendanceStatus,
+        status: normalizeAttendanceStatus(record.status),
 
         remarks: record.remarks,
       };

@@ -3,6 +3,7 @@ import connectMongo from "@/lib/db/mongodb";
 import Meeting from "@/models/Meeting";
 
 import { BANK_TRANSACTION_TYPE } from "../domain/bank-transaction";
+import { normalizeAttendanceStatus } from "../domain/attendance-status";
 
 import { VALIDATION_CODE, VALIDATION_SEVERITY } from "../domain/summary";
 import type { MeetingDashboardSummary, SummaryValidation } from "../types";
@@ -29,11 +30,11 @@ export async function getSummary(meetingId: string): Promise<MeetingDashboardSum
   const attendanceSummary = {
     totalMembers: attendance.length,
 
-    present: attendance.filter((x) => x.status === "PRESENT").length,
+    present: attendance.filter((x) => normalizeAttendanceStatus(x.status) === "PRESENT").length,
 
-    absent: attendance.filter((x) => x.status === "ABSENT").length,
+    absent: attendance.filter((x) => normalizeAttendanceStatus(x.status) === "ABSENT").length,
 
-    excused: attendance.filter((x) => x.status === "EXCUSED").length,
+    leave: attendance.filter((x) => normalizeAttendanceStatus(x.status) === "LEAVE").length,
   };
 
   const paymentSummary = {

@@ -18,9 +18,14 @@ import AssessmentOutlinedIcon from "@mui/icons-material/AssessmentOutlined";
 
 import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 
-import type { UserRole } from "@/lib/auth/roles";
+import { FINANCIAL_STEWARD_ROLES, type UserRole } from "@/lib/auth/roles";
 
 import type { NavigationItem } from "./navigation-types";
+
+export type DashboardNavLink = {
+  title: string;
+  href: string;
+};
 
 export const dashboardNavigation: NavigationItem[] = [
   {
@@ -51,6 +56,8 @@ export const dashboardNavigation: NavigationItem[] = [
     title: "Financial Years",
     href: "/financial-years",
     icon: CalendarMonthOutlinedIcon,
+    roles: FINANCIAL_STEWARD_ROLES,
+    allowOfficeBearers: true,
   },
 
   {
@@ -63,7 +70,8 @@ export const dashboardNavigation: NavigationItem[] = [
     title: "Reports",
     href: "/reports",
     icon: BarChartOutlinedIcon,
-    // roles: ["ADMIN", "TREASURER"],
+    roles: FINANCIAL_STEWARD_ROLES,
+    allowOfficeBearers: true,
   },
 
   {
@@ -89,6 +97,31 @@ export const dashboardNavigation: NavigationItem[] = [
 export function filterNavigationByRole(
   items: NavigationItem[],
   role: UserRole | string,
+  options?: {
+    isOfficeBearer?: boolean;
+  },
 ): NavigationItem[] {
-  return items.filter((item) => !item.roles || item.roles.includes(role as UserRole));
+  return items.filter((item) => {
+    if (!item.roles) {
+      return true;
+    }
+
+    if (item.roles.includes(role as UserRole)) {
+      return true;
+    }
+
+    return Boolean(item.allowOfficeBearers && options?.isOfficeBearer);
+  });
+}
+
+export function getDashboardNavLinks(
+  role: UserRole | string,
+  isOfficeBearer = false,
+): DashboardNavLink[] {
+  return filterNavigationByRole(dashboardNavigation, role, { isOfficeBearer }).map(
+    ({ title, href }) => ({
+      title,
+      href,
+    }),
+  );
 }

@@ -219,7 +219,7 @@ export type AttendanceStatistics = {
 
   absent: number;
 
-  excused: number;
+  leave: number;
 };
 
 export type MemberPaymentSummary = {
@@ -291,6 +291,7 @@ export type MeetingDashboardSummary = {
 export type MeetingLoanRecord = {
   _id: string;
   loanNumber: string;
+  memberId: string;
   memberCode: string;
   memberName: string;
   loanType: string;

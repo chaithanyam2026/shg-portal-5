@@ -10,17 +10,17 @@ import { AppBar, Box, Button, Stack, Toolbar, Typography } from "@mui/material";
 
 import { logoutAction } from "@/app/logout/actions";
 import AppLogo from "@/components/layout/AppLogo";
-import type { UserRole } from "@/lib/auth/roles";
+import type { DashboardNavLink } from "@/lib/navigation";
 
 import MobileNavigation from "./MobileNavigation";
 import Sidebar, { DRAWER_WIDTH } from "./Sidebar";
 
 type Props = PropsWithChildren<{
   displayName?: string;
-  userRole?: UserRole;
+  navItems: DashboardNavLink[];
 }>;
 
-export default function AppLayout({ children, displayName, userRole = "MEMBER" }: Props) {
+export default function AppLayout({ children, displayName, navItems }: Props) {
   const [isPending, startTransition] = useTransition();
 
   function handleLogout() {
@@ -84,12 +84,12 @@ export default function AppLayout({ children, displayName, userRole = "MEMBER" }
               {isPending ? "Signing Out..." : "Sign Out"}
             </Button>
 
-            <MobileNavigation userRole={userRole} />
+            <MobileNavigation navItems={navItems} />
           </Stack>
         </Toolbar>
       </AppBar>
 
-      <Sidebar userRole={userRole} />
+      <Sidebar navItems={navItems} />
 
       <Box
         component="main"

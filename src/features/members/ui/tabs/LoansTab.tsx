@@ -45,9 +45,15 @@ type Props = {
   financialYearId: string;
 
   member: MemberDetails;
+
+  canViewLoanDetails?: boolean;
 };
 
-export default function LoansTab({ member, financialYearId }: Props) {
+export default function LoansTab({
+  member,
+  financialYearId,
+  canViewLoanDetails = false,
+}: Props) {
   const [loans, setLoans] = useState<LoanSummary[]>([]);
 
   const [loading, setLoading] = useState(true);
@@ -138,7 +144,9 @@ export default function LoansTab({ member, financialYearId }: Props) {
 
                 <TableCell>Status</TableCell>
 
-                <TableCell align="center">Action</TableCell>
+                {canViewLoanDetails && (
+                  <TableCell align="center">Action</TableCell>
+                )}
               </TableRow>
             </TableHead>
 
@@ -163,16 +171,18 @@ export default function LoansTab({ member, financialYearId }: Props) {
                     />
                   </TableCell>
 
-                  <TableCell align="center">
-                    <Button
-                      component={Link}
-                      href={`/loans/${loan._id}`}
-                      size="small"
-                      variant="outlined"
-                    >
-                      View
-                    </Button>
-                  </TableCell>
+                  {canViewLoanDetails && (
+                    <TableCell align="center">
+                      <Button
+                        component={Link}
+                        href={`/loans/${loan._id}`}
+                        size="small"
+                        variant="outlined"
+                      >
+                        View
+                      </Button>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))}
             </TableBody>

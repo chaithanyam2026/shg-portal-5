@@ -45,7 +45,10 @@ export default function AttendanceStatusChip({ cell }: Props) {
             {cell.meetingDate.toLocaleDateString("en-IN")}
           </Typography>
 
-          <Typography variant="body2">Status : {cell.status}</Typography>
+          <Typography variant="body2">
+            Status :{" "}
+            {cell.status === "PRESENT" ? "Present" : cell.status === "LEAVE" ? "Leave" : "Absent"}
+          </Typography>
 
           {cell.status === "ABSENT" && (
             <>

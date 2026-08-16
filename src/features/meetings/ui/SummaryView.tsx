@@ -59,8 +59,8 @@ export default function SummaryView({ meetingId, summary, readOnly = false }: Pr
                   value: summary.attendance.absent,
                 },
                 {
-                  label: "Excused",
-                  value: summary.attendance.excused,
+                  label: "Leave",
+                  value: summary.attendance.leave,
                 },
               ]}
             />

@@ -9,15 +9,14 @@ import GroupsOutlinedIcon from "@mui/icons-material/GroupsOutlined";
 import { Card, CardActionArea, CardContent, Grid, Stack, Typography } from "@mui/material";
 
 import PageHeader from "@/components/layout/PageHeader";
-import { auth } from "@/auth";
-import type { UserRole } from "@/lib/auth/roles";
+import { canCurrentUserAccessFinancialStewardArea } from "@/features/financial-year/services";
 
 type DashboardModule = {
   title: string;
   description: string;
   href: string;
   icon: typeof EventOutlinedIcon;
-  roles?: readonly UserRole[];
+  stewardOnly?: boolean;
 };
 
 const modules: DashboardModule[] = [
@@ -44,6 +43,7 @@ const modules: DashboardModule[] = [
     description: "Manage financial years and opening balances.",
     href: "/financial-years",
     icon: CalendarMonthOutlinedIcon,
+    stewardOnly: true,
   },
   {
     title: "Members",
@@ -56,22 +56,13 @@ const modules: DashboardModule[] = [
     description: "Attendance, loan, income, and member financial reports.",
     href: "/reports",
     icon: BarChartOutlinedIcon,
-    roles: ["ADMIN", "SUPER_ADMIN", "TREASURER"],
+    stewardOnly: true,
   },
 ];
 
-function canAccessModule(role: UserRole, module: DashboardModule): boolean {
-  if (!module.roles) {
-    return true;
-  }
-
-  return module.roles.includes(role);
-}
-
 export default async function DashboardPage() {
-  const session = await auth();
-  const role = (session?.user.role as UserRole | undefined) ?? "MEMBER";
-  const visibleModules = modules.filter((module) => canAccessModule(role, module));
+  const canAccessStewardArea = await canCurrentUserAccessFinancialStewardArea();
+  const visibleModules = modules.filter((module) => !module.stewardOnly || canAccessStewardArea);
 
   return (
     <Stack spacing={3}>

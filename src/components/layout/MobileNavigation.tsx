@@ -6,13 +6,15 @@ import MenuIcon from "@mui/icons-material/Menu";
 
 import { Box, IconButton } from "@mui/material";
 
+import type { DashboardNavLink } from "@/lib/navigation";
+
 import Sidebar from "./Sidebar";
 
 type Props = {
-  userRole?: string;
+  navItems: DashboardNavLink[];
 };
 
-export default function MobileNavigation({ userRole }: Props) {
+export default function MobileNavigation({ navItems }: Props) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -23,7 +25,7 @@ export default function MobileNavigation({ userRole }: Props) {
         </IconButton>
       </Box>
 
-      <Sidebar mobile mobileOpen={open} onClose={() => setOpen(false)} userRole={userRole} />
+      <Sidebar mobile mobileOpen={open} onClose={() => setOpen(false)} navItems={navItems} />
     </>
   );
 }

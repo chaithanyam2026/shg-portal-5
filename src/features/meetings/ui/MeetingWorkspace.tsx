@@ -32,17 +32,34 @@ const MEMBERS_TAB_INDEX = MEETING_TAB_SLUGS.indexOf("members");
 type Props = {
   meeting: MeetingDetails;
   initialTab?: string | null;
+  canViewAllLoans?: boolean;
+  currentMemberId?: string | null;
 };
 
-export default function MeetingWorkspace({ meeting, initialTab }: Props) {
+export default function MeetingWorkspace({
+  meeting,
+  initialTab,
+  canViewAllLoans = false,
+  currentMemberId = null,
+}: Props) {
   return (
     <MeetingDataRefreshProvider>
-      <MeetingWorkspaceContent meeting={meeting} initialTab={initialTab} />
+      <MeetingWorkspaceContent
+        meeting={meeting}
+        initialTab={initialTab}
+        canViewAllLoans={canViewAllLoans}
+        currentMemberId={currentMemberId}
+      />
     </MeetingDataRefreshProvider>
   );
 }
 
-function MeetingWorkspaceContent({ meeting, initialTab }: Props) {
+function MeetingWorkspaceContent({
+  meeting,
+  initialTab,
+  canViewAllLoans = false,
+  currentMemberId = null,
+}: Props) {
   const { refreshKey, refreshMeetingData } = useMeetingDataRefresh();
   const initialTabIndex = resolveMeetingTabIndex(initialTab);
   const [tab, setTab] = useState(initialTabIndex);
@@ -144,7 +161,12 @@ function MeetingWorkspaceContent({ meeting, initialTab }: Props) {
 
       {visitedTabs.has(3) && (
         <Box sx={panelSx(3)}>
-          <LoansTabPanel meetingId={meeting.id} readOnly={readOnly} />
+          <LoansTabPanel
+            meetingId={meeting.id}
+            readOnly={readOnly}
+            canViewAllLoans={canViewAllLoans}
+            currentMemberId={currentMemberId}
+          />
         </Box>
       )}
 

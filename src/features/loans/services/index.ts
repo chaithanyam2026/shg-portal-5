@@ -4,6 +4,7 @@ export * from "./update";
 export * from "./create";
 export * from "./get";
 export * from "./list";
+export { canCurrentUserViewAllLoans } from "./internal/loan-access";
 export * from "./summary";
 
 export * from "./create-opening-loans";

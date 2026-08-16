@@ -22,6 +22,7 @@ import {
 import { formatDate } from "@/lib/utils/date";
 
 import type { CreateLoanInput, CreateMeetingLoanInput } from "@/features/loans/validation";
+import { canViewLoanDetails } from "@/features/loans/domain";
 import LoanForm from "@/features/loans/ui/LoanForm";
 
 import type { MeetingLoansSummary } from "../types";
@@ -31,9 +32,16 @@ import { useMeetingDataRefresh } from "./MeetingDataRefresh";
 type Props = {
   initialSummary: MeetingLoansSummary;
   readOnly?: boolean;
+  canViewAllLoans?: boolean;
+  currentMemberId?: string | null;
 };
 
-export default function MeetingLoanForm({ initialSummary, readOnly = false }: Props) {
+export default function MeetingLoanForm({
+  initialSummary,
+  readOnly = false,
+  canViewAllLoans = false,
+  currentMemberId = null,
+}: Props) {
   const router = useRouter();
   const { refreshMeetingData } = useMeetingDataRefresh();
 
@@ -117,7 +125,15 @@ export default function MeetingLoanForm({ initialSummary, readOnly = false }: Pr
                   {initialSummary.loans.map((loan) => (
                     <TableRow key={loan._id} hover>
                       <TableCell>
-                        <Link href={`/loans/${loan._id}`}>{loan.loanNumber}</Link>
+                        {canViewLoanDetails({
+                          loanMemberId: loan.memberId,
+                          currentMemberId,
+                          canViewAllLoans,
+                        }) ? (
+                          <Link href={`/loans/${loan._id}`}>{loan.loanNumber}</Link>
+                        ) : (
+                          loan.loanNumber
+                        )}
                       </TableCell>
 
                       <TableCell>
