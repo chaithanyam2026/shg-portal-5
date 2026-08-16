@@ -31,6 +31,9 @@ export async function updateIncome(meetingId: string, input: UpdateIncomeInput) 
 
   await meeting.save();
 
+  const { revalidateMeetings } = await import("@/lib/cache");
+  revalidateMeetings();
+
   return {
     message: "Income updated successfully.",
   };

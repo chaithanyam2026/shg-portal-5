@@ -259,5 +259,8 @@ export async function update(id: string, input: unknown) {
 
   const populatedFinancialYear = await populateFinancialYear(financialYear);
 
+  const { revalidateFinancialYearWrites } = await import("@/lib/cache");
+  revalidateFinancialYearWrites();
+
   return mapFinancialYearDetails(populatedFinancialYear);
 }

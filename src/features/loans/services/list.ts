@@ -18,6 +18,7 @@ import { ObjectIdSchema } from "../validation";
 
 import { buildLoanLedger } from "./internal/loan-ledger";
 import { loadRepaymentsForMembers } from "./internal/meeting-loader";
+import { CACHE_TAGS, remember } from "@/lib/cache";
 
 type ListLoansInput = {
   financialYearId?: string;
@@ -31,7 +32,7 @@ type ListLoansInput = {
   search?: string;
 };
 
-export async function listLoans(filters: ListLoansInput = {}): Promise<LoanSummary[]> {
+async function queryLoans(filters: ListLoansInput = {}): Promise<LoanSummary[]> {
   await connectMongo();
 
   const query: Record<string, unknown> = {};
@@ -177,3 +178,9 @@ export async function listLoans(filters: ListLoansInput = {}): Promise<LoanSumma
     }),
   );
 }
+
+export const listLoans = remember(queryLoans, {
+  key: "loans-list",
+  tags: [CACHE_TAGS.loans],
+  revalidate: 30,
+});

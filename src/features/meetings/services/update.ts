@@ -109,6 +109,9 @@ export async function updateMeeting(id: string, input: UpdateMeetingInput, userI
 
   await meeting.save();
 
+  const { revalidateMeetingWrites } = await import("@/lib/cache");
+  revalidateMeetingWrites();
+
   return {
     id: meeting._id.toString(),
 

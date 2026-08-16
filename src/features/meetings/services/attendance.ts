@@ -31,6 +31,9 @@ export async function updateAttendance(meetingId: string, input: UpdateAttendanc
 
   await meeting.save();
 
+  const { revalidateMeetings } = await import("@/lib/cache");
+  revalidateMeetings();
+
   return {
     message: "Attendance updated successfully.",
   };

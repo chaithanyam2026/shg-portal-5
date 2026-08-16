@@ -52,6 +52,9 @@ export async function markFinancialYearValidated(id: string) {
 
   const populatedFinancialYear = await populateFinancialYear(financialYear);
 
+  const { revalidateFinancialYearWrites } = await import("@/lib/cache");
+  revalidateFinancialYearWrites();
+
   return {
     financialYear: mapFinancialYearDetails(populatedFinancialYear),
     validation,

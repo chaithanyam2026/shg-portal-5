@@ -58,6 +58,9 @@ export async function createMember(input: CreateMemberInput): Promise<MemberDeta
   user.memberId = member._id;
   await user.save();
 
+  const { revalidateMembers } = await import("@/lib/cache");
+  revalidateMembers();
+
   return {
     _id: member._id.toString(),
     memberCode: member.memberCode,

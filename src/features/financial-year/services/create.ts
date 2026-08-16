@@ -58,5 +58,8 @@ export async function createFinancialYear(input: CreateFinancialYearInput) {
 
   const populatedFinancialYear = await populateFinancialYear(financialYear);
 
+  const { revalidateFinancialYearWrites } = await import("@/lib/cache");
+  revalidateFinancialYearWrites();
+
   return mapFinancialYearDetails(populatedFinancialYear);
 }

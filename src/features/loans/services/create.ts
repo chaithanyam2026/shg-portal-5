@@ -92,5 +92,8 @@ export async function createLoan(input: CreateLoanInput): Promise<LoanDetails> {
     remarks: data.remarks,
   });
 
+  const { revalidateLoans } = await import("@/lib/cache");
+  revalidateLoans();
+
   return getLoan(loan._id.toString());
 }

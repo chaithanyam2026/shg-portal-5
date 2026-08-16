@@ -122,6 +122,9 @@ export async function closeFinancialYear(
 
   await financialYear.save();
 
+  const { revalidateFinancialYearWrites } = await import("@/lib/cache");
+  revalidateFinancialYearWrites();
+
   const responseSummary = {
     ...summary,
     savingsBalance: members.reduce((total, member) => total + member.savingsBalance, 0),

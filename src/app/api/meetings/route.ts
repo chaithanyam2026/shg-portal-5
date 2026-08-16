@@ -28,7 +28,11 @@ export async function GET(request: NextRequest) {
       sort: sort === "-meetingDate" ? "-meetingDate" : "meetingDate",
     });
 
-    return NextResponse.json(result);
+    return NextResponse.json(result, {
+      headers: {
+        "Cache-Control": "private, max-age=15, stale-while-revalidate=30",
+      },
+    });
   } catch (error) {
     return NextResponse.json(
       {

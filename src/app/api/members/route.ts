@@ -7,7 +7,11 @@ export async function GET() {
   try {
     const members = await listMembers();
 
-    return NextResponse.json(members);
+    return NextResponse.json(members, {
+      headers: {
+        "Cache-Control": "private, max-age=30, stale-while-revalidate=60",
+      },
+    });
   } catch (error) {
     console.error(error);
 

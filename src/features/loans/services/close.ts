@@ -75,5 +75,8 @@ export async function closeLoan(loanId: string, input: unknown): Promise<LoanDet
 
   await loan.save();
 
+  const { revalidateLoans } = await import("@/lib/cache");
+  revalidateLoans();
+
   return getLoan(id);
 }

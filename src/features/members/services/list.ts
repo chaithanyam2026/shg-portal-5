@@ -1,14 +1,11 @@
 import connectMongo from "@/lib/db/mongodb";
+import { CACHE_TAGS, remember } from "@/lib/cache";
 
 import Member from "@/models/Member";
 
 import type { MemberSummary } from "../types";
 
-/**
- * Returns all members ordered by
- * member code.
- */
-export async function listMembers(): Promise<MemberSummary[]> {
+async function queryMembers(): Promise<MemberSummary[]> {
   await connectMongo();
 
   const members = await Member.find()
@@ -37,3 +34,13 @@ export async function listMembers(): Promise<MemberSummary[]> {
     remarks: member.remarks ?? "",
   }));
 }
+
+/**
+ * Returns all members ordered by
+ * member code.
+ */
+export const listMembers = remember(queryMembers, {
+  key: "members-list",
+  tags: [CACHE_TAGS.members],
+  revalidate: 60,
+});

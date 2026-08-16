@@ -1,8 +1,9 @@
 import type { AccountProfile } from "../types";
 
 import { resolveMemberForUser } from "./internal/resolve-member-for-user";
+import { CACHE_TAGS, remember } from "@/lib/cache";
 
-export async function getAccountProfile(userId: string): Promise<AccountProfile> {
+async function queryAccountProfile(userId: string): Promise<AccountProfile> {
   const { member } = await resolveMemberForUser(userId);
 
   return {
@@ -13,3 +14,9 @@ export async function getAccountProfile(userId: string): Promise<AccountProfile>
     address: member.address ?? "",
   };
 }
+
+export const getAccountProfile = remember(queryAccountProfile, {
+  key: "account-profile",
+  tags: [CACHE_TAGS.members],
+  revalidate: 60,
+});
