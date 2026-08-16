@@ -3,7 +3,7 @@ import connectMongo from "@/lib/db/mongodb";
 import Meeting from "@/models/Meeting";
 import { Types } from "mongoose";
 
-import { MEETING_STATUS } from "../domain/meeting-status";
+import { assertCanUpdateMeeting } from "./internal/assert-can-update-meeting";
 
 import { UpdatePaymentsInput, UpdatePaymentsSchema } from "../validation";
 
@@ -18,9 +18,7 @@ export async function updatePayments(meetingId: string, input: UpdatePaymentsInp
     throw new Error("Meeting not found.");
   }
 
-  if (meeting.status === MEETING_STATUS.CLOSED) {
-    throw new Error("Payments cannot be updated after the meeting is closed.");
-  }
+  await assertCanUpdateMeeting(meeting);
 
   meeting.payments = data.payments.map((payment) => ({
     memberId: new Types.ObjectId(payment.memberId),

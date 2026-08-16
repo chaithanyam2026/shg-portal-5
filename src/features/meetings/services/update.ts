@@ -9,8 +9,8 @@ import FinancialYear from "@/models/FinancialYear";
 import Meeting from "@/models/Meeting";
 import { Types } from "mongoose";
 
-import { MEETING_STATUS } from "../domain/meeting-status";
 import { UpdateMeetingInput, UpdateMeetingSchema } from "../validation";
+import { assertCanUpdateMeeting } from "./internal/assert-can-update-meeting";
 
 export async function updateMeeting(id: string, input: UpdateMeetingInput, userId?: string | null) {
   await connectMongo();
@@ -23,9 +23,7 @@ export async function updateMeeting(id: string, input: UpdateMeetingInput, userI
     throw new Error("Meeting not found.");
   }
 
-  if (meeting.status === MEETING_STATUS.CLOSED) {
-    throw new Error("Closed meetings cannot be edited.");
-  }
+  await assertCanUpdateMeeting(meeting);
 
   const financialYear = await FinancialYear.findById(meeting.financialYearId);
 

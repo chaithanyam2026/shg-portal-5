@@ -26,6 +26,7 @@ import type { FinancialYearDetails } from "../../types";
 
 type Props = {
   financialYear: FinancialYearDetails;
+  canEdit?: boolean;
 };
 
 type UpdateFinancialYearFormValues = Omit<
@@ -42,6 +43,7 @@ function formatDateInputValue(value: Date | string) {
 
 export default function GeneralForm({
   financialYear,
+  canEdit = true,
 }: Props) {
   const router = useRouter();
 
@@ -131,6 +133,7 @@ export default function GeneralForm({
                   {...field}
                   label="Name"
                   fullWidth
+                  disabled={!canEdit}
                   error={!!errors.name}
                   helperText={
                     errors.name?.message
@@ -147,6 +150,7 @@ export default function GeneralForm({
                   label="Start Date"
                   type="date"
                   fullWidth
+                  disabled={!canEdit}
                   slotProps={{
                     inputLabel: {
                       shrink: true,
@@ -177,6 +181,7 @@ export default function GeneralForm({
                   label="End Date"
                   type="date"
                   fullWidth
+                  disabled={!canEdit}
                   slotProps={{
                     inputLabel: {
                       shrink: true,
@@ -207,6 +212,7 @@ export default function GeneralForm({
                   multiline
                   minRows={4}
                   fullWidth
+                  disabled={!canEdit}
                   error={
                     !!errors.remarks
                   }
@@ -222,6 +228,7 @@ export default function GeneralForm({
               type="submit"
               variant="contained"
               disabled={
+                !canEdit ||
                 !isDirty ||
                 isSubmitting
               }

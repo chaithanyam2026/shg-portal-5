@@ -3,6 +3,7 @@ export * from "./close";
 export * from "./create";
 export * from "./get";
 export * from "./list";
+export * from "./reset-password";
 export * from "./update";
 
 /* export * from "./generate-opening-balances";

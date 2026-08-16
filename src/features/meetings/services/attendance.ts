@@ -4,7 +4,7 @@ import { Types } from "mongoose";
 
 import Meeting from "@/models/Meeting";
 
-import { MEETING_STATUS } from "../domain/meeting-status";
+import { assertCanUpdateMeeting } from "./internal/assert-can-update-meeting";
 
 import { UpdateAttendanceInput, UpdateAttendanceSchema } from "../validation";
 
@@ -19,9 +19,7 @@ export async function updateAttendance(meetingId: string, input: UpdateAttendanc
     throw new Error("Meeting not found.");
   }
 
-  if (meeting.status === MEETING_STATUS.CLOSED) {
-    throw new Error("Attendance cannot be updated after the meeting is closed.");
-  }
+  await assertCanUpdateMeeting(meeting);
 
   meeting.attendance = data.attendance.map((record) => ({
     memberId: new Types.ObjectId(record.memberId),

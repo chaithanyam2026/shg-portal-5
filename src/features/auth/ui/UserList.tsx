@@ -25,7 +25,7 @@ import {
 
 import type { UserListItem } from "@/features/auth/services/list";
 import PageHeader from "@/components/layout/PageHeader";
-import { ROLE_LABELS, USER_ROLE_VALUES, type UserRole } from "@/lib/auth/roles";
+import { isAdminRole, ROLE_LABELS, USER_ROLE_VALUES, type UserRole } from "@/lib/auth/roles";
 
 import CreateUserDialog from "./CreateUserDialog";
 import ResetPasswordDialog from "./ResetPasswordDialog";
@@ -138,6 +138,11 @@ export default function UserList({ users, currentUserId }: Props) {
         </Button>
       </PageHeader>
 
+      <Alert severity="info">
+        Administrators can reset passwords for members, secretaries, and treasurers. Admin accounts
+        must change their own password.
+      </Alert>
+
       <TableContainer component={Card}>
         <Table>
           <TableHead>
@@ -181,10 +186,12 @@ export default function UserList({ users, currentUserId }: Props) {
                 </TableCell>
 
                 <TableCell align="right">
-                  <Stack direction="row" spacing={1} sx={{ justifyContent: "flex-end" }}>
-                    <Button size="small" variant="outlined" onClick={() => setResetUser(user)}>
-                      Reset Password
-                    </Button>
+                  <Stack direction="row" spacing={1} sx={{ justifyContent: "flex-end", flexWrap: "wrap" }}>
+                    {!isAdminRole(user.role) && (
+                      <Button size="small" variant="outlined" onClick={() => setResetUser(user)}>
+                        Reset Password
+                      </Button>
+                    )}
 
                     <Button
                       size="small"

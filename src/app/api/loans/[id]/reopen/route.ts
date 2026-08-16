@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { deleteMeeting } from "@/features/meetings/services/delete";
+import { reopenLoan } from "@/features/loans/services";
 import { AppError } from "@/lib/errors";
 
 type RouteContext = {
@@ -9,15 +9,12 @@ type RouteContext = {
   }>;
 };
 
-export async function DELETE(_request: NextRequest, { params }: RouteContext) {
+export async function POST(_request: NextRequest, { params }: RouteContext) {
   try {
     const { id } = await params;
+    const loan = await reopenLoan(id);
 
-    await deleteMeeting(id);
-
-    return new NextResponse(null, {
-      status: 204,
-    });
+    return NextResponse.json(loan);
   } catch (error) {
     if (error instanceof AppError) {
       return NextResponse.json(
@@ -30,14 +27,12 @@ export async function DELETE(_request: NextRequest, { params }: RouteContext) {
       );
     }
 
-    const message = error instanceof Error ? error.message : "Unable to delete meeting.";
-
     return NextResponse.json(
       {
-        message,
+        message: error instanceof Error ? error.message : "Unable to reopen loan.",
       },
       {
-        status: message === "Meeting not found." ? 404 : 400,
+        status: 400,
       },
     );
   }

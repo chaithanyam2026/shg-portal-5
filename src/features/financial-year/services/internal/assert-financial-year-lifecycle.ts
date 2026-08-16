@@ -6,7 +6,10 @@ import {
   FINANCIAL_YEAR_STATUS,
   type FinancialYearStatus,
 } from "../../domain/financial-year-status";
-import { isReviewFinancialYearStatus } from "../../domain/financial-year-lifecycle";
+import {
+  getFinancialYearCreateBlockReason,
+  isReviewFinancialYearStatus,
+} from "../../domain/financial-year-lifecycle";
 
 type FinancialYearLifecycleRow = {
   _id: { toString(): string };
@@ -91,29 +94,15 @@ export async function assertFinancialYearCreateAllowed(
 ): Promise<void> {
   const financialYears = await listOtherFinancialYears();
 
-  const draftYear = findFirstByStatus(financialYears, FINANCIAL_YEAR_STATUS.DRAFT);
+  const blockReason = getFinancialYearCreateBlockReason(financialYears);
 
-  if (draftYear) {
-    throw new Error(
-      `A draft financial year "${draftYear.name}" already exists. Start or remove it before creating another year.`,
-    );
-  }
-
-  const inProgressYear = findFirstByStatus(financialYears, FINANCIAL_YEAR_STATUS.IN_PROGRESS);
-
-  if (inProgressYear) {
-    throw new Error(
-      `Financial year "${inProgressYear.name}" is still in progress. Validate and approve it before creating the next year.`,
-    );
+  if (blockReason) {
+    throw new Error(blockReason);
   }
 
   const reviewYears = financialYears.filter((financialYear) =>
     isReviewFinancialYearStatus(financialYear.status),
   );
-
-  if (reviewYears.length > 1) {
-    throw new Error("Only one financial year can be validated or approved at a time.");
-  }
 
   if (reviewYears.length === 1) {
     const reviewYear = reviewYears[0];
@@ -123,18 +112,5 @@ export async function assertFinancialYearCreateAllowed(
         `Financial year "${reviewYear.name}" is ${reviewYear.status.toLowerCase()}. Use it as the source year or close it before creating another year.`,
       );
     }
-  }
-
-  const invalidYear = financialYears.find(
-    (financialYear) =>
-      financialYear.status !== FINANCIAL_YEAR_STATUS.CLOSED &&
-      !isReviewFinancialYearStatus(financialYear.status) &&
-      financialYear._id.toString() !== sourceFinancialYearId,
-  );
-
-  if (invalidYear) {
-    throw new Error(
-      `Financial year "${invalidYear.name}" must be closed before creating a new year.`,
-    );
   }
 }

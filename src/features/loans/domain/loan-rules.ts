@@ -55,9 +55,11 @@ export function canSanctionLoan(loanType: LoanType, activeLoanCount: number): bo
 export function canUpdateExpectedMonthlyRepayment(input: {
   loanStatus: LoanStatus;
   financialYearStatus: FinancialYearStatus;
+  isOfficeBearer: boolean;
 }): boolean {
   return (
     input.loanStatus === ACTIVE_LOAN_STATUS &&
-    input.financialYearStatus === FINANCIAL_YEAR_STATUS.IN_PROGRESS
+    input.financialYearStatus === FINANCIAL_YEAR_STATUS.IN_PROGRESS &&
+    input.isOfficeBearer
   );
 }

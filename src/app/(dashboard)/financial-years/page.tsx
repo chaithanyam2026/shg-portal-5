@@ -1,12 +1,11 @@
-import Link from "next/link";
+import { Alert, Stack } from "@mui/material";
 
-import { Alert, Button, Stack } from "@mui/material";
-
-import { listFinancialYears } from "@/features/financial-year/services";
+import { getFinancialYearCreateEligibility, listFinancialYears } from "@/features/financial-year/services";
 import connectMongo from "@/lib/db/mongodb";
 
 import PageHeader from "@/components/layout/PageHeader";
 import FinancialYearList from "@/features/financial-year/ui/FinancialYearList";
+import NewFinancialYearButton from "@/features/financial-year/ui/NewFinancialYearButton";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +13,10 @@ export default async function FinancialYearsPage() {
   try {
     await connectMongo();
 
-    const financialYears = await listFinancialYears();
+    const [financialYears, createEligibility] = await Promise.all([
+      listFinancialYears(),
+      getFinancialYearCreateEligibility(),
+    ]);
 
     return (
       <Stack spacing={3}>
@@ -23,9 +25,10 @@ export default async function FinancialYearsPage() {
           showBack={false}
           subtitle="Manage financial years for your SHG."
         >
-          <Link href="/financial-years/new" style={{ textDecoration: "none" }}>
-            <Button variant="contained">New</Button>
-          </Link>
+          <NewFinancialYearButton
+            allowed={createEligibility.allowed}
+            reason={createEligibility.reason}
+          />
         </PageHeader>
 
         <FinancialYearList financialYears={financialYears} />

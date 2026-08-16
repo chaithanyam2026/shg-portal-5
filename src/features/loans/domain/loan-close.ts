@@ -1,6 +1,6 @@
 import type { FinancialYearStatus } from "@/features/financial-year/domain/financial-year-status";
 
-import { ACTIVE_LOAN_STATUS, type LoanStatus } from "./loan-status";
+import { ACTIVE_LOAN_STATUS, CLOSED_LOAN_STATUS, type LoanStatus } from "./loan-status";
 
 type LoanCloseEligibilityInput = {
   loanStatus: LoanStatus;
@@ -26,6 +26,18 @@ export function canCloseLoan({
 
 export function formatLoanClosingRemark(comment: string): string {
   return `[Closed] ${comment.trim()}`;
+}
+
+export function stripLoanClosingRemarks(remarks: string): string {
+  return remarks
+    .split("\n")
+    .filter((line) => !line.trim().startsWith("[Closed]"))
+    .join("\n")
+    .trim();
+}
+
+export function canReopenLoan(status: LoanStatus) {
+  return status === CLOSED_LOAN_STATUS;
 }
 
 export type LoanCloseBalanceInput = {

@@ -23,6 +23,7 @@ import type { FinancialYearDetails, MemberLookup } from "../../types";
 type Props = {
   financialYear: FinancialYearDetails;
   members: MemberLookup[];
+  canEdit?: boolean;
 };
 
 const ROLES = [
@@ -56,7 +57,7 @@ type CommitteeState = {
   treasurer: string;
 };
 
-export default function CommitteeForm({ financialYear, members }: Props) {
+export default function CommitteeForm({ financialYear, members, canEdit = true }: Props) {
   const router = useRouter();
 
   const [error, setError] = useState("");
@@ -175,6 +176,7 @@ export default function CommitteeForm({ financialYear, members }: Props) {
                 <Select
                   value={committee[role.key]}
                   label={role.label}
+                  disabled={!canEdit || saving}
                   onChange={(event) => handleChange(role.key, event.target.value)}
                 >
                   <MenuItem value="">None</MenuItem>
@@ -196,7 +198,7 @@ export default function CommitteeForm({ financialYear, members }: Props) {
           <Button
             variant="contained"
             onClick={save}
-            disabled={saving}
+            disabled={!canEdit || saving}
             startIcon={saving ? <CircularProgress size={18} color="inherit" /> : undefined}
           >
             Save Committee

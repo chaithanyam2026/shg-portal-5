@@ -4,6 +4,10 @@ import FinancialYear from "@/models/FinancialYear";
 import Loan from "@/models/Loan";
 import Member from "@/models/Member";
 
+import { isFinancialYearOfficeBearer } from "@/features/financial-year/domain/office-bearers";
+import { auth } from "@/auth";
+import { getCurrentMemberId } from "@/lib/auth/current-member";
+import { isAdminRole } from "@/lib/auth/roles";
 import { toIsoString } from "@/lib/utils/date";
 
 import type { LoanDetails } from "../types";
@@ -15,6 +19,7 @@ import {
   calculateLoanCloseTotal,
   calculateLoanSummary,
   canCloseLoan,
+  canReopenLoan,
   canUpdateExpectedMonthlyRepayment,
 } from "../domain";
 import { getLoanPassbook } from "./get-passbook";
@@ -40,7 +45,7 @@ export async function getLoan(loanId: LoanIdInput): Promise<LoanDetails> {
   }
 
   const [financialYear, member, passbook, memberCloseBalances] = await Promise.all([
-    FinancialYear.findById(loan.financialYearId).select("name status").lean(),
+    FinancialYear.findById(loan.financialYearId).select("name status executiveCommittee").lean(),
 
     Member.findById(loan.memberId)
       .select({
@@ -60,6 +65,8 @@ export async function getLoan(loanId: LoanIdInput): Promise<LoanDetails> {
 
   const summary = calculateLoanSummary(passbook);
   const fineWaiver = buildFineWaiverSnapshot(passbook);
+
+  const [actorMemberId, session] = await Promise.all([getCurrentMemberId(), auth()]);
 
   return {
     _id: loan._id.toString(),
@@ -127,9 +134,12 @@ export async function getLoan(loanId: LoanIdInput): Promise<LoanDetails> {
       isClosable: summary.isClosable,
     }),
 
+    canReopen: canReopenLoan(loan.status) && isAdminRole(session?.user?.role),
+
     canUpdateExpectedMonthlyRepayment: canUpdateExpectedMonthlyRepayment({
       loanStatus: loan.status,
       financialYearStatus: financialYear.status,
+      isOfficeBearer: isFinancialYearOfficeBearer(financialYear.executiveCommittee, actorMemberId),
     }),
 
     pendingAbsentFine: memberCloseBalances.pendingAbsentFine,

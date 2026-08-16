@@ -28,11 +28,27 @@ function formatDateTime(value: string | null) {
 export default function MeetingGeneralPanel({ meeting }: Props) {
   return (
     <>
-      {meeting.status === "CLOSED" && (
+      {meeting.status === "CLOSED" && !meeting.canEdit && (
         <Alert severity="info">This meeting is closed and cannot be edited.</Alert>
       )}
 
-      {meeting.status !== "CLOSED" && meeting.financialYearStatus === "CLOSED" && (
+      {meeting.status === "CLOSED" && meeting.canReopen && (
+        <Alert severity="warning">
+          This meeting is closed. Reopen it so members can edit it, or update it yourself as an
+          administrator.
+          {meeting.financialYearStatus === "CLOSED"
+            ? " If the financial year is also closed, reopen that year first so members are not blocked."
+            : ""}
+        </Alert>
+      )}
+
+      {meeting.status === "CLOSED" && meeting.canEdit && !meeting.canReopen && (
+        <Alert severity="warning">
+          This meeting is closed. You can still update it because you are an administrator.
+        </Alert>
+      )}
+
+      {meeting.status !== "CLOSED" && meeting.financialYearStatus === "CLOSED" && !meeting.canEdit && (
         <Alert severity="info">This financial year is closed and cannot be edited.</Alert>
       )}
 

@@ -41,7 +41,7 @@ export default function MeetingLoanForm({ initialSummary, readOnly = false }: Pr
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const isClosed = readOnly || initialSummary.status === "CLOSED";
+  const isClosed = readOnly;
   const meetingDate = initialSummary.meetingDate.split("T")[0];
 
   async function handleSubmit(values: CreateLoanInput) {

@@ -1,7 +1,8 @@
-import { Stack, Typography } from "@mui/material";
+import { Alert, Stack, Typography } from "@mui/material";
 
 import PageHeader from "@/components/layout/PageHeader";
 
+import { getFinancialYearCreateEligibility } from "@/features/financial-year/services/get-create-eligibility";
 import { listOpeningBalanceSourceFinancialYears } from "@/features/financial-year/services/list-opening-balance-sources";
 
 import CreateFinancialYearWizard from "@/features/financial-year/ui/CreateFinancialYearWizard";
@@ -12,8 +13,11 @@ export const metadata = {
 };
 
 export default async function NewFinancialYearPage() {
-  const allFinancialYears = await listFinancialYears();
-  const closedFinancialYears = await listOpeningBalanceSourceFinancialYears();
+  const [allFinancialYears, closedFinancialYears, createEligibility] = await Promise.all([
+    listFinancialYears(),
+    listOpeningBalanceSourceFinancialYears(),
+    getFinancialYearCreateEligibility(),
+  ]);
 
   const isFirstFinancialYear = allFinancialYears.length === 0;
 
@@ -21,15 +25,21 @@ export default async function NewFinancialYearPage() {
     <Stack spacing={3}>
       <PageHeader title="Create Next Financial Year" backHref="/financial-years" />
 
-      <Typography variant="body2" color="text.secondary">
-        Create the next financial year by selecting a closed, validated, or approved financial year.
-        Opening balances and member balances will be carried forward automatically.
-      </Typography>
+      {!createEligibility.allowed ? (
+        <Alert severity="warning">{createEligibility.reason}</Alert>
+      ) : (
+        <>
+          <Typography variant="body2" color="text.secondary">
+            Create the next financial year by selecting a closed, validated, or approved financial
+            year. Opening balances and member balances will be carried forward automatically.
+          </Typography>
 
-      <CreateFinancialYearWizard
-        financialYears={closedFinancialYears}
-        isFirstFinancialYear={isFirstFinancialYear}
-      />
+          <CreateFinancialYearWizard
+            financialYears={closedFinancialYears}
+            isFirstFinancialYear={isFirstFinancialYear}
+          />
+        </>
+      )}
     </Stack>
   );
 }

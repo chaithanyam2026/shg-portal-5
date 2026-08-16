@@ -4,8 +4,9 @@ import type { FinancialYearDetails } from "../../types";
 
 type Props = {
   financialYear: FinancialYearDetails;
+  canEdit?: boolean;
 };
 
-export default function OpeningAccountsTab({ financialYear }: Props) {
-  return <OpeningAccountsForm financialYear={financialYear} />;
+export default function OpeningAccountsTab({ financialYear, canEdit = true }: Props) {
+  return <OpeningAccountsForm financialYear={financialYear} canEdit={canEdit} />;
 }

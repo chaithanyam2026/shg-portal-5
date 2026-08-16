@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import type { LoanSummaryResult } from "../types";
 
 import { Box, Button, Tab, Tabs } from "@mui/material";
@@ -21,8 +22,38 @@ type Props = {
 };
 
 export default function LoanTabs({ loan, summary, passbook }: Props) {
+  const router = useRouter();
   const [tab, setTab] = useState(0);
   const [closeDialogOpen, setCloseDialogOpen] = useState(false);
+  const [reopening, setReopening] = useState(false);
+
+  async function reopenLoan() {
+    const ok = window.confirm("Reopen this loan so members can update it?");
+
+    if (!ok) {
+      return;
+    }
+
+    try {
+      setReopening(true);
+
+      const response = await fetch(`/api/loans/${loan._id}/reopen`, {
+        method: "POST",
+      });
+
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(result.message ?? "Unable to reopen loan.");
+      }
+
+      router.refresh();
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Unable to reopen loan.");
+    } finally {
+      setReopening(false);
+    }
+  }
 
   return (
     <Box>
@@ -34,6 +65,12 @@ export default function LoanTabs({ loan, summary, passbook }: Props) {
         {loan.canBeClosed && (
           <Button variant="contained" color="warning" onClick={() => setCloseDialogOpen(true)}>
             Close Loan
+          </Button>
+        )}
+
+        {loan.canReopen && (
+          <Button variant="outlined" color="warning" onClick={reopenLoan} disabled={reopening}>
+            {reopening ? "Reopening..." : "Reopen Loan"}
           </Button>
         )}
       </PageHeader>
@@ -61,7 +98,10 @@ export default function LoanTabs({ loan, summary, passbook }: Props) {
       <CloseLoanDialog
         loan={closeDialogOpen ? loan : null}
         onClose={() => setCloseDialogOpen(false)}
-        onSuccess={() => setCloseDialogOpen(false)}
+        onSuccess={() => {
+          setCloseDialogOpen(false);
+          router.refresh();
+        }}
       />
     </Box>
   );

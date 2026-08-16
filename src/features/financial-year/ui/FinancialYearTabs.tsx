@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { Box, Tab, Tabs } from "@mui/material";
+import { Alert, Box, Tab, Tabs } from "@mui/material";
 
 import type { IncomeExpenseReport as IncomeExpenseReportModel } from "@/features/reports/types";
 import { IncomeExpenseReport } from "@/features/reports/ui";
@@ -17,9 +17,17 @@ type Props = {
   financialYear: FinancialYearDetails;
   members: MemberLookup[];
   report: IncomeExpenseReportModel;
+  canEdit: boolean;
+  canReopen?: boolean;
 };
 
-export default function FinancialYearTabs({ financialYear, members, report }: Props) {
+export default function FinancialYearTabs({
+  financialYear,
+  members,
+  report,
+  canEdit,
+  canReopen = false,
+}: Props) {
   const [tab, setTab] = useState(0);
 
   return (
@@ -39,17 +47,30 @@ export default function FinancialYearTabs({ financialYear, members, report }: Pr
       </Tabs>
 
       <Box sx={{ mt: 3 }}>
-        {tab === 0 && <GeneralTab financialYear={financialYear} />}
+        {financialYear.status === "IN_PROGRESS" && !canEdit && (
+          <Alert severity="info" sx={{ mb: 2 }}>
+            Only the president, secretary, or treasurer of this financial year can edit these
+            fields.
+          </Alert>
+        )}
 
-        {tab === 1 && <MembersTab financialYear={financialYear} members={members} />}
+        {tab === 0 && <GeneralTab financialYear={financialYear} canEdit={canEdit} />}
 
-        {tab === 2 && <CommitteeTab financialYear={financialYear} members={members} />}
+        {tab === 1 && (
+          <MembersTab financialYear={financialYear} members={members} canEdit={canEdit} />
+        )}
 
-        {tab === 3 && <OpeningAccountsTab financialYear={financialYear} />}
+        {tab === 2 && (
+          <CommitteeTab financialYear={financialYear} members={members} canEdit={canEdit} />
+        )}
+
+        {tab === 3 && <OpeningAccountsTab financialYear={financialYear} canEdit={canEdit} />}
 
         {tab === 4 && <IncomeExpenseReport report={report} />}
 
-        {tab === 5 && <SummaryTab financialYear={financialYear} />}
+        {tab === 5 && (
+          <SummaryTab financialYear={financialYear} canEdit={canEdit} canReopen={canReopen} />
+        )}
       </Box>
     </>
   );

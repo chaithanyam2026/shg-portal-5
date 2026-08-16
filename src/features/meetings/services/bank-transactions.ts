@@ -2,7 +2,7 @@ import connectMongo from "@/lib/db/mongodb";
 
 import Meeting from "@/models/Meeting";
 
-import { MEETING_STATUS } from "../domain/meeting-status";
+import { assertCanUpdateMeeting } from "./internal/assert-can-update-meeting";
 
 import { UpdateBankTransactionsInput, UpdateBankTransactionsSchema } from "../validation";
 
@@ -20,9 +20,7 @@ export async function updateBankTransactions(
     throw new Error("Meeting not found.");
   }
 
-  if (meeting.status === MEETING_STATUS.CLOSED) {
-    throw new Error("Bank transactions cannot be updated after the meeting is closed.");
-  }
+  await assertCanUpdateMeeting(meeting);
 
   meeting.bankTransactions = data.bankTransactions.map((transaction) => ({
     transactionDate: transaction.transactionDate,

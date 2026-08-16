@@ -12,7 +12,6 @@ import MeetingForm from "@/features/meetings/ui/MeetingForm";
 import type { CreateMeetingInput } from "@/features/meetings/validation";
 
 import type { MeetingDetails } from "@/features/meetings/types";
-import { isEditable } from "@/features/meetings/domain/meeting-rules";
 
 type Props = {
   params: Promise<{
@@ -130,7 +129,7 @@ export default function EditMeetingPage({ params }: Props) {
 
         <MeetingForm
           loading={saving}
-          disabled={!isEditable(meeting.status, meeting.financialYearStatus)}
+          disabled={!meeting.canEdit}
           initialValues={{
             meetingDate: meeting.meetingDate.slice(0, 10),
 

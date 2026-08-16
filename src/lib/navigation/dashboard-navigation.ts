@@ -82,7 +82,7 @@ export const dashboardNavigation: NavigationItem[] = [
     title: "Users",
     href: "/settings/users",
     icon: SettingsOutlinedIcon,
-    roles: ["ADMIN"],
+    roles: ["ADMIN", "SUPER_ADMIN"],
   },
 ];
 

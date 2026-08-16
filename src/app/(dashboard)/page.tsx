@@ -56,7 +56,7 @@ const modules: DashboardModule[] = [
     description: "Attendance, loan, income, and member financial reports.",
     href: "/reports",
     icon: BarChartOutlinedIcon,
-    roles: ["ADMIN", "TREASURER"],
+    roles: ["ADMIN", "SUPER_ADMIN", "TREASURER"],
   },
 ];
 

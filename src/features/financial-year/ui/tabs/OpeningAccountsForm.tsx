@@ -19,6 +19,7 @@ import type { FinancialYearDetails } from "../../types";
 
 type Props = {
   financialYear: FinancialYearDetails;
+  canEdit?: boolean;
 };
 
 type OpeningBalances = {
@@ -29,7 +30,7 @@ type OpeningBalances = {
   otherLoans: number;
 };
 
-export default function OpeningAccountsForm({ financialYear }: Props) {
+export default function OpeningAccountsForm({ financialYear, canEdit = true }: Props) {
   const router = useRouter();
 
   const [saving, setSaving] = useState(false);
@@ -107,6 +108,7 @@ export default function OpeningAccountsForm({ financialYear }: Props) {
             label="Bank Balance"
             type="number"
             fullWidth
+            disabled={!canEdit || saving}
             value={balances.bankBalance}
             onChange={(e) => updateField("bankBalance", e.target.value)}
           />
@@ -115,6 +117,7 @@ export default function OpeningAccountsForm({ financialYear }: Props) {
             label="Cash in Hand"
             type="number"
             fullWidth
+            disabled={!canEdit || saving}
             value={balances.cashInHand}
             onChange={(e) => updateField("cashInHand", e.target.value)}
           />
@@ -123,6 +126,7 @@ export default function OpeningAccountsForm({ financialYear }: Props) {
             label="Excess Corpus"
             type="number"
             fullWidth
+            disabled={!canEdit || saving}
             value={balances.excessCorpus}
             onChange={(e) => updateField("excessCorpus", e.target.value)}
           />
@@ -131,6 +135,7 @@ export default function OpeningAccountsForm({ financialYear }: Props) {
             label="Investments"
             type="number"
             fullWidth
+            disabled={!canEdit || saving}
             value={balances.investments}
             onChange={(e) => updateField("investments", e.target.value)}
           />
@@ -139,6 +144,7 @@ export default function OpeningAccountsForm({ financialYear }: Props) {
             label="Other Loans"
             type="number"
             fullWidth
+            disabled={!canEdit || saving}
             value={balances.otherLoans}
             onChange={(e) => updateField("otherLoans", e.target.value)}
           />
@@ -146,7 +152,7 @@ export default function OpeningAccountsForm({ financialYear }: Props) {
           <Button
             variant="contained"
             onClick={save}
-            disabled={saving}
+            disabled={!canEdit || saving}
             startIcon={saving ? <CircularProgress size={18} color="inherit" /> : undefined}
           >
             Save Opening Accounts

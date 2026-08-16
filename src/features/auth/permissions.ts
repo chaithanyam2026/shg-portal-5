@@ -26,11 +26,11 @@ export const ROUTE_PERMISSIONS: readonly RoutePermission[] = [
   },
   {
     path: "/reports",
-    roles: ["ADMIN", "TREASURER"],
+    roles: ["ADMIN", "SUPER_ADMIN", "TREASURER"],
   },
   {
     path: "/settings",
-    roles: ["ADMIN"],
+    roles: ["ADMIN", "SUPER_ADMIN"],
   },
 ] as const;
 

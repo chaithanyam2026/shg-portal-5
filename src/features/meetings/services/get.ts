@@ -1,9 +1,11 @@
 import connectMongo from "@/lib/db/mongodb";
+import { auth } from "@/auth";
 
 import type { FinancialYearStatus } from "@/features/financial-year/domain/financial-year-status";
 import FinancialYear from "@/models/FinancialYear";
 import Meeting from "@/models/Meeting";
 
+import { canReopenMeeting, isDeletable, isEditable } from "../domain/meeting-rules";
 import type { MeetingDetails } from "../types";
 
 export async function getMeeting(id: string): Promise<MeetingDetails> {
@@ -21,12 +23,20 @@ export async function getMeeting(id: string): Promise<MeetingDetails> {
     throw new Error("Financial year not found.");
   }
 
+  const session = await auth();
+
   return {
     id: meeting._id.toString(),
 
     financialYearId: meeting.financialYearId.toString(),
 
     financialYearStatus: financialYear.status as FinancialYearStatus,
+
+    canEdit: isEditable(meeting.status, financialYear.status, session?.user?.role),
+
+    canReopen: canReopenMeeting(meeting.status, session?.user?.role),
+
+    canDelete: isDeletable(meeting.status, session?.user?.role),
 
     meetingDate: meeting.meetingDate.toISOString(),
 
