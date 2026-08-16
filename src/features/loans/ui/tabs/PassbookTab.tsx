@@ -96,6 +96,8 @@ export default function PassbookTab({ passbook }: Props) {
 
             <TableCell align="right">Principal Paid</TableCell>
 
+            <TableCell align="right">Refund Amount</TableCell>
+
             <TableCell align="right">Pending Interest</TableCell>
 
             <TableCell align="right">Pending Fine</TableCell>
@@ -124,6 +126,16 @@ export default function PassbookTab({ passbook }: Props) {
               <TableCell align="right">{formatCurrency(entry.paidLoanFine)}</TableCell>
 
               <TableCell align="right">{formatCurrency(entry.paidPrincipal)}</TableCell>
+
+              <TableCell
+                align="right"
+                sx={{
+                  color: entry.remainingAmount > 0 ? "success.main" : undefined,
+                  fontWeight: entry.remainingAmount > 0 ? 600 : undefined,
+                }}
+              >
+                {formatCurrency(entry.remainingAmount)}
+              </TableCell>
 
               <TableCell
                 align="right"

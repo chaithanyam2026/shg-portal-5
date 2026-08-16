@@ -86,8 +86,8 @@ export type LoanPassbookEntry = {
   pendingLoanFine: number;
 
   /**
-   * Excess payment that could not
-   * be allocated.
+   * Excess payment that could not be allocated
+   * (shown as refund amount).
    */
   remainingAmount: number;
 };

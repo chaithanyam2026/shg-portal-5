@@ -1,6 +1,8 @@
 "use client";
 
-import { Stack, TableCell, TableRow, TextField } from "@mui/material";
+import { Stack, TableCell, TableRow, TextField, Typography } from "@mui/material";
+
+import { formatCurrency } from "@/lib/utils/format";
 
 import type { PaymentRecord } from "../types";
 
@@ -52,14 +54,21 @@ export default function PaymentRow({ serialNumber, record, disabled = false, onC
         </Stack>
       </TableCell>
 
-      <TableCell width={120} sx={{ verticalAlign: "top" }}>
-        <AmountField
-          fullWidth
-          size="small"
-          disabled={disabled}
-          value={record.loanRepayment}
-          onChange={(value) => update("loanRepayment", value)}
-        />
+      <TableCell width={150} sx={{ verticalAlign: "top" }}>
+        <Stack spacing={0}>
+          <AmountField
+            fullWidth
+            size="small"
+            disabled={disabled}
+            value={record.loanRepayment}
+            onChange={(value) => update("loanRepayment", value)}
+          />
+          {record.outstandingPrincipal > 0 && (
+            <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: "block" }}>
+              {`Outstanding principal ${formatCurrency(record.outstandingPrincipal)}`}
+            </Typography>
+          )}
+        </Stack>
       </TableCell>
 
       <TableCell width={150} sx={{ verticalAlign: "top" }}>

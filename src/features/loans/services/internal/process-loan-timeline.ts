@@ -29,13 +29,13 @@ import type { LoanRepayment } from "./meeting-loader";
 
 type TimelineEvent =
   | {
-      type: "checkpoint";
-      date: Date;
-    }
+    type: "checkpoint";
+    date: Date;
+  }
   | {
-      type: "repayment";
-      repayment: LoanRepayment;
-    };
+    type: "repayment";
+    repayment: LoanRepayment;
+  };
 
 type ProcessLoanTimelineInput = {
   loan: BuildLoanLedgerInput;
@@ -296,6 +296,10 @@ export function processLoanTimeline({
     loan.disbursedDate,
     financialYearEndDate,
   )) {
+    if (outstandingPrincipal <= 0) {
+      break;
+    }
+
     const eventDate = event.type === "checkpoint" ? event.date : event.repayment.meetingDate;
     const eventMonthKey = getCalendarMonthKey(eventDate);
 
@@ -418,7 +422,10 @@ export function processLoanTimeline({
     previousTransactionDate = repayment.meetingDate;
   }
 
-  if (!isAfterFinancialYearEnd(previousTransactionDate, financialYearEndDate)) {
+  if (
+    outstandingPrincipal > 0 &&
+    !isAfterFinancialYearEnd(previousTransactionDate, financialYearEndDate)
+  ) {
     const interest = calculateInterestUpToDate(
       loan,
       outstandingPrincipal,
