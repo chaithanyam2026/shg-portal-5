@@ -15,6 +15,7 @@ import {
 import { EXPENSE_CATEGORY } from "../domain/expense";
 
 import type { ExpenseRecord } from "../types";
+import { toDateInputValue } from "@/lib/utils/date";
 
 import ExpenseRow from "./ExpenseRow";
 
@@ -39,7 +40,7 @@ export default function ExpenseTable({ records, disabled = false, onChange }: Pr
     onChange([
       ...records,
       {
-        transactionDate: new Date().toISOString().slice(0, 10),
+        transactionDate: toDateInputValue(),
         category: EXPENSE_CATEGORY.MISCELLANEOUS,
         amount: 0,
         remarks: "",

@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 
 import type { CreateMemberInput } from "../validation";
+import { toDateInputValue } from "@/lib/utils/date";
 
 type MemberFormValues = {
   memberCode: string;
@@ -37,7 +38,7 @@ const defaultValues: MemberFormValues = {
   name: "",
   phone: "",
   address: "",
-  joinDate: new Date().toISOString().split("T")[0],
+  joinDate: toDateInputValue(),
   remarks: "",
   username: "",
   password: "",

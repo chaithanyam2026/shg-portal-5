@@ -22,24 +22,13 @@ import {
   UpdateFinancialYearSchema,
 } from "../../validation";
 
+import { toDateInputValue } from "@/lib/utils/date";
 import type { FinancialYearDetails } from "../../types";
 
 type Props = {
   financialYear: FinancialYearDetails;
   canEdit?: boolean;
 };
-
-type UpdateFinancialYearFormValues = Omit<
-  UpdateFinancialYearInput,
-  "startDate" | "endDate"
-> & {
-  startDate: string;
-  endDate: string;
-};
-
-function formatDateInputValue(value: Date | string) {
-  return new Date(value).toISOString().slice(0, 10);
-}
 
 export default function GeneralForm({
   financialYear,
@@ -58,12 +47,12 @@ export default function GeneralForm({
       isDirty,
     },
   } = useForm<
-    UpdateFinancialYearFormValues,
+    UpdateFinancialYearFormInput,
     unknown,
     UpdateFinancialYearInput
   >({
     resolver: zodResolver(UpdateFinancialYearSchema) as unknown as Resolver<
-      UpdateFinancialYearFormValues,
+      UpdateFinancialYearFormInput,
       unknown,
       UpdateFinancialYearInput
     >,
@@ -71,9 +60,9 @@ export default function GeneralForm({
     defaultValues: {
       name: financialYear.name,
 
-      startDate: formatDateInputValue(financialYear.startDate),
+      startDate: toDateInputValue(financialYear.startDate),
 
-      endDate: formatDateInputValue(financialYear.endDate),
+      endDate: toDateInputValue(financialYear.endDate),
 
       remarks: financialYear.remarks,
     },

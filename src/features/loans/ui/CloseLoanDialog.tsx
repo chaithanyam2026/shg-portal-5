@@ -17,7 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 
-import { parseDateInputValue, toCalendarDate } from "@/lib/utils/date";
+import { parseDateInputValue, toDateInputValue } from "@/lib/utils/date";
 
 import type { LoanDetails } from "../types";
 import { formatCurrency } from "./format";
@@ -33,14 +33,6 @@ type CloseSummaryRow = {
   value: number;
   emphasize?: boolean;
 };
-
-function toDateInputValue(value: Date | string): string {
-  const date = toCalendarDate(value);
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-
-  return `${date.getFullYear()}-${month}-${day}`;
-}
 
 function CloseSummaryItem({ label, value, emphasize = false }: CloseSummaryRow) {
   return (

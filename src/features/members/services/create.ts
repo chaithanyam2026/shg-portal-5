@@ -1,4 +1,5 @@
 import connectMongo from "@/lib/db/mongodb";
+import { toCalendarDate } from "@/lib/utils/date";
 
 import { hashPassword } from "@/lib/auth/password";
 import { USER_ROLES } from "@/lib/constants/roles";
@@ -51,7 +52,7 @@ export async function createMember(input: CreateMemberInput): Promise<MemberDeta
     name: data.name,
     phone: data.phone,
     address: data.address ?? "",
-    joinDate: data.joinDate,
+    joinDate: toCalendarDate(data.joinDate),
     remarks: data.remarks ?? "",
     active: true,
     userId: user._id,

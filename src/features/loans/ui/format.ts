@@ -21,7 +21,9 @@ export function formatNumber(value: number): string {
  * Formats a date.
  */
 export function formatDate(value: Date | string): string {
-  return new Date(value).toLocaleDateString("en-IN");
+  return new Date(value).toLocaleDateString("en-IN", {
+    timeZone: "Asia/Kolkata",
+  });
 }
 
 /**

@@ -2,6 +2,7 @@ import { Types } from "mongoose";
 
 import { FINANCIAL_YEAR_STATUS } from "@/features/financial-year/domain/financial-year-status";
 import connectMongo from "@/lib/db/mongodb";
+import { toCalendarDate } from "@/lib/utils/date";
 
 import FinancialYear from "@/models/FinancialYear";
 import Loan from "@/models/Loan";
@@ -83,11 +84,11 @@ export async function createLoan(input: CreateLoanInput): Promise<LoanDetails> {
 
     expectedMonthlyRepayment,
 
-    sanctionedDate: data.sanctionedDate,
+    sanctionedDate: toCalendarDate(data.sanctionedDate),
 
-    disbursedDate: data.disbursedDate,
+    disbursedDate: toCalendarDate(data.disbursedDate),
 
-    expiryDate: data.expiryDate ?? null,
+    expiryDate: data.expiryDate ? toCalendarDate(data.expiryDate) : null,
 
     remarks: data.remarks,
   });

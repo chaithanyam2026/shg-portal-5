@@ -18,7 +18,7 @@ import AssessmentOutlinedIcon from "@mui/icons-material/AssessmentOutlined";
 
 import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 
-import { FINANCIAL_STEWARD_ROLES, type UserRole } from "@/lib/auth/roles";
+import { ADMIN_ROLES, FINANCIAL_STEWARD_ROLES, type UserRole } from "@/lib/auth/roles";
 
 import type { NavigationItem } from "./navigation-types";
 
@@ -90,7 +90,7 @@ export const dashboardNavigation: NavigationItem[] = [
     title: "Users",
     href: "/settings/users",
     icon: SettingsOutlinedIcon,
-    roles: ["ADMIN", "SUPER_ADMIN"],
+    roles: ADMIN_ROLES,
   },
 ];
 

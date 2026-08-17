@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { Button, Stack, TextField } from "@mui/material";
 
-import { parseDateInputValue } from "@/lib/utils/date";
+import { parseDateInputValue, toDateInputValue } from "@/lib/utils/date";
 import type { CreateMeetingInput } from "../validation";
 
 type MeetingFormValues = {
@@ -22,7 +22,7 @@ type Props = {
 };
 
 const defaultValues: MeetingFormValues = {
-  meetingDate: new Date().toISOString().split("T")[0],
+  meetingDate: toDateInputValue(),
   place: "",
   agenda: "",
   remarks: "",

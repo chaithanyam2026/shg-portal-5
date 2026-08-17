@@ -2,6 +2,7 @@ import { Types } from "mongoose";
 
 import connectMongo from "@/lib/db/mongodb";
 import { AppError } from "@/lib/errors";
+import { toCalendarDate } from "@/lib/utils/date";
 import FinancialYear from "@/models/FinancialYear";
 
 import type { FinancialYearDocument } from "@/models/FinancialYear";
@@ -185,11 +186,11 @@ export async function update(id: string, input: unknown) {
   }
 
   if (data.startDate !== undefined) {
-    financialYear.startDate = data.startDate;
+    financialYear.startDate = toCalendarDate(data.startDate);
   }
 
   if (data.endDate !== undefined) {
-    financialYear.endDate = data.endDate;
+    financialYear.endDate = toCalendarDate(data.endDate);
   }
 
   if (data.remarks !== undefined) {
@@ -210,8 +211,9 @@ export async function update(id: string, input: unknown) {
 
         specialLoan: member.openingSpecialLoan,
 
-        specialLoanExpiry:
-          member.openingSpecialLoanExpiry ?? null,
+        specialLoanExpiry: member.openingSpecialLoanExpiry
+          ? toCalendarDate(member.openingSpecialLoanExpiry)
+          : null,
       },
     }));
   }

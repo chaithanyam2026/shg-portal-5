@@ -1,4 +1,5 @@
 import connectMongo from "@/lib/db/mongodb";
+import { toCalendarDate } from "@/lib/utils/date";
 
 import Meeting from "@/models/Meeting";
 
@@ -20,7 +21,7 @@ export async function updateExpenses(meetingId: string, input: UpdateExpensesInp
   await assertCanUpdateMeeting(meeting);
 
   meeting.expenses = data.expenses.map((expense) => ({
-    transactionDate: expense.transactionDate,
+    transactionDate: toCalendarDate(expense.transactionDate),
 
     category: expense.category,
 

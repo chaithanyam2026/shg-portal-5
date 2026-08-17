@@ -19,7 +19,7 @@ import {
 } from "@mui/material";
 
 import type { MemberLookup } from "@/features/financial-year/types";
-import { parseDateInputValue } from "@/lib/utils/date";
+import { parseDateInputValue, toDateInputValue } from "@/lib/utils/date";
 
 import { LOAN_TYPES, SPECIAL_LOAN_TYPE } from "../domain";
 import MinimumMonthlyRepaymentField from "./MinimumMonthlyRepaymentField";
@@ -55,14 +55,6 @@ type LoanFormValues = {
   expiryDate: string;
   remarks: string;
 };
-
-function toDateInputValue(value?: string): string {
-  if (!value) {
-    return new Date().toISOString().split("T")[0];
-  }
-
-  return value.split("T")[0];
-}
 
 export default function LoanForm({
   financialYearId,
