@@ -10,7 +10,10 @@ import connectMongo from "@/lib/db/mongodb";
 import User from "@/models/User";
 
 import { LoginSchema } from "@/features/auth/validation";
-import { recordLoginSuccess } from "@/features/auth/services/record-login-activity";
+import {
+  recordLoginFailure,
+  recordLoginSuccess,
+} from "@/features/auth/services/record-login-activity";
 
 const nextAuth = NextAuth({
     ...authConfig,
