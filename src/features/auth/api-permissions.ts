@@ -1,4 +1,4 @@
-import type { UserRole } from "@/lib/auth/roles";
+import { ADMIN_ROLES, type UserRole } from "@/lib/auth/roles";
 
 export type ApiPermission = {
   path: string;
@@ -8,7 +8,7 @@ export type ApiPermission = {
 export const API_PERMISSIONS: readonly ApiPermission[] = [
   {
     path: "/api/users",
-    roles: ["ADMIN", "SUPER_ADMIN"],
+    roles: ADMIN_ROLES,
   },
 ] as const;
 

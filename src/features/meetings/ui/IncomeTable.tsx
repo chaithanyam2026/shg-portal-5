@@ -15,6 +15,7 @@ import {
 import { INCOME_CATEGORY } from "../domain/income";
 
 import type { IncomeRecord } from "../types";
+import { toDateInputValue } from "@/lib/utils/date";
 
 import IncomeRow from "./IncomeRow";
 
@@ -39,7 +40,7 @@ export default function IncomeTable({ records, disabled = false, onChange }: Pro
     onChange([
       ...records,
       {
-        transactionDate: new Date().toISOString().slice(0, 10),
+        transactionDate: toDateInputValue(),
         category: INCOME_CATEGORY.MISCELLANEOUS,
         amount: 0,
         remarks: "",

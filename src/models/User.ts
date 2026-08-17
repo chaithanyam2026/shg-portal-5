@@ -41,6 +41,16 @@ export interface UserDocument {
 
   lastLoginAt: Date | null;
 
+  lastFailedLoginAt: Date | null;
+
+  lastSeenAt: Date | null;
+
+  loginCount: number;
+
+  failedLoginCount: number;
+
+  sessionOpenCount: number;
+
   createdAt: Date;
 
   updatedAt: Date;
@@ -101,6 +111,34 @@ const userSchema =
       type: Date,
       default: null,
     },
+
+    lastFailedLoginAt: {
+      type: Date,
+      default: null,
+    },
+
+    lastSeenAt: {
+      type: Date,
+      default: null,
+    },
+
+    loginCount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+
+    failedLoginCount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+
+    sessionOpenCount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
   }, createSchemaOptions(),);
 
 /**
@@ -130,6 +168,16 @@ const User: Model<UserDocument> =
     "User",
     userSchema,
   );
+
+if (!User.schema.path("loginCount")) {
+  User.schema.add({
+    lastFailedLoginAt: { type: Date, default: null },
+    lastSeenAt: { type: Date, default: null },
+    loginCount: { type: Number, default: 0, min: 0 },
+    failedLoginCount: { type: Number, default: 0, min: 0 },
+    sessionOpenCount: { type: Number, default: 0, min: 0 },
+  });
+}
 
 export default User;
 

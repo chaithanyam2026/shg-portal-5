@@ -1,4 +1,5 @@
 import connectMongo from "@/lib/db/mongodb";
+import { toCalendarDate } from "@/lib/utils/date";
 import FinancialYear from "@/models/FinancialYear";
 
 import { FINANCIAL_YEAR_STATUS } from "../domain/financial-year-status";
@@ -45,8 +46,8 @@ export async function createFinancialYear(input: CreateFinancialYearInput) {
 
   const financialYear = await FinancialYear.create({
     name: data.name,
-    startDate: data.startDate,
-    endDate: data.endDate,
+    startDate: toCalendarDate(data.startDate),
+    endDate: toCalendarDate(data.endDate),
     remarks: data.remarks ?? "",
 
     status: FINANCIAL_YEAR_STATUS.DRAFT,

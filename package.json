@@ -11,7 +11,8 @@
     "format:check": "prettier . --check",
     "seed:members": "tsx src/scripts/index.ts members",
     "seed:admin": "tsx src/scripts/index.ts admin",
-    "fix:meeting-indexes": "tsx src/scripts/index.ts fix-meeting-indexes"
+    "fix:meeting-indexes": "tsx src/scripts/index.ts fix-meeting-indexes",
+    "fix:calendar-dates": "tsx src/scripts/index.ts fix-calendar-dates"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [

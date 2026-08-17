@@ -6,21 +6,13 @@ import { useRouter } from "next/navigation";
 
 import { Alert, Button, Stack, TextField } from "@mui/material";
 
-import { parseDateInputValue, toCalendarDate } from "@/lib/utils/date";
+import { parseDateInputValue, toDateInputValue } from "@/lib/utils/date";
 
 import type { LoanDetails } from "../types";
 
 type Props = {
   loan: LoanDetails;
 };
-
-function toDateInputValue(value: Date | string): string {
-  const date = toCalendarDate(value);
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-
-  return `${date.getFullYear()}-${month}-${day}`;
-}
 
 export default function SetLoanClosedDateForm({ loan }: Props) {
   const router = useRouter();

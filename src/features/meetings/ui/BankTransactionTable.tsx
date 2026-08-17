@@ -15,6 +15,7 @@ import {
 import { BANK_TRANSACTION_TYPE } from "../domain/bank-transaction";
 
 import type { BankTransactionRecord } from "../types";
+import { toDateInputValue } from "@/lib/utils/date";
 
 import BankTransactionRow from "./BankTransactionRow";
 
@@ -41,7 +42,7 @@ export default function BankTransactionTable({ records, disabled = false, onChan
     onChange([
       ...records,
       {
-        transactionDate: new Date().toISOString().slice(0, 10),
+        transactionDate: toDateInputValue(),
         type: BANK_TRANSACTION_TYPE.DEPOSIT,
         amount: 0,
         remarks: "",

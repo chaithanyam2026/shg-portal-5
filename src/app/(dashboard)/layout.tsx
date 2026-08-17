@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 
 import AppLayout from "@/components/layout/AppLayout";
 import PageLayout from "@/components/layout/PageLayout";
+import SessionActivityTracker from "@/features/auth/ui/SessionActivityTracker";
 import { getAccountProfile } from "@/features/members/services/get-account-profile";
 import { isCurrentUserFinancialYearOfficeBearer } from "@/features/financial-year/services";
 import { getDashboardNavLinks } from "@/lib/navigation";
@@ -39,6 +40,7 @@ export default async function DashboardLayout({ children }: Props) {
 
   return (
     <AppLayout displayName={displayName} navItems={navItems}>
+      <SessionActivityTracker />
       <PageLayout>{children}</PageLayout>
     </AppLayout>
   );

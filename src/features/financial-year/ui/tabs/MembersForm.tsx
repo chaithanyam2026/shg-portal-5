@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { Alert, Button, Card, CardContent, Stack } from "@mui/material";
 
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { toDateInputValue } from "@/lib/utils/date";
 import type { FinancialYearDetails, MemberLookup } from "../../types";
 
 import AddIcon from "@mui/icons-material/Add";
@@ -20,7 +21,7 @@ type Props = {
 };
 
 function formatDateInputValue(value: Date | string | null) {
-  return value ? new Date(value).toISOString().slice(0, 10) : "";
+  return value ? toDateInputValue(value) : "";
 }
 
 export default function MembersForm({ financialYear, members, canEdit = true }: Props) {

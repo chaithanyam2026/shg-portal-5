@@ -22,6 +22,10 @@ async function main() {
       await import("./fix-meeting-indexes");
       break;
 
+    case "fix-calendar-dates":
+      await import("./fix-calendar-dates");
+      break;
+
     default:
       throw new Error(`Unknown script: ${script}`);
   }

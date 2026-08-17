@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import Link from "next/link";
 
 import {
   Alert,
@@ -26,6 +27,7 @@ import {
 import type { UserListItem } from "@/features/auth/services/list";
 import PageHeader from "@/components/layout/PageHeader";
 import { isAdminRole, ROLE_LABELS, USER_ROLE_VALUES, type UserRole } from "@/lib/auth/roles";
+import { formatDateTime } from "@/lib/utils/format";
 
 import CreateUserDialog from "./CreateUserDialog";
 import ResetPasswordDialog from "./ResetPasswordDialog";
@@ -151,6 +153,11 @@ export default function UserList({ users, currentUserId }: Props) {
               <TableCell>Member</TableCell>
               <TableCell>Access Level</TableCell>
               <TableCell>Status</TableCell>
+              <TableCell>Logins</TableCell>
+              <TableCell>Failed</TableCell>
+              <TableCell>App opens</TableCell>
+              <TableCell>Last login</TableCell>
+              <TableCell>Last opened</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -185,8 +192,23 @@ export default function UserList({ users, currentUserId }: Props) {
                   />
                 </TableCell>
 
+                <TableCell>{user.loginCount}</TableCell>
+                <TableCell>{user.failedLoginCount}</TableCell>
+                <TableCell>{user.sessionOpenCount}</TableCell>
+                <TableCell>{formatDateTime(user.lastLoginAt)}</TableCell>
+                <TableCell>{formatDateTime(user.lastSeenAt)}</TableCell>
+
                 <TableCell align="right">
                   <Stack direction="row" spacing={1} sx={{ justifyContent: "flex-end", flexWrap: "wrap" }}>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      component={Link}
+                      href={`/settings/users/${user._id}/activity`}
+                    >
+                      Activity
+                    </Button>
+
                     {!isAdminRole(user.role) && (
                       <Button size="small" variant="outlined" onClick={() => setResetUser(user)}>
                         Reset Password

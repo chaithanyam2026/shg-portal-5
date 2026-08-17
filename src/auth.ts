@@ -10,6 +10,7 @@ import connectMongo from "@/lib/db/mongodb";
 import User from "@/models/User";
 
 import { LoginSchema } from "@/features/auth/validation";
+import { recordLoginSuccess } from "@/features/auth/services/record-login-activity";
 
 const nextAuth = NextAuth({
     ...authConfig,
@@ -50,6 +51,7 @@ const nextAuth = NextAuth({
                 }
 
                 if (user.status !== "ACTIVE") {
+                    await recordLoginFailure(username);
                     return null;
                 }
 
@@ -63,17 +65,11 @@ const nextAuth = NextAuth({
                 );
 
                 if (!passwordValid) {
+                    await recordLoginFailure(username);
                     return null;
                 }
 
-                await User.updateOne(
-                    { _id: user._id },
-                    {
-                        $set: {
-                            lastLoginAt: new Date(),
-                        },
-                    },
-                );
+                await recordLoginSuccess(user._id.toString(), user.username);
 
                 return {
                     id: user._id.toString(),

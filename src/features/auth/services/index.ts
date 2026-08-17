@@ -3,6 +3,8 @@ export * from "./close";
 export * from "./create";
 export * from "./get";
 export * from "./list";
+export * from "./list-login-activity";
+export * from "./record-login-activity";
 export * from "./reset-password";
 export * from "./update";
 
