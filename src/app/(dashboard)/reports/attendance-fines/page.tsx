@@ -1,14 +1,11 @@
 import PageHeader from "@/components/layout/PageHeader";
 
-import {
-  getSelectedFinancialYear,
-  listFinancialYearOptions,
-} from "@/features/financial-year/services";
+import { loadReportFinancialYear } from "@/features/financial-year/services";
 
 import { buildAttendanceFineRegister } from "@/features/reports/services/build-attendance-fine-register";
 
 import AttendanceFineRegisterPage from "@/features/reports/ui/AttendanceFineRegisterPage";
-import { redirect } from "next/navigation";
+import NoAssignedReportYears from "@/features/reports/ui/NoAssignedReportYears";
 
 type Props = {
   searchParams: Promise<{
@@ -19,21 +16,25 @@ type Props = {
 export default async function AttendanceFineRegister({ searchParams }: Props) {
   const params = await searchParams;
 
-  const financialYear = await getSelectedFinancialYear(params.financialYear);
+  const { financialYear, options } = await loadReportFinancialYear(params.financialYear);
+
   if (!financialYear) {
-    redirect("/financial-years");
+    return (
+      <>
+        <PageHeader title="Attendance Fine Register" backHref="/reports" />
+        <NoAssignedReportYears />
+      </>
+    );
   }
 
-  const options = await listFinancialYearOptions();
-
-  const register = await buildAttendanceFineRegister(financialYear._id.toString());
+  const register = await buildAttendanceFineRegister(financialYear._id);
 
   return (
     <>
       <PageHeader title="Attendance Fine Register" backHref="/reports" />
 
       <AttendanceFineRegisterPage
-        financialYearId={financialYear._id.toString()}
+        financialYearId={financialYear._id}
         financialYearName={financialYear.name}
         options={options}
         register={register}

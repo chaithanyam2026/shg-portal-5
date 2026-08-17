@@ -1,14 +1,10 @@
 import PageHeader from "@/components/layout/PageHeader";
 
-import {
-  getSelectedFinancialYear,
-  listFinancialYearOptions,
-} from "@/features/financial-year/services";
+import { loadReportFinancialYear } from "@/features/financial-year/services";
 
 import { buildLoanRegister } from "@/features/reports/services/build-loan-register";
 import LoanRegisterPage from "@/features/reports/ui/LoanRegisterPage";
-
-import { redirect } from "next/navigation";
+import NoAssignedReportYears from "@/features/reports/ui/NoAssignedReportYears";
 
 type Props = {
   searchParams: Promise<{
@@ -19,24 +15,24 @@ type Props = {
 export default async function Page({ searchParams }: Props) {
   const params = await searchParams;
 
-  const financialYear = await getSelectedFinancialYear(params.financialYear);
+  const { financialYear, options } = await loadReportFinancialYear(params.financialYear);
 
   if (!financialYear) {
-    redirect("/financial-years");
+    return (
+      <>
+        <PageHeader title="Loan Register" backHref="/reports" />
+        <NoAssignedReportYears />
+      </>
+    );
   }
 
-  const financialYearId = financialYear._id.toString();
-
-  const [options, register] = await Promise.all([
-    listFinancialYearOptions(),
-    buildLoanRegister(financialYearId),
-  ]);
+  const register = await buildLoanRegister(financialYear._id);
 
   return (
     <>
       <PageHeader title="Loan Register" backHref="/reports" />
 
-      <LoanRegisterPage financialYearId={financialYearId} options={options} register={register} />
+      <LoanRegisterPage financialYearId={financialYear._id} options={options} register={register} />
     </>
   );
 }

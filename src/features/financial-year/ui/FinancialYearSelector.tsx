@@ -16,6 +16,7 @@ type Props = {
 
 export default function FinancialYearSelector({ options, value, onChange }: Props) {
   const selected = useMemo(() => options.find((option) => option.id === value), [options, value]);
+  const selectValue = selected ? value : "";
 
   return (
     <Stack
@@ -33,7 +34,8 @@ export default function FinancialYearSelector({ options, value, onChange }: Prop
 
         <Select
           label="Financial Year"
-          value={value}
+          value={selectValue}
+          disabled={options.length === 0}
           onChange={(event) => onChange(event.target.value)}
         >
           {options.map((option) => (
@@ -57,6 +59,12 @@ export default function FinancialYearSelector({ options, value, onChange }: Prop
       {selected && (
         <Typography variant="caption" color="text.secondary">
           Current Selection : {selected.name}
+        </Typography>
+      )}
+
+      {options.length === 0 && (
+        <Typography variant="caption" color="text.secondary">
+          No financial years available.
         </Typography>
       )}
     </Stack>

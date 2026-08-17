@@ -33,10 +33,10 @@ export function getCommitteeMemberId(value: unknown): string | null {
 export function isFinancialYearOfficeBearer(
   committee:
     | {
-        president?: unknown;
-        secretary?: unknown;
-        treasurer?: unknown;
-      }
+      president?: unknown;
+      secretary?: unknown;
+      treasurer?: unknown;
+    }
     | null
     | undefined,
   memberId: string | null | undefined,
@@ -56,13 +56,13 @@ export function isFinancialYearOfficeBearer(
 
 export function canManageFinancialYear(input: {
   committee:
-    | {
-        president?: unknown;
-        secretary?: unknown;
-        treasurer?: unknown;
-      }
-    | null
-    | undefined;
+  | {
+    president?: unknown;
+    secretary?: unknown;
+    treasurer?: unknown;
+  }
+  | null
+  | undefined;
   memberId: string | null | undefined;
   isSteward?: boolean;
 }): boolean {
@@ -72,13 +72,13 @@ export function canManageFinancialYear(input: {
 export function canEditFinancialYearFields(input: {
   status: FinancialYearStatus;
   committee:
-    | {
-        president?: unknown;
-        secretary?: unknown;
-        treasurer?: unknown;
-      }
-    | null
-    | undefined;
+  | {
+    president?: unknown;
+    secretary?: unknown;
+    treasurer?: unknown;
+  }
+  | null
+  | undefined;
   memberId: string | null | undefined;
   isSteward?: boolean;
 }): boolean {
