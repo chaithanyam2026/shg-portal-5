@@ -1,14 +1,10 @@
 import PageHeader from "@/components/layout/PageHeader";
 
-import {
-  getSelectedFinancialYear,
-  listFinancialYearOptions,
-} from "@/features/financial-year/services";
+import { loadReportFinancialYear } from "@/features/financial-year/services";
 
 import { buildIncomeExpenseReport } from "@/features/reports/services";
 import IncomeExpenseReportPage from "@/features/reports/ui/IncomeExpenseReportPage";
-
-import { redirect } from "next/navigation";
+import NoAssignedReportYears from "@/features/reports/ui/NoAssignedReportYears";
 
 type Props = {
   searchParams: Promise<{
@@ -19,25 +15,25 @@ type Props = {
 export default async function Page({ searchParams }: Props) {
   const params = await searchParams;
 
-  const financialYear = await getSelectedFinancialYear(params.financialYear);
+  const { financialYear, options } = await loadReportFinancialYear(params.financialYear);
 
   if (!financialYear) {
-    redirect("/financial-years");
+    return (
+      <>
+        <PageHeader title="Income & Expense" backHref="/reports" />
+        <NoAssignedReportYears />
+      </>
+    );
   }
 
-  const financialYearId = financialYear._id.toString();
-
-  const [options, report] = await Promise.all([
-    listFinancialYearOptions(),
-    buildIncomeExpenseReport(financialYearId),
-  ]);
+  const report = await buildIncomeExpenseReport(financialYear._id);
 
   return (
     <>
       <PageHeader title="Income & Expense" backHref="/reports" />
 
       <IncomeExpenseReportPage
-        financialYearId={financialYearId}
+        financialYearId={financialYear._id}
         options={options}
         report={report}
       />

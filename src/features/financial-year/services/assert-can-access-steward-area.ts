@@ -9,6 +9,7 @@ import { AppError } from "@/lib/errors";
 import FinancialYear from "@/models/FinancialYear";
 
 import { FINANCIAL_YEAR_STATUS } from "../domain/financial-year-status";
+import { officeBearerYearFilter } from "./internal/office-bearer-year-filter";
 
 export async function isCurrentUserFinancialYearOfficeBearer(): Promise<boolean> {
   const memberId = await getCurrentMemberId();
@@ -19,17 +20,11 @@ export async function isCurrentUserFinancialYearOfficeBearer(): Promise<boolean>
 
   await connectMongo();
 
-  const memberObjectId = new Types.ObjectId(memberId);
-
   const officeBearerYear = await FinancialYear.exists({
     status: {
       $ne: FINANCIAL_YEAR_STATUS.CLOSED,
     },
-    $or: [
-      { "executiveCommittee.president": memberObjectId },
-      { "executiveCommittee.secretary": memberObjectId },
-      { "executiveCommittee.treasurer": memberObjectId },
-    ],
+    ...officeBearerYearFilter(new Types.ObjectId(memberId)),
   });
 
   return Boolean(officeBearerYear);

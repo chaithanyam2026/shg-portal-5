@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
 
-import { assertCanAccessFinancialStewardArea } from "@/features/financial-year/services";
+import {
+  assertCanAccessFinancialStewardArea,
+  assertCanAccessReportFinancialYear,
+} from "@/features/financial-year/services";
 import { IncomeExpenseReportSchema } from "@/features/reports/validation";
 
 import { buildIncomeExpenseReport } from "@/features/reports/services";
@@ -17,6 +20,8 @@ export async function GET(request: NextRequest) {
       fromDate: searchParams.get("fromDate") ?? undefined,
       toDate: searchParams.get("toDate") ?? undefined,
     });
+
+    await assertCanAccessReportFinancialYear(input.financialYearId);
 
     const report = await buildIncomeExpenseReport(input.financialYearId);
 
