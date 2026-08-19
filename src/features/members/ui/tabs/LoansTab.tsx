@@ -84,7 +84,7 @@ export default function LoansTab({
           throw new Error(result.message ?? "Unable to load loans.");
         }
 
-        setLoans(result);
+        setLoans(Array.isArray(result) ? result : []);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Unable to load loans.");
         setLoans([]);

@@ -112,7 +112,9 @@ export default function PaymentForm({
 
             <Typography>Absent Fine: ₹{totals.absent}</Typography>
 
-            <Typography>Special Loan Fine: ₹{totals.special}</Typography>
+            {records.some((record) => record.hasSpecialLoan || record.specialLoanFine > 0) && (
+              <Typography>Special Loan Fine: ₹{totals.special}</Typography>
+            )}
 
             <Typography variant="h6">Grand Total: ₹{totals.total}</Typography>
           </Stack>

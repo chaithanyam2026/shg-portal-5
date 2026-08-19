@@ -1,17 +1,23 @@
 import { Types } from "mongoose";
 
+import { SPECIAL_LOAN_TYPE } from "@/features/loans/domain/loan-type";
 import { buildLoanLedger } from "@/features/loans/services/internal/loan-ledger";
 import { loadRepaymentsForMembers } from "@/features/loans/services/internal/meeting-loader";
 import FinancialYear from "@/models/FinancialYear";
 import Loan from "@/models/Loan";
+
+export type MemberLoanOutstanding = {
+  outstandingPrincipal: number;
+  outstandingSpecialLoan: number;
+};
 
 /**
  * Current outstanding principal per member (last passbook outstanding value).
  */
 export async function loadOutstandingPrincipals(
   financialYearId: string,
-): Promise<Map<string, number>> {
-  const outstandingByMember = new Map<string, number>();
+): Promise<Map<string, MemberLoanOutstanding>> {
+  const outstandingByMember = new Map<string, MemberLoanOutstanding>();
 
   const [financialYear, loans] = await Promise.all([
     FinancialYear.findById(financialYearId).select("endDate").lean(),
@@ -58,8 +64,18 @@ export async function loadOutstandingPrincipals(
     );
 
     const lastOutstanding = passbook.entries.at(-1)?.outstandingPrincipal ?? loan.disbursedAmount;
+    const current = outstandingByMember.get(memberId) ?? {
+      outstandingPrincipal: 0,
+      outstandingSpecialLoan: 0,
+    };
 
-    outstandingByMember.set(memberId, (outstandingByMember.get(memberId) ?? 0) + lastOutstanding);
+    current.outstandingPrincipal += lastOutstanding;
+
+    if (loan.loanType === SPECIAL_LOAN_TYPE) {
+      current.outstandingSpecialLoan += lastOutstanding;
+    }
+
+    outstandingByMember.set(memberId, current);
   }
 
   return outstandingByMember;

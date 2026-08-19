@@ -1,6 +1,7 @@
 import { Card, CardContent, Divider, Stack, Typography } from "@mui/material";
 
 import AppLogo from "@/components/layout/AppLogo";
+import { PWA_SPLASH_SUBTITLE } from "@/lib/pwa/app-metadata";
 
 import LoginForm from "./LoginForm";
 
@@ -32,10 +33,17 @@ export default function LoginCard({ callbackUrl }: Props) {
               alignItems: "center",
             }}
           >
-            <AppLogo href={undefined} height={120} priority showTitle titleLayout="column" />
+            <AppLogo
+              href={undefined}
+              height={120}
+              priority
+              showTitle
+              title={PWA_SPLASH_SUBTITLE}
+              titleLayout="column"
+            />
 
             <Typography variant="body2" color="text.secondary">
-              Sign in to continue
+              {/* Sign in to continue */}
             </Typography>
           </Stack>
 

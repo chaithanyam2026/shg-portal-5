@@ -11,6 +11,7 @@ type Props = {
   height?: number;
   priority?: boolean;
   showTitle?: boolean;
+  title?: string;
   titleLayout?: "row" | "column";
 };
 
@@ -19,6 +20,7 @@ export default function AppLogo({
   height = 44,
   priority = false,
   showTitle = false,
+  title = PWA_APP_NAME,
   titleLayout = "row",
 }: Props) {
   const image = (
@@ -66,7 +68,7 @@ export default function AppLogo({
             lineHeight: 1.2,
           }}
         >
-          {PWA_APP_NAME}
+          {title}
         </Typography>
       )}
     </Stack>

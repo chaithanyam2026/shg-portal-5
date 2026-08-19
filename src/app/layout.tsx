@@ -11,6 +11,8 @@ import {
 
 import "./globals.css";
 
+import AppSplash from "@/components/layout/AppSplash";
+
 import AppSerwistProvider from "./serwist-provider";
 import Providers from "./providers";
 
@@ -58,6 +60,7 @@ export default function RootLayout({ children }: Props) {
   return (
     <html lang="en">
       <body>
+        <AppSplash />
         <AppSerwistProvider>
           <Providers>{children}</Providers>
         </AppSerwistProvider>

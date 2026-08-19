@@ -114,6 +114,9 @@ export type PaymentRecord = {
 
   /** Current outstanding loan principal (last passbook outstanding value). */
   outstandingPrincipal: number;
+
+  /** Member currently has outstanding special-loan principal. */
+  hasSpecialLoan: boolean;
 };
 
 export type PaymentSummary = {
