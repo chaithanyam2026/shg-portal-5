@@ -42,9 +42,9 @@ export default function LoginCard({ callbackUrl }: Props) {
               titleLayout="column"
             />
 
-            {/* <Typography variant="body2" color="text.secondary">
-              Sign in to continue
-            </Typography> */}
+            <Typography variant="body2" color="text.secondary">
+              {/* Sign in to continue */}
+            </Typography>
           </Stack>
 
           <Divider />

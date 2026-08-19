@@ -49,6 +49,20 @@ function emptyDues() {
   };
 }
 
+function emptyOutstanding() {
+  return {
+    outstandingPrincipal: 0,
+    outstandingSpecialLoan: 0,
+  };
+}
+
+function loanOutstanding(
+  outstandingPrincipals: Map<string, { outstandingPrincipal: number; outstandingSpecialLoan: number }>,
+  memberId: string,
+) {
+  return outstandingPrincipals.get(memberId) ?? emptyOutstanding();
+}
+
 export async function getPayments(meetingId: string): Promise<PaymentSummary> {
   await connectMongo();
 
@@ -69,10 +83,12 @@ export async function getPayments(meetingId: string): Promise<PaymentSummary> {
 
   if (payments.length === 0) {
     const records: PaymentRecord[] = members.map((member) => {
-      const memberDues = dues.get(member._id.toString()) ?? emptyDues();
+      const memberId = member._id.toString();
+      const memberDues = dues.get(memberId) ?? emptyDues();
+      const outstanding = loanOutstanding(outstandingPrincipals, memberId);
 
       return {
-        memberId: member._id.toString(),
+        memberId,
 
         memberCode: member.memberCode,
 
@@ -94,7 +110,9 @@ export async function getPayments(meetingId: string): Promise<PaymentSummary> {
 
         absentFineDue: memberDues.absentFineDue,
 
-        outstandingPrincipal: outstandingPrincipals.get(member._id.toString()) ?? 0,
+        outstandingPrincipal: outstanding.outstandingPrincipal,
+
+        hasSpecialLoan: outstanding.outstandingSpecialLoan > 0,
       };
     });
 
@@ -104,14 +122,16 @@ export async function getPayments(meetingId: string): Promise<PaymentSummary> {
   const memberMap = new Map(members.map((member) => [member._id.toString(), member]));
 
   const records: PaymentRecord[] = payments.map((payment) => {
-    const member = memberMap.get(payment.memberId.toString());
-    const memberDues = dues.get(payment.memberId.toString()) ?? emptyDues();
+    const memberId = payment.memberId.toString();
+    const member = memberMap.get(memberId);
+    const memberDues = dues.get(memberId) ?? emptyDues();
+    const outstanding = loanOutstanding(outstandingPrincipals, memberId);
 
     const total =
       payment.contribution + payment.loanRepayment + payment.absentFine + payment.specialLoanFine;
 
     return {
-      memberId: payment.memberId.toString(),
+      memberId,
 
       memberCode: member?.memberCode ?? "",
 
@@ -133,7 +153,9 @@ export async function getPayments(meetingId: string): Promise<PaymentSummary> {
 
       absentFineDue: memberDues.absentFineDue,
 
-      outstandingPrincipal: outstandingPrincipals.get(payment.memberId.toString()) ?? 0,
+      outstandingPrincipal: outstanding.outstandingPrincipal,
+
+      hasSpecialLoan: outstanding.outstandingSpecialLoan > 0,
     };
   });
 

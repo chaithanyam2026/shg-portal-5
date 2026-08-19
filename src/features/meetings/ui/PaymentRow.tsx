@@ -13,10 +13,17 @@ type Props = {
   serialNumber: number;
   record: PaymentRecord;
   disabled?: boolean;
+  showSpecialLoan?: boolean;
   onChange(record: PaymentRecord): void;
 };
 
-export default function PaymentRow({ serialNumber, record, disabled = false, onChange }: Props) {
+export default function PaymentRow({
+  serialNumber,
+  record,
+  disabled = false,
+  showSpecialLoan = false,
+  onChange,
+}: Props) {
   function update<K extends keyof PaymentRecord>(key: K, value: PaymentRecord[K]) {
     const next = {
       ...record,
@@ -84,15 +91,17 @@ export default function PaymentRow({ serialNumber, record, disabled = false, onC
         </Stack>
       </TableCell>
 
-      <TableCell width={150} sx={{ verticalAlign: "top" }}>
-        <AmountField
-          fullWidth
-          size="small"
-          disabled={disabled}
-          value={record.specialLoanFine}
-          onChange={(value) => update("specialLoanFine", value)}
-        />
-      </TableCell>
+      {showSpecialLoan && (
+        <TableCell width={150} sx={{ verticalAlign: "top" }}>
+          <AmountField
+            fullWidth
+            size="small"
+            disabled={disabled || !record.hasSpecialLoan}
+            value={record.specialLoanFine}
+            onChange={(value) => update("specialLoanFine", value)}
+          />
+        </TableCell>
+      )}
 
       <TableCell width={120} sx={{ verticalAlign: "top" }}>
         {record.total}

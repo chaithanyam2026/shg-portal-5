@@ -27,6 +27,11 @@ export default function PaymentTable({ records, disabled = false, onChange }: Pr
     onChange(next);
   }
 
+  const showSpecialLoan = records.some(
+    (record) => record.hasSpecialLoan || record.specialLoanFine > 0,
+  );
+  const columnCount = showSpecialLoan ? 8 : 7;
+
   return (
     <TableContainer component={Paper}>
       <Table>
@@ -39,7 +44,7 @@ export default function PaymentTable({ records, disabled = false, onChange }: Pr
             <TableCell>Contribution</TableCell>
             <TableCell>Loan Repayment</TableCell>
             <TableCell>Absent Fine</TableCell>
-            <TableCell>Special Loan</TableCell>
+            {showSpecialLoan && <TableCell>Special Loan</TableCell>}
             <TableCell>Total</TableCell>
             <TableCell>Remarks</TableCell>
           </TableRow>
@@ -48,7 +53,7 @@ export default function PaymentTable({ records, disabled = false, onChange }: Pr
         <TableBody>
           {records.length === 0 && (
             <TableRow>
-              <TableCell colSpan={8} align="center">
+              <TableCell colSpan={columnCount} align="center">
                 No members found.
               </TableCell>
             </TableRow>
@@ -60,6 +65,7 @@ export default function PaymentTable({ records, disabled = false, onChange }: Pr
               serialNumber={index + 1}
               record={record}
               disabled={disabled}
+              showSpecialLoan={showSpecialLoan}
               onChange={(value) => updateRecord(index, value)}
             />
           ))}
