@@ -12,6 +12,7 @@ import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
 import EventOutlinedIcon from "@mui/icons-material/EventOutlined";
 import GroupsOutlinedIcon from "@mui/icons-material/GroupsOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import PaymentsOutlinedIcon from "@mui/icons-material/PaymentsOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import { usePathname } from "next/navigation";
@@ -38,6 +39,7 @@ const NAV_ICONS: Record<string, typeof DashboardOutlinedIcon> = {
   "/meetings": EventOutlinedIcon,
   "/loans": AccountBalanceWalletOutlinedIcon,
   "/attendance": AssessmentOutlinedIcon,
+  "/chitty": PaymentsOutlinedIcon,
   "/financial-years": CalendarMonthOutlinedIcon,
   "/members": GroupsOutlinedIcon,
   "/reports": BarChartOutlinedIcon,

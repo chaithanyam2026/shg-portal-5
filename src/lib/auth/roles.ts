@@ -27,6 +27,9 @@ export const FINANCIAL_STEWARD_ROLES = [
   USER_ROLES.TREASURER,
 ] as const;
 
+/** Any signed-in member role may open Chitty. */
+export const CHITTY_ACCESS_ROLES = USER_ROLE_VALUES;
+
 export function isAdminRole(role?: string | null): boolean {
   return role === USER_ROLES.SUPER_ADMIN || role === USER_ROLES.ADMIN;
 }
