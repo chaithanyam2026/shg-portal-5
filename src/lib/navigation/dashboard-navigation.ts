@@ -18,6 +18,8 @@ import AssessmentOutlinedIcon from "@mui/icons-material/AssessmentOutlined";
 
 import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 
+import PaymentsOutlinedIcon from "@mui/icons-material/PaymentsOutlined";
+
 import { ADMIN_ROLES, FINANCIAL_STEWARD_ROLES, type UserRole } from "@/lib/auth/roles";
 
 import type { NavigationItem } from "./navigation-types";
@@ -32,6 +34,12 @@ export const dashboardNavigation: NavigationItem[] = [
     title: "Dashboard",
     href: "/",
     icon: DashboardOutlinedIcon,
+  },
+
+  {
+    title: "Chitty",
+    href: "/chitty",
+    icon: PaymentsOutlinedIcon,
   },
 
   {

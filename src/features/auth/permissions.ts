@@ -1,4 +1,4 @@
-import { ADMIN_ROLES, type UserRole } from "@/lib/auth/roles";
+import { ADMIN_ROLES, CHITTY_ACCESS_ROLES, type UserRole } from "@/lib/auth/roles";
 
 export type RoutePermission = {
   path: string;
@@ -23,6 +23,10 @@ export const ROUTE_PERMISSIONS: readonly RoutePermission[] = [
   },
   {
     path: "/attendance",
+  },
+  {
+    path: "/chitty",
+    roles: CHITTY_ACCESS_ROLES,
   },
   {
     path: "/reports",

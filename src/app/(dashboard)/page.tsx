@@ -6,6 +6,7 @@ import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
 import EventOutlinedIcon from "@mui/icons-material/EventOutlined";
 import GroupsOutlinedIcon from "@mui/icons-material/GroupsOutlined";
+import PaymentsOutlinedIcon from "@mui/icons-material/PaymentsOutlined";
 import { Card, CardActionArea, CardContent, Grid, Stack, Typography } from "@mui/material";
 
 import PageHeader from "@/components/layout/PageHeader";
@@ -25,6 +26,12 @@ const modules: DashboardModule[] = [
     description: "Conduct meetings and record attendance, payments, and expenses.",
     href: "/meetings",
     icon: EventOutlinedIcon,
+  },
+  {
+    title: "Chitty Dashboard",
+    description: "Track weekly chitty cash, GPay, and missing payments.",
+    href: "/chitty",
+    icon: PaymentsOutlinedIcon,
   },
   {
     title: "Loans",
