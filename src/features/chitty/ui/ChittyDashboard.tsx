@@ -132,7 +132,7 @@ export default function ChittyDashboard({ initialSheet }: Props) {
         <Alert severity="info">
           {toDateInputValue(new Date()) === sheet.date
             ? `Payment entry is closed after ${CHITTY_PAYMENT_LOCK_LABEL}.`
-            : "Previous Sundays are read-only, except for admin edits."}
+            : "Previous Sundays are read-only. Save is available only for the current Sunday."}
         </Alert>
       )}
 
