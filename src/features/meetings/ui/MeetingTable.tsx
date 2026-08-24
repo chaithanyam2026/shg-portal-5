@@ -102,7 +102,7 @@ function MeetingRows({ meetings }: { meetings: MeetingSummary[] }) {
             <Button component={Link} href={`/meetings/${meeting.id}/edit`} size="small" sx={{
               display: {
                 xs: "none",
-                sm: "inline-flex",
+                sm: "none",
               },
             }}>
               Edit
