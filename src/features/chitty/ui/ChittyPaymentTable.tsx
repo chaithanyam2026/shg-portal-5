@@ -59,8 +59,8 @@ export default function ChittyPaymentTable({
         <TableHead>
           <TableRow>
             <TableCell>Member</TableCell>
-            <TableCell width={140}>Cash Payment</TableCell>
-            <TableCell width={140}>GPay Payment</TableCell>
+            <TableCell width={200}>Cash_Payment</TableCell>
+            <TableCell width={200}>GPay_Payment</TableCell>
             <TableCell width={88} align="center">
               GPay
             </TableCell>
