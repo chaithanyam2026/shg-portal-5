@@ -86,7 +86,7 @@ function MeetingRows({ meetings }: { meetings: MeetingSummary[] }) {
         <TableRow key={meeting.id} hover>
           <TableCell>{formatDate(meeting.meetingDate)}</TableCell>
 
-          <TableCell>{meeting.place}</TableCell>
+          {/* <TableCell>{meeting.place}</TableCell> */}
 
           <TableCell>
             <MeetingStatusChip status={meeting.status} />
@@ -99,7 +99,12 @@ function MeetingRows({ meetings }: { meetings: MeetingSummary[] }) {
               View
             </Button>
 
-            <Button component={Link} href={`/meetings/${meeting.id}/edit`} size="small">
+            <Button component={Link} href={`/meetings/${meeting.id}/edit`} size="small" sx={{
+              display: {
+                xs: "none",
+                sm: "none",
+              },
+            }}>
               Edit
             </Button>
           </TableCell>
@@ -178,7 +183,7 @@ export default function MeetingTable({ meetings }: Props) {
                     <TableRow>
                       <TableCell>Meeting Date</TableCell>
 
-                      <TableCell>Place</TableCell>
+                      {/* <TableCell>Place</TableCell> */}
 
                       <TableCell>Status</TableCell>
 
