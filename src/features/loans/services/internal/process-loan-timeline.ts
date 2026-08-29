@@ -75,14 +75,32 @@ type MonthlyFineEvaluationResult = {
   shouldApplyFine: boolean;
 };
 
-function shouldEvaluateFineAtFinancialYearEnd(financialYearEndDate: Date): boolean {
+function shouldEvaluateAtFinancialYearEnd(financialYearEndDate: Date): boolean {
   const nextMonthCheckpoint = new Date(
     financialYearEndDate.getFullYear(),
     financialYearEndDate.getMonth() + 1,
     1,
   );
 
-  return compareCalendarDates(nextMonthCheckpoint, financialYearEndDate) > 0;
+  const today = new Date();
+
+  const todayDate = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate(),
+  );
+
+  const oneWeekFromToday = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate() + 7,
+  );
+
+  return (
+    compareCalendarDates(nextMonthCheckpoint, financialYearEndDate) > 0 &&
+    compareCalendarDates(financialYearEndDate, todayDate) >= 0 &&
+    compareCalendarDates(financialYearEndDate, oneWeekFromToday) <= 0
+  );
 }
 
 function evaluateMonthlyFineForMonth(
@@ -433,25 +451,25 @@ export function processLoanTimeline({
       financialYearEndDate,
       financialYearEndDate,
     );
+    if (shouldEvaluateAtFinancialYearEnd(financialYearEndDate)) {
+      if (interest.interestAmount > 0) {
+        pendingInterest += interest.interestAmount;
 
-    if (interest.interestAmount > 0) {
-      pendingInterest += interest.interestAmount;
+        entries.push(
+          createFineLedgerEntry({
+            transactionDate: toCalendarDate(financialYearEndDate),
+            description: "Interest accrued till financial year end",
+            interestDays: interest.interestDays,
+            interestCharged: interest.interestAmount,
+            loanFineCharged: 0,
+            outstandingPrincipal,
+            pendingInterest,
+            pendingLoanFine,
+          }),
+        );
+      }
 
-      entries.push(
-        createFineLedgerEntry({
-          transactionDate: toCalendarDate(financialYearEndDate),
-          description: "Interest accrued till financial year end",
-          interestDays: interest.interestDays,
-          interestCharged: interest.interestAmount,
-          loanFineCharged: 0,
-          outstandingPrincipal,
-          pendingInterest,
-          pendingLoanFine,
-        }),
-      );
-    }
 
-    if (shouldEvaluateFineAtFinancialYearEnd(financialYearEndDate)) {
       const fyEndYear = financialYearEndDate.getFullYear();
       const fyEndMonth = financialYearEndDate.getMonth();
 
