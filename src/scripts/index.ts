@@ -18,6 +18,10 @@ async function main() {
       await import("./seed-admin");
       break;
 
+    case "chitty-users":
+      await import("./seed-chitty-users");
+      break;
+
     case "fix-meeting-indexes":
       await import("./fix-meeting-indexes");
       break;

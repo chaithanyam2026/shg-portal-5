@@ -19,6 +19,7 @@ import {
 
 import { parseDateInputValue, toDateInputValue } from "@/lib/utils/date";
 
+import { calculateLoanCloseTotal } from "../domain";
 import type { LoanDetails } from "../types";
 import { formatCurrency } from "./format";
 
@@ -68,6 +69,10 @@ export default function CloseLoanDialog({ loan, onClose, onSuccess }: Props) {
   const [closedDate, setClosedDate] = useState(toDateInputValue(new Date()));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [pendingAbsentFine, setPendingAbsentFine] = useState(0);
+  const [pendingContribution, setPendingContribution] = useState(0);
+  const [balancesLoading, setBalancesLoading] = useState(false);
+  const [balancesError, setBalancesError] = useState("");
 
   useEffect(() => {
     if (!loan) {
@@ -78,6 +83,47 @@ export default function CloseLoanDialog({ loan, onClose, onSuccess }: Props) {
     setClosedDate(toDateInputValue(new Date()));
     setError("");
     setLoading(false);
+    setPendingAbsentFine(0);
+    setPendingContribution(0);
+    setBalancesError("");
+    setBalancesLoading(true);
+
+    const loanId = loan._id;
+    let cancelled = false;
+
+    async function loadCloseBalances() {
+      try {
+        const response = await fetch(`/api/loans/${loanId}/close-balances`);
+        const result = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          throw new Error(result.message ?? "Unable to load closing balances.");
+        }
+
+        if (cancelled) {
+          return;
+        }
+
+        setPendingAbsentFine(result.pendingAbsentFine ?? 0);
+        setPendingContribution(result.pendingContribution ?? 0);
+      } catch (loadError) {
+        if (!cancelled) {
+          setBalancesError(
+            loadError instanceof Error ? loadError.message : "Unable to load closing balances.",
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setBalancesLoading(false);
+        }
+      }
+    }
+
+    void loadCloseBalances();
+
+    return () => {
+      cancelled = true;
+    };
   }, [loan]);
 
   function handleClose() {
@@ -139,14 +185,24 @@ export default function CloseLoanDialog({ loan, onClose, onSuccess }: Props) {
 
   const requiresOutstandingCloseNote = Boolean(loan && !loan.isClosable && loan.canBeClosed);
 
+  const closeTotal = loan
+    ? calculateLoanCloseTotal({
+        outstandingPrincipal: loan.outstandingPrincipal,
+        pendingInterest: loan.pendingInterest,
+        pendingLoanFine: loan.pendingLoanFine,
+        pendingAbsentFine,
+        pendingContribution,
+      })
+    : 0;
+
   const summaryRows: CloseSummaryRow[] = loan
     ? [
         { label: "Outstanding Principal", value: loan.outstandingPrincipal },
         { label: "Pending Interest", value: loan.pendingInterest },
         { label: "Pending Loan Fine", value: loan.pendingLoanFine },
-        { label: "Pending Absent Fine", value: loan.pendingAbsentFine },
-        { label: "Pending Contribution", value: loan.pendingContribution },
-        { label: "Total", value: loan.closeTotal, emphasize: true },
+        { label: "Pending Absent Fine", value: pendingAbsentFine },
+        { label: "Pending Contribution", value: pendingContribution },
+        { label: "Total", value: closeTotal, emphasize: true },
       ]
     : [];
 
@@ -181,16 +237,22 @@ export default function CloseLoanDialog({ loan, onClose, onSuccess }: Props) {
                 Closing Balances
               </Typography>
 
-              {summaryRows.map((row) => (
-                <CloseSummaryItem key={row.label} {...row} />
-              ))}
+              {balancesLoading ? (
+                <Typography variant="body2" color="text.secondary">
+                  Loading closing balances...
+                </Typography>
+              ) : (
+                summaryRows.map((row) => <CloseSummaryItem key={row.label} {...row} />)
+              )}
             </Stack>
           )}
 
+          {balancesError && <Alert severity="error">{balancesError}</Alert>}
+
           {requiresOutstandingCloseNote && (
             <Alert severity="warning">
-              This loan still has outstanding principal. It can be closed because the financial
-              year end date has passed. Add a comment explaining why it is being closed.
+              This loan still has outstanding principal. It can be closed because the financial year
+              end date has passed. Add a comment explaining why it is being closed.
             </Alert>
           )}
 
@@ -242,7 +304,9 @@ export default function CloseLoanDialog({ loan, onClose, onSuccess }: Props) {
           form="close-loan-form"
           variant="contained"
           color="warning"
-          disabled={loading || !comment.trim() || !closedDate}
+          disabled={
+            loading || balancesLoading || Boolean(balancesError) || !comment.trim() || !closedDate
+          }
         >
           {loading ? "Closing..." : "Close Loan"}
         </Button>

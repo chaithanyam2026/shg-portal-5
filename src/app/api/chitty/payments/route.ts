@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { getChittyPayments, saveChittyPayments } from "@/features/chitty/services";
-import { SaveChittyPaymentsSchema } from "@/features/chitty/validation";
 import { requireAuth } from "@/lib/auth/guards";
 import { AppError } from "@/lib/errors";
 
 export async function GET(request: NextRequest) {
   try {
+    const chittyId = request.nextUrl.searchParams.get("chittyId") ?? undefined;
     const date = request.nextUrl.searchParams.get("date") ?? undefined;
-    const sheet = await getChittyPayments(date);
+    const sheet = await getChittyPayments({ chittyId, date });
     return NextResponse.json(sheet);
   } catch (error) {
     if (error instanceof AppError) {
@@ -26,11 +26,7 @@ export async function PATCH(request: NextRequest) {
   try {
     const session = await requireAuth();
     const body = await request.json();
-    const data = SaveChittyPaymentsSchema.parse(body);
-    const sheet = await saveChittyPayments({
-      ...data,
-      userId: session.user.id,
-    });
+    const sheet = await saveChittyPayments(body, session.user.id);
     return NextResponse.json(sheet);
   } catch (error) {
     if (error instanceof AppError) {

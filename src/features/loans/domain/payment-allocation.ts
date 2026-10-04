@@ -33,6 +33,7 @@ export type PaymentAllocationInput = {
  * 3. Principal
  */
 export type PaymentAllocation = {
+  amountPaid: number;
   /**
    * Principal repaid.
    */
@@ -92,6 +93,8 @@ export function allocateLoanPayment(input: PaymentAllocationInput): PaymentAlloc
   remaining -= paidPrincipal;
 
   return {
+    amountPaid: input.payment,
+
     paidPrincipal,
 
     paidInterest,

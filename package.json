@@ -11,6 +11,7 @@
     "format:check": "prettier . --check",
     "seed:members": "tsx src/scripts/index.ts members",
     "seed:admin": "tsx src/scripts/index.ts admin",
+    "seed:chitty-users": "tsx src/scripts/index.ts chitty-users",
     "fix:meeting-indexes": "tsx src/scripts/index.ts fix-meeting-indexes",
     "fix:calendar-dates": "tsx src/scripts/index.ts fix-calendar-dates"
   },
@@ -45,6 +46,7 @@
     "react-hook-form": "^7.81.0",
     "react-icons": "^5.7.0",
     "serwist": "^9.5.12",
+    "sharp": "^0.35.4",
     "uuid": "^14.0.1",
     "zod": "^4.4.3"
   },

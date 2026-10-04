@@ -3,7 +3,7 @@
 import { Alert, Stack } from "@mui/material";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import AddIcon from "@mui/icons-material/Add";
 import { useLoanFilters } from "../hooks";
@@ -29,13 +29,20 @@ type Props = {
   financialYears: FinancialYearLookup[];
 
   ownLoansOnly?: boolean;
+
+  initialFinancialYearId?: string;
 };
 
-export default function LoanList({ loans, financialYears, ownLoansOnly = false }: Props) {
-  // const [search, setSearch] =
-  //   useState("");
-
-  const [financialYearId, setFinancialYearId] = useState("");
+export default function LoanList({
+  loans: initialLoans,
+  financialYears,
+  ownLoansOnly = false,
+  initialFinancialYearId = "",
+}: Props) {
+  const [loans, setLoans] = useState(initialLoans);
+  const [yearLoading, setYearLoading] = useState(false);
+  const [yearError, setYearError] = useState("");
+  const skipYearFetch = useRef(true);
 
   // const [loanType, setLoanType] =
   //   useState("");
@@ -96,7 +103,62 @@ export default function LoanList({ loans, financialYears, ownLoansOnly = false }
       status,
     ]); */
   const { filters, filteredLoans, setSearch, setFinancialYear, setLoanType, setStatus } =
-    useLoanFilters(loans);
+    useLoanFilters(loans, { financialYearId: initialFinancialYearId });
+
+  useEffect(() => {
+    setLoans(initialLoans);
+  }, [initialLoans]);
+
+  useEffect(() => {
+    if (skipYearFetch.current) {
+      skipYearFetch.current = false;
+      return;
+    }
+
+    const financialYearId = filters.financialYearId;
+    let cancelled = false;
+
+    async function loadLoansForYear() {
+      setYearLoading(true);
+      setYearError("");
+
+      try {
+        const params = new URLSearchParams();
+
+        if (financialYearId) {
+          params.set("financialYearId", financialYearId);
+        }
+
+        const query = params.toString();
+        const response = await fetch(query ? `/api/loans?${query}` : "/api/loans");
+        const result = await response.json().catch(() => []);
+
+        if (!response.ok) {
+          throw new Error(
+            result.message ?? "Unable to load loans for the selected financial year.",
+          );
+        }
+
+        if (!cancelled) {
+          setLoans(Array.isArray(result) ? result : []);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setYearError(error instanceof Error ? error.message : "Unable to load loans.");
+        }
+      } finally {
+        if (!cancelled) {
+          setYearLoading(false);
+        }
+      }
+    }
+
+    void loadLoansForYear();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [filters.financialYearId]);
 
   const hasActiveFilters =
     filters.search !== "" ||
@@ -133,6 +195,7 @@ export default function LoanList({ loans, financialYears, ownLoansOnly = false }
             <Select
               label="Financial Year"
               value={filters.financialYearId}
+              disabled={yearLoading}
               onChange={(event) => setFinancialYear(event.target.value)}
             >
               <MenuItem value="">All</MenuItem>
@@ -186,12 +249,18 @@ export default function LoanList({ loans, financialYears, ownLoansOnly = false }
           </FormControl>
         </Stack>
 
-        {filteredLoans.length === 0 ? (
+        {yearError && <Alert severity="error">{yearError}</Alert>}
+
+        {yearLoading ? (
+          <Alert severity="info">Loading loans...</Alert>
+        ) : filteredLoans.length === 0 ? (
           <Alert severity="info">
             {loans.length === 0
               ? ownLoansOnly
                 ? "You do not have any loans."
-                : "No loans have been created yet."
+                : filters.financialYearId
+                  ? "No loans found for this financial year."
+                  : "No loans have been created yet."
               : hasActiveFilters
                 ? "No loans match the current filters. Try adjusting your search or filters."
                 : "No loans found."}

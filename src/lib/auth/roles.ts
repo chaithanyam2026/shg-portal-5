@@ -1,20 +1,13 @@
-import {
-  USER_ROLES,
-  USER_ROLE_VALUES,
-  type UserRole,
-} from "@/lib/constants/roles";
+import { USER_ROLES, USER_ROLE_VALUES, type UserRole } from "@/lib/constants/roles";
 
-export {
-  USER_ROLES,
-  USER_ROLE_VALUES,
-  type UserRole,
-} from "@/lib/constants/roles";
+export { USER_ROLES, USER_ROLE_VALUES, type UserRole } from "@/lib/constants/roles";
 
 export const ROLE_LABELS: Record<UserRole, string> = {
   SUPER_ADMIN: "Super Admin",
   ADMIN: "Admin",
   SECRETARY: "Secretary",
   TREASURER: "Treasurer",
+  CHITTY_ADMIN: "Chitty Admin",
   MEMBER: "Member",
 };
 
@@ -34,11 +27,18 @@ export function isAdminRole(role?: string | null): boolean {
   return role === USER_ROLES.SUPER_ADMIN || role === USER_ROLES.ADMIN;
 }
 
+export function isChittyAdminRole(role?: string | null): boolean {
+  return role === USER_ROLES.CHITTY_ADMIN;
+}
+
 export function isFinancialStewardRole(role?: string | null): boolean {
   return FINANCIAL_STEWARD_ROLES.includes(role as (typeof FINANCIAL_STEWARD_ROLES)[number]);
 }
 
-export function canResetUserPassword(actorRole?: string | null, targetRole?: string | null): boolean {
+export function canResetUserPassword(
+  actorRole?: string | null,
+  targetRole?: string | null,
+): boolean {
   return isAdminRole(actorRole) && !isAdminRole(targetRole);
 }
 

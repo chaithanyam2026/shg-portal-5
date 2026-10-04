@@ -18,11 +18,7 @@ export default async function Page() {
 
   return (
     <>
-      <PageHeader
-        title="Chitty Payment"
-        showBack={false}
-        subtitle="Weekly chitty payment tracking"
-      />
+      <PageHeader title="Chitty" showBack={false} subtitle="Weekly chitty collections" />
       <ChittyDashboard initialSheet={sheet} />
     </>
   );

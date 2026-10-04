@@ -1,9 +1,11 @@
+import { cache } from "react";
+
 import { auth } from "@/auth";
 
 import Member from "@/models/Member";
 import User from "@/models/User";
 
-export async function getCurrentMemberId(): Promise<string | null> {
+export const getCurrentMemberId = cache(async (): Promise<string | null> => {
   const session = await auth();
 
   if (!session?.user?.id) {
@@ -27,4 +29,4 @@ export async function getCurrentMemberId(): Promise<string | null> {
     .lean();
 
   return member?._id.toString() ?? null;
-}
+});

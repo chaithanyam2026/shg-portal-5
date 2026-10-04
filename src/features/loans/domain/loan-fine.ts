@@ -51,6 +51,8 @@ export type MonthlyLoanFineAtMonthEndInput = {
   pendingFineAtMonthStart: number;
 
   finePaidDuringMonth: number;
+
+  amountPaidInMonth: number;
 };
 
 /**
@@ -94,7 +96,7 @@ export function evaluateMonthlyLoanFineAtMonthEnd(
   }
 
   const metMinimumPrincipal =
-    input.principalPaidInMonth >= input.minimumMonthlyRepayment;
+    input.amountPaidInMonth >= input.minimumMonthlyRepayment;
 
   const metPendingFines =
     input.pendingFineAtMonthStart === 0 ||

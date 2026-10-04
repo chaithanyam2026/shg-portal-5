@@ -161,6 +161,8 @@ export function calculateFineWaiverPayment(
     principalPaidInMonth,
     pendingFineAtMonthStart: pendingFineDueDuringMonth,
     finePaidDuringMonth,
+    //TODO: Temp fix amountPaidInMonth
+    amountPaidInMonth: principalPaidInMonth + finePaidDuringMonth
   });
 
   if (evaluation.shouldApplyFine === false) {
@@ -192,6 +194,8 @@ export function calculateFineWaiverPayment(
     principalPaidInMonth: principalPaidInMonth + minimumPrincipalShortfall,
     pendingFineAtMonthStart: pendingFineDueDuringMonth,
     finePaidDuringMonth: finePaidDuringMonth + pendingFineShortfall,
+    //TODO: Temp fix amountPaidInMonth
+    amountPaidInMonth: principalPaidInMonth + finePaidDuringMonth
   });
 
   const parts: string[] = [];

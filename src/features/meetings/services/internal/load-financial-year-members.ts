@@ -1,7 +1,7 @@
 import type { Types } from "mongoose";
 
-import FinancialYear from "@/models/FinancialYear";
 import type { FinancialYearDocument } from "@/models/FinancialYear";
+import FinancialYear from "@/models/FinancialYear";
 import "@/models/Member";
 
 type PopulatedFinancialYearMember = {
@@ -21,6 +21,7 @@ export async function loadFinancialYearMembers(financialYearId: string) {
     .populate({
       path: "members.memberId",
       select: "memberCode name",
+      // Go-live WhatsApp: also select "phone" and return it with each member.
     })
     .lean<PopulatedFinancialYear>();
 

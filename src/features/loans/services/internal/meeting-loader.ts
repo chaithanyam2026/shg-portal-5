@@ -13,10 +13,14 @@ type LoadLoanRepaymentsInput = {
   memberId: {
     toString(): string;
   };
+  financialYearId?: {
+    toString(): string;
+  };
 };
 
 type LoadRepaymentsForMembersInput = {
   memberIds: string[];
+  financialYearId?: string;
 };
 
 type MeetingRepaymentDocument = {
@@ -32,6 +36,14 @@ type MeetingRepaymentDocument = {
   }>;
 };
 
+function financialYearObjectId(financialYearId?: { toString(): string } | string) {
+  if (!financialYearId) {
+    return undefined;
+  }
+
+  return new Types.ObjectId(financialYearId.toString());
+}
+
 /**
  * Loads all loan repayments for a member.
  *
@@ -40,20 +52,46 @@ type MeetingRepaymentDocument = {
  */
 export async function loadLoanRepayments({
   memberId,
+  financialYearId,
 }: LoadLoanRepaymentsInput): Promise<LoanRepayment[]> {
   const memberObjectId = new Types.ObjectId(memberId.toString());
+  const yearId = financialYearObjectId(financialYearId);
 
-  const meetings = (await Meeting.find()
-    .where("payments.memberId")
-    .equals(memberObjectId)
-    .select({
-      meetingDate: 1,
-      payments: 1,
-    })
-    .sort({
-      meetingDate: 1,
-    })
-    .lean()) as unknown as MeetingRepaymentDocument[];
+  const meetings = (await Meeting.aggregate([
+    {
+      $match: {
+        ...(yearId ? { financialYearId: yearId } : {}),
+        payments: {
+          $elemMatch: {
+            memberId: memberObjectId,
+            loanRepayment: { $gt: 0 },
+          },
+        },
+      },
+    },
+    {
+      $sort: {
+        meetingDate: 1,
+      },
+    },
+    {
+      $project: {
+        meetingDate: 1,
+        payments: {
+          $filter: {
+            input: "$payments",
+            as: "payment",
+            cond: {
+              $and: [
+                { $eq: ["$$payment.memberId", memberObjectId] },
+                { $gt: ["$$payment.loanRepayment", 0] },
+              ],
+            },
+          },
+        },
+      },
+    },
+  ])) as MeetingRepaymentDocument[];
 
   return collectRepaymentsFromMeetings(meetings, memberId.toString());
 }
@@ -65,9 +103,7 @@ function collectRepaymentsFromMeetings(
   const repayments: LoanRepayment[] = [];
 
   for (const meeting of meetings) {
-    const payment = meeting.payments.find(
-      (item) => item.memberId.toString() === memberId,
-    );
+    const payment = meeting.payments.find((item) => item.memberId.toString() === memberId);
 
     if (!payment || payment.loanRepayment <= 0) {
       continue;
@@ -89,6 +125,7 @@ function collectRepaymentsFromMeetings(
  */
 export async function loadRepaymentsForMembers({
   memberIds,
+  financialYearId,
 }: LoadRepaymentsForMembersInput): Promise<Map<string, LoanRepayment[]>> {
   const uniqueMemberIds = [...new Set(memberIds)];
 
@@ -101,29 +138,46 @@ export async function loadRepaymentsForMembers({
   }
 
   const memberObjectIds = uniqueMemberIds.map((memberId) => new Types.ObjectId(memberId));
+  const yearId = financialYearObjectId(financialYearId);
 
-  const meetings = (await Meeting.find({
-    payments: {
-      $elemMatch: {
-        memberId: { $in: memberObjectIds },
-        loanRepayment: { $gt: 0 },
+  const meetings = (await Meeting.aggregate([
+    {
+      $match: {
+        ...(yearId ? { financialYearId: yearId } : {}),
+        payments: {
+          $elemMatch: {
+            memberId: { $in: memberObjectIds },
+            loanRepayment: { $gt: 0 },
+          },
+        },
       },
     },
-  })
-    .select({
-      meetingDate: 1,
-      payments: 1,
-    })
-    .sort({
-      meetingDate: 1,
-    })
-    .lean()) as unknown as MeetingRepaymentDocument[];
+    {
+      $sort: {
+        meetingDate: 1,
+      },
+    },
+    {
+      $project: {
+        meetingDate: 1,
+        payments: {
+          $filter: {
+            input: "$payments",
+            as: "payment",
+            cond: {
+              $and: [
+                { $in: ["$$payment.memberId", memberObjectIds] },
+                { $gt: ["$$payment.loanRepayment", 0] },
+              ],
+            },
+          },
+        },
+      },
+    },
+  ])) as MeetingRepaymentDocument[];
 
   for (const memberId of uniqueMemberIds) {
-    repaymentsByMember.set(
-      memberId,
-      collectRepaymentsFromMeetings(meetings, memberId),
-    );
+    repaymentsByMember.set(memberId, collectRepaymentsFromMeetings(meetings, memberId));
   }
 
   return repaymentsByMember;
