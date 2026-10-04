@@ -1,0 +1,56 @@
+[
+  {
+    "chittyCode": "CH001",
+    "name": "Ravi",
+    "phone": "9000000101",
+    "agentMemberCode": "m001"
+  },
+  {
+    "chittyCode": "CH001",
+    "name": "Lakshmi",
+    "phone": "9000000102",
+    "agentMemberCode": "m001"
+  },
+  {
+    "chittyCode": "CH001",
+    "name": "Meera",
+    "phone": "9000000201",
+    "agentMemberCode":"m001"
+  },
+  {
+    "chittyCode": "CH001",
+    "name": "Arun",
+    "phone": "9000000202",
+    "agentMemberCode": "m001"
+  },
+  {
+    "chittyCode": "CH001",
+    "name": "Lakshmi2",
+    "phone": "9000000102",
+    "agentMemberCode": "m001"
+  },
+  {
+    "chittyCode": "CH001",
+    "name": "Meera2",
+    "phone": "9000000201",
+    "agentMemberCode":"m001"
+  },
+  {
+    "chittyCode": "CH001",
+    "name": "Arun2",
+    "phone": "9000000202",
+    "agentMemberCode": "m001"
+  },
+  {
+    "chittyCode": "CH001",
+    "name": "Divya",
+    "phone": "9000000301",
+    "agentMemberCode": "m002"
+  },
+  {
+    "chittyCode": "CH001",
+    "name": "Nithin",
+    "phone": "9000000401",
+    "agentMemberCode": "m002"
+  }
+]

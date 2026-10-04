@@ -18,3 +18,4 @@ export * from "./meeting-expense";
 
 export * from "./meeting-other-income";
 export * from "./meeting-close";
+export * from "./whatsapp-template";

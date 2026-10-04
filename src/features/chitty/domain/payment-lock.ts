@@ -1,11 +1,11 @@
 import { APP_TIMEZONE, compareCalendarDates, toCalendarDate } from "@/lib/utils/date";
 
-/** Payments cannot be edited at or after this local time each day. */
-export const CHITTY_PAYMENT_LOCK_HOUR = 19;
+/** Members cannot edit at or after this local time on the current Sunday. */
+export const CHITTY_PAYMENT_LOCK_HOUR = 20;
 
-export const CHITTY_PAYMENT_LOCK_MINUTE = 45;
+export const CHITTY_PAYMENT_LOCK_MINUTE = 0;
 
-export const CHITTY_PAYMENT_LOCK_LABEL = "7:45 PM";
+export const CHITTY_PAYMENT_LOCK_LABEL = "8:00 PM";
 
 function getTimePartsInAppTimezone(date: Date): { hour: number; minute: number } {
   const parts = new Intl.DateTimeFormat("en-GB", {
@@ -21,18 +21,13 @@ function getTimePartsInAppTimezone(date: Date): { hour: number; minute: number }
   };
 }
 
-export function isChittyPaymentLocked(
-  now: Date,
-  sheetDate: Date,
-  options?: { allowPastEdits?: boolean },
-): boolean {
-  if (options?.allowPastEdits) {
-    return false;
-  }
-  const today = toCalendarDate(now);
-  const sheet = toCalendarDate(sheetDate);
+export function isCurrentChittySunday(now: Date, sheetDate: Date): boolean {
+  return compareCalendarDates(toCalendarDate(now), toCalendarDate(sheetDate)) === 0;
+}
 
-  if (compareCalendarDates(sheet, today) !== 0) {
+/** True for any day other than the sheet date, and on that date from 8:00 PM onward. */
+export function isAfterChittyPaymentCutoff(now: Date, sheetDate: Date): boolean {
+  if (!isCurrentChittySunday(now, sheetDate)) {
     return true;
   }
 

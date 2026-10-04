@@ -36,5 +36,8 @@ export async function closeMeeting(id: string, userId?: string | null): Promise<
   const { revalidateMeetings } = await import("@/lib/cache");
   revalidateMeetings();
 
+  const { notifyMeetingClosed } = await import("./internal/send-whatsapp");
+  await notifyMeetingClosed(id);
+
   return getMeeting(id);
 }

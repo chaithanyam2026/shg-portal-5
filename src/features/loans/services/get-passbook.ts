@@ -1,3 +1,5 @@
+import { cache } from "react";
+
 import connectMongo from "@/lib/db/mongodb";
 import { toCalendarDate } from "@/lib/utils/date";
 
@@ -8,19 +10,13 @@ import type { LoanPassbook } from "../domain";
 
 import { LoanIdInput, LoanIdSchema } from "../validation";
 
-import { buildLoanLedger } from "./internal/loan-ledger";
 import { Types } from "mongoose";
+import { buildLoanLedger } from "./internal/loan-ledger";
 
-/**
- * Returns the complete loan
- * passbook.
- */
-export async function getLoanPassbook(loanId: LoanIdInput): Promise<LoanPassbook> {
+export async function loadLoanPassbook(loanId: string): Promise<LoanPassbook> {
   await connectMongo();
 
-  const id = LoanIdSchema.parse(loanId);
-
-  const loan = await Loan.findById(id)
+  const loan = await Loan.findById(loanId)
     .populate<{
       memberId: {
         _id: Types.ObjectId;
@@ -65,6 +61,18 @@ export async function getLoanPassbook(loanId: LoanIdInput): Promise<LoanPassbook
 
     closedDate: loan.closedDate,
 
+    financialYearId: loan.financialYearId,
+
     financialYearEndDate: toCalendarDate(financialYear.endDate),
   });
 }
+
+/**
+ * Returns the complete loan
+ * passbook.
+ */
+export const getLoanPassbook = cache(async (loanId: LoanIdInput): Promise<LoanPassbook> => {
+  const id = LoanIdSchema.parse(loanId);
+
+  return loadLoanPassbook(id);
+});

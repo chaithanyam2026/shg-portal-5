@@ -16,10 +16,10 @@ import { toIsoString } from "@/lib/utils/date";
 
 import { ObjectIdSchema } from "../validation";
 
+import { getCurrentMemberId } from "@/lib/auth/current-member";
+import { CACHE_TAGS, remember } from "@/lib/cache";
 import { buildLoanLedger } from "./internal/loan-ledger";
 import { loadRepaymentsForMembers } from "./internal/meeting-loader";
-import { CACHE_TAGS, remember } from "@/lib/cache";
-import { getCurrentMemberId } from "@/lib/auth/current-member";
 
 import { canCurrentUserViewAllLoans } from "./internal/loan-access";
 
@@ -102,6 +102,7 @@ async function queryLoans(filters: ListLoansInput = {}): Promise<LoanSummary[]> 
 
   const repaymentsByMember = await loadRepaymentsForMembers({
     memberIds,
+    financialYearId: filters.financialYearId,
   });
 
   return Promise.all(
@@ -124,6 +125,7 @@ async function queryLoans(filters: ListLoansInput = {}): Promise<LoanSummary[]> 
           expectedMonthlyRepayment: loan.expectedMonthlyRepayment,
           disbursedDate: loan.disbursedDate,
           closedDate: loan.closedDate,
+          financialYearId: financialYear._id,
           financialYearEndDate: toCalendarDate(financialYear.endDate),
         },
         repaymentsByMember.get(memberId) ?? [],
@@ -158,8 +160,7 @@ async function queryLoans(filters: ListLoansInput = {}): Promise<LoanSummary[]> 
 
         expectedMonthlyRepayment: loan.expectedMonthlyRepayment,
 
-        sanctionedDate:
-          toIsoString(loan.sanctionedDate) ?? toIsoString(loan.disbursedDate) ?? "",
+        sanctionedDate: toIsoString(loan.sanctionedDate) ?? toIsoString(loan.disbursedDate) ?? "",
 
         disbursedDate: toIsoString(loan.disbursedDate) ?? "",
 

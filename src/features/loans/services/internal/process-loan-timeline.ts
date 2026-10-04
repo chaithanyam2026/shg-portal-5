@@ -65,6 +65,8 @@ type MonthlyActivity = {
   principalPaid: number;
 
   finePaid: number;
+
+  amountPaid: number;
 };
 
 type MonthlyFineEvaluationResult = {
@@ -139,6 +141,7 @@ function evaluateMonthlyFineForMonth(
   const fineEvaluation = evaluateMonthlyLoanFineAtMonthEnd({
     minimumMonthlyRepayment,
     principalPaidInMonth: activity.principalPaid,
+    amountPaidInMonth: activity.amountPaid,
     pendingFineAtMonthStart:
       monthFineDueDuringMonth.get(evaluatedMonthKey) ??
       monthStartPendingFine.get(evaluatedMonthKey) ??
@@ -393,7 +396,7 @@ export function processLoanTimeline({
       outstandingFine: pendingLoanFine,
     });
 
-    const { paidPrincipal, paidInterest, paidLoanFine } = allocation;
+    const { paidPrincipal, paidInterest, paidLoanFine, amountPaid } = allocation;
 
     const balances = updateOutstandingBalance({
       outstandingPrincipal,
@@ -412,10 +415,12 @@ export function processLoanTimeline({
     const activity = monthlyActivity.get(repaymentMonthKey) ?? {
       principalPaid: 0,
       finePaid: 0,
+      amountPaid: 0,
     };
 
     activity.principalPaid += paidPrincipal;
     activity.finePaid += paidLoanFine;
+    activity.amountPaid += amountPaid;
     monthlyActivity.set(repaymentMonthKey, activity);
 
     entries.push(
@@ -454,7 +459,6 @@ export function processLoanTimeline({
     if (shouldEvaluateAtFinancialYearEnd(financialYearEndDate)) {
       if (interest.interestAmount > 0) {
         pendingInterest += interest.interestAmount;
-
         entries.push(
           createFineLedgerEntry({
             transactionDate: toCalendarDate(financialYearEndDate),

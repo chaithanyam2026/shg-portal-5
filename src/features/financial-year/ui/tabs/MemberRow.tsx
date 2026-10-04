@@ -35,7 +35,7 @@ export default function MemberRow({
   onChange,
   onRemove,
 }: Props) {
-  console.log('members==', row)
+
   return (
     <TableRow hover>
       <TableCell sx={{ minWidth: 240 }}>

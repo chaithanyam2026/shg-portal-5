@@ -1,7 +1,8 @@
 "use client";
 
+import { Fragment } from "react";
+
 import {
-  Checkbox,
   Paper,
   Table,
   TableBody,
@@ -10,7 +11,7 @@ import {
   TableFooter,
   TableHead,
   TableRow,
-  TextField,
+  Typography,
 } from "@mui/material";
 
 import { formatCurrency } from "@/lib/utils/format";
@@ -23,34 +24,58 @@ import NumberField from "./NumberField";
 type Props = {
   records: ChittyPaymentRecord[];
   canEditAll: boolean;
+  canEditSheet: boolean;
   currentMemberId: string | null;
-  sheetLocked?: boolean;
   disabled?: boolean;
   onChange(records: ChittyPaymentRecord[]): void;
 };
 
+type MemberGroup = {
+  agentMemberId: string;
+  agentMemberName: string;
+  records: ChittyPaymentRecord[];
+};
+
+function groupByMember(records: ChittyPaymentRecord[]): MemberGroup[] {
+  const groups: MemberGroup[] = [];
+  const indexByMember = new Map<string, number>();
+
+  for (const record of records) {
+    const existingIndex = indexByMember.get(record.agentMemberId);
+
+    if (existingIndex === undefined) {
+      indexByMember.set(record.agentMemberId, groups.length);
+      groups.push({
+        agentMemberId: record.agentMemberId,
+        agentMemberName: record.agentMemberName,
+        records: [record],
+      });
+      continue;
+    }
+
+    groups[existingIndex].records.push(record);
+  }
+
+  return groups;
+}
+
 export default function ChittyPaymentTable({
   records,
   canEditAll,
+  canEditSheet,
   currentMemberId,
-  sheetLocked = false,
   disabled = false,
   onChange,
 }: Props) {
-  const totals = records.reduce(
-    (sum, record) => ({
-      cash: sum.cash + record.cash,
-      gpay: sum.gpay + record.gpay,
-      gpayChecked: sum.gpayChecked + (record.gpayChecked ? record.gpay : 0),
-      missingCount: sum.missingCount + record.missingCount,
-    }),
-    { cash: 0, gpay: 0, gpayChecked: 0, missingCount: 0 },
-  );
+  const groups = groupByMember(records);
+  const grandTotal = records.reduce((sum, record) => sum + record.cash + record.gpay, 0);
 
-  function updateRecord(index: number, patch: Partial<ChittyPaymentRecord>) {
-    const next = [...records];
-    next[index] = { ...next[index], ...patch };
-    onChange(next);
+  function updateRecord(chittyUserId: string, patch: Partial<ChittyPaymentRecord>) {
+    onChange(
+      records.map((record) =>
+        record.chittyUserId === chittyUserId ? { ...record, ...patch } : record,
+      ),
+    );
   }
 
   return (
@@ -58,133 +83,71 @@ export default function ChittyPaymentTable({
       <Table size="small" stickyHeader>
         <TableHead>
           <TableRow>
-            <TableCell>Member</TableCell>
-            <TableCell width={200}>Cash_Payment</TableCell>
-            <TableCell width={200}>GPay_Payment</TableCell>
-            <TableCell width={88} align="center">
-              GPay
-            </TableCell>
-            <TableCell width={120}>Missing count</TableCell>
-            <TableCell sx={{ minWidth: 180 }}>Remarks</TableCell>
+            <TableCell>Chitty user</TableCell>
+            <TableCell width={140}>Cash_Amt</TableCell>
+            <TableCell width={140}>GPay_Amt</TableCell>
+            <TableCell align="right">Total</TableCell>
           </TableRow>
         </TableHead>
-
         <TableBody>
           {records.length === 0 && (
             <TableRow>
-              <TableCell colSpan={6} align="center">
-                No members found.
+              <TableCell colSpan={4} align="center">
+                No chitty users for this selection.
               </TableCell>
             </TableRow>
           )}
-
-          {records.map((record, index) => {
-            const rowDisabled =
-              disabled ||
-              !canEditChittyPaymentRow({
-                sheetLocked,
-                canEditAll,
-                currentMemberId,
-                rowMemberId: record.memberId,
-              });
-
-            return (
-              <TableRow key={record.memberId} hover>
-                <TableCell sx={{ whiteSpace: "nowrap" }}>{record.memberName}</TableCell>
-
-                <TableCell>
-                  <NumberField
-                    fullWidth
-                    size="small"
-                    disabled={rowDisabled}
-                    value={record.cash}
-                    slotProps={{
-                      input: {
-                        inputProps: {
-                          min: 0,
-                        },
-                      },
-                    }}
-                    onChange={(value) => updateRecord(index, { cash: Math.max(0, value) })}
-                  />
-                </TableCell>
-
-                <TableCell>
-                  <NumberField
-                    fullWidth
-                    size="small"
-                    disabled={rowDisabled}
-                    value={record.gpay}
-                    slotProps={{
-                      input: {
-                        inputProps: {
-                          min: 0,
-                        },
-                      },
-                    }}
-                    onChange={(value) => updateRecord(index, { gpay: Math.max(0, value) })}
-                  />
-                </TableCell>
-
-                <TableCell align="center">
-                  <Checkbox
-                    checked={record.gpayChecked}
-                    disabled={rowDisabled}
-                    onChange={(event) => updateRecord(index, { gpayChecked: event.target.checked })}
-                    slotProps={{
-                      input: {
-                        "aria-label": `Include ${record.memberName} GPay in total`,
-                      },
-                    }}
-                  />
-                </TableCell>
-
-                <TableCell>
-                  <NumberField
-                    fullWidth
-                    size="small"
-                    integer
-                    disabled={rowDisabled}
-                    value={record.missingCount}
-                    slotProps={{
-                      input: {
-                        inputProps: {
-                          min: 0,
-                          step: 1,
-                        },
-                      },
-                    }}
-                    onChange={(value) => updateRecord(index, { missingCount: Math.max(0, value) })}
-                  />
-                </TableCell>
-
-                <TableCell>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    multiline
-                    minRows={1}
-                    maxRows={3}
-                    disabled={rowDisabled}
-                    value={record.remarks}
-                    onChange={(event) => updateRecord(index, { remarks: event.target.value })}
-                  />
+          {groups.map((group) => (
+            <Fragment key={group.agentMemberId}>
+              <TableRow>
+                <TableCell colSpan={4} sx={{ bgcolor: "action.hover", borderBottom: 0, py: 1.25 }}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                    {group.agentMemberName}
+                  </Typography>
                 </TableCell>
               </TableRow>
-            );
-          })}
-        </TableBody>
+              {group.records.map((record) => {
+                const editable =
+                  !disabled &&
+                  canEditChittyPaymentRow({
+                    canEditSheet,
+                    canEditAll,
+                    currentMemberId,
+                    rowAgentMemberId: record.agentMemberId,
+                  });
 
+                return (
+                  <TableRow key={record.chittyUserId}>
+                    <TableCell sx={{ pl: 3 }}>{record.userName}</TableCell>
+                    <TableCell>
+                      <NumberField
+                        size="small"
+                        value={record.cash}
+                        disabled={!editable}
+                        onChange={(cash) => updateRecord(record.chittyUserId, { cash })}
+                        slotProps={{ htmlInput: { min: 0, step: "0.01" } }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <NumberField
+                        size="small"
+                        value={record.gpay}
+                        disabled={!editable}
+                        onChange={(gpay) => updateRecord(record.chittyUserId, { gpay })}
+                        slotProps={{ htmlInput: { min: 0, step: "0.01" } }}
+                      />
+                    </TableCell>
+                    <TableCell align="right">{formatCurrency(record.cash + record.gpay)}</TableCell>
+                  </TableRow>
+                );
+              })}
+            </Fragment>
+          ))}
+        </TableBody>
         <TableFooter>
           <TableRow>
-            <TableCell sx={{ fontWeight: 700 }}>Total</TableCell>
-            <TableCell sx={{ fontWeight: 700 }}>{formatCurrency(totals.cash)}</TableCell>
-            <TableCell sx={{ fontWeight: 700 }}>{formatCurrency(totals.gpay)}</TableCell>
-            <TableCell sx={{ fontWeight: 700 }} align="center">
-              {formatCurrency(totals.gpayChecked)}
-            </TableCell>
-            <TableCell sx={{ fontWeight: 700 }}>{totals.missingCount}</TableCell>
-            <TableCell />
+            <TableCell colSpan={3}>Full payment amount</TableCell>
+            <TableCell align="right">{formatCurrency(grandTotal)}</TableCell>
           </TableRow>
         </TableFooter>
       </Table>

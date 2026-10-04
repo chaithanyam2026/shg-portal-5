@@ -1,16 +1,19 @@
+import { cache } from "react";
+
 import connectMongo from "@/lib/db/mongodb";
 
 import FinancialYear from "@/models/FinancialYear";
 import Loan from "@/models/Loan";
 import Member from "@/models/Member";
 
-import { isFinancialYearOfficeBearer } from "@/features/financial-year/domain/office-bearers";
 import { auth } from "@/auth";
+import { isFinancialYearOfficeBearer } from "@/features/financial-year/domain/office-bearers";
 import { getCurrentMemberId } from "@/lib/auth/current-member";
 import { isAdminRole } from "@/lib/auth/roles";
 import { toIsoString } from "@/lib/utils/date";
 
-import type { LoanDetails } from "../types";
+import type { LoanPassbook } from "../domain";
+import type { LoanDetails, LoanSummaryResult } from "../types";
 
 import { LoanIdInput, LoanIdSchema } from "../validation";
 
@@ -22,19 +25,24 @@ import {
   canReopenLoan,
   canUpdateExpectedMonthlyRepayment,
 } from "../domain";
-import { getLoanPassbook } from "./get-passbook";
-import { getLoanMemberCloseBalances } from "./internal/get-loan-member-close-balances";
+import { getLoanPassbook, loadLoanPassbook } from "./get-passbook";
 import { assertCanViewLoan } from "./internal/loan-access";
 
-/**
- * Returns complete loan details.
- *
- * Static information comes from the
- * Loan document while financial
- * information is derived from the
- * Loan Summary.
- */
-export async function getLoan(loanId: LoanIdInput): Promise<LoanDetails> {
+const EMPTY_CLOSE_BALANCES = {
+  pendingAbsentFine: 0,
+  pendingContribution: 0,
+};
+
+export type LoanDetailPageData = {
+  loan: LoanDetails;
+  summary: LoanSummaryResult;
+  passbook: LoanPassbook;
+};
+
+async function loadLoanDetailPage(
+  loanId: LoanIdInput,
+  options: { freshPassbook?: boolean } = {},
+): Promise<LoanDetailPageData> {
   await connectMongo();
 
   const id = LoanIdSchema.parse(loanId);
@@ -47,7 +55,7 @@ export async function getLoan(loanId: LoanIdInput): Promise<LoanDetails> {
 
   await assertCanViewLoan(loan.memberId.toString());
 
-  const [financialYear, member, passbook, memberCloseBalances] = await Promise.all([
+  const [financialYear, member, passbook] = await Promise.all([
     FinancialYear.findById(loan.financialYearId)
       .select("name status endDate executiveCommittee")
       .lean(),
@@ -59,9 +67,7 @@ export async function getLoan(loanId: LoanIdInput): Promise<LoanDetails> {
       })
       .lean(),
 
-    getLoanPassbook(id),
-
-    getLoanMemberCloseBalances(loan.memberId.toString(), loan.financialYearId.toString()),
+    options.freshPassbook ? loadLoanPassbook(id) : getLoanPassbook(id),
   ]);
 
   if (!financialYear || !member) {
@@ -79,93 +85,115 @@ export async function getLoan(loanId: LoanIdInput): Promise<LoanDetails> {
   const isAdmin = isAdminRole(session?.user?.role);
 
   return {
-    _id: loan._id.toString(),
+    loan: {
+      _id: loan._id.toString(),
 
-    loanNumber: loan.loanNumber,
+      loanNumber: loan.loanNumber,
 
-    loanType: loan.loanType,
+      loanType: loan.loanType,
 
-    status: loan.status,
+      status: loan.status,
 
-    financialYearId: loan.financialYearId.toString(),
+      financialYearId: loan.financialYearId.toString(),
 
-    financialYearName: financialYear.name,
+      financialYearName: financialYear.name,
 
-    financialYearStatus: financialYear.status,
-
-    memberId: loan.memberId.toString(),
-
-    memberCode: member.memberCode,
-
-    memberName: member.name,
-
-    sanctionedAmount: loan.sanctionedAmount,
-
-    disbursedAmount: loan.disbursedAmount,
-
-    interestRate: loan.interestRate,
-
-    expectedMonthlyRepayment: loan.expectedMonthlyRepayment,
-
-    sanctionedDate:
-      toIsoString(loan.sanctionedDate) ?? toIsoString(loan.disbursedDate) ?? "",
-
-    disbursedDate: toIsoString(loan.disbursedDate) ?? "",
-
-    closedDate: toIsoString(loan.closedDate),
-
-    expiryDate: toIsoString(loan.expiryDate),
-
-    remarks: loan.remarks ?? "",
-
-    outstandingPrincipal: summary.outstandingPrincipal,
-
-    paidPrincipal: summary.paidPrincipal,
-
-    paidInterest: summary.paidInterest,
-
-    pendingInterest: summary.pendingInterest,
-
-    paidLoanFine: summary.paidLoanFine,
-
-    pendingLoanFine: summary.pendingLoanFine,
-
-    totalPayable: summary.totalPayable,
-
-    effectiveInterestPercentage: summary.effectiveInterestPercentage,
-
-    effectiveInterestWithFinesPercentage: summary.effectiveInterestWithFinesPercentage,
-
-    isClosable: summary.isClosable,
-
-    canBeClosed: canCloseLoan({
-      loanStatus: loan.status,
-      isClosable: summary.isClosable,
-      financialYearEndDate: financialYear.endDate,
-      isOfficeBearer,
-      isAdmin,
-    }),
-
-    canReopen: canReopenLoan(loan.status) && isAdmin,
-
-    canUpdateExpectedMonthlyRepayment: canUpdateExpectedMonthlyRepayment({
-      loanStatus: loan.status,
       financialYearStatus: financialYear.status,
-      isOfficeBearer,
-    }),
 
-    pendingAbsentFine: memberCloseBalances.pendingAbsentFine,
+      memberId: loan.memberId.toString(),
 
-    pendingContribution: memberCloseBalances.pendingContribution,
+      memberCode: member.memberCode,
 
-    closeTotal: calculateLoanCloseTotal({
+      memberName: member.name,
+
+      sanctionedAmount: loan.sanctionedAmount,
+
+      disbursedAmount: loan.disbursedAmount,
+
+      interestRate: loan.interestRate,
+
+      expectedMonthlyRepayment: loan.expectedMonthlyRepayment,
+
+      sanctionedDate: toIsoString(loan.sanctionedDate) ?? toIsoString(loan.disbursedDate) ?? "",
+
+      disbursedDate: toIsoString(loan.disbursedDate) ?? "",
+
+      closedDate: toIsoString(loan.closedDate),
+
+      expiryDate: toIsoString(loan.expiryDate),
+
+      remarks: loan.remarks ?? "",
+
       outstandingPrincipal: summary.outstandingPrincipal,
-      pendingInterest: summary.pendingInterest,
-      pendingLoanFine: summary.pendingLoanFine,
-      pendingAbsentFine: memberCloseBalances.pendingAbsentFine,
-      pendingContribution: memberCloseBalances.pendingContribution,
-    }),
 
-    fineWaiver,
+      paidPrincipal: summary.paidPrincipal,
+
+      paidInterest: summary.paidInterest,
+
+      pendingInterest: summary.pendingInterest,
+
+      paidLoanFine: summary.paidLoanFine,
+
+      pendingLoanFine: summary.pendingLoanFine,
+
+      totalPayable: summary.totalPayable,
+
+      effectiveInterestPercentage: summary.effectiveInterestPercentage,
+
+      effectiveInterestWithFinesPercentage: summary.effectiveInterestWithFinesPercentage,
+
+      isClosable: summary.isClosable,
+
+      canBeClosed: canCloseLoan({
+        loanStatus: loan.status,
+        isClosable: summary.isClosable,
+        financialYearEndDate: financialYear.endDate,
+        isOfficeBearer,
+        isAdmin,
+      }),
+
+      canReopen: canReopenLoan(loan.status) && isAdmin,
+
+      canUpdateExpectedMonthlyRepayment: canUpdateExpectedMonthlyRepayment({
+        loanStatus: loan.status,
+        financialYearStatus: financialYear.status,
+        isOfficeBearer,
+      }),
+
+      pendingAbsentFine: EMPTY_CLOSE_BALANCES.pendingAbsentFine,
+
+      pendingContribution: EMPTY_CLOSE_BALANCES.pendingContribution,
+
+      closeTotal: calculateLoanCloseTotal({
+        outstandingPrincipal: summary.outstandingPrincipal,
+        pendingInterest: summary.pendingInterest,
+        pendingLoanFine: summary.pendingLoanFine,
+        pendingAbsentFine: EMPTY_CLOSE_BALANCES.pendingAbsentFine,
+        pendingContribution: EMPTY_CLOSE_BALANCES.pendingContribution,
+      }),
+
+      fineWaiver,
+    },
+    summary,
+    passbook,
   };
+}
+
+/**
+ * Loan details, summary, and passbook from a single passbook build.
+ */
+export const getLoanDetailPage = cache((loanId: LoanIdInput) => loadLoanDetailPage(loanId));
+
+/**
+ * Returns complete loan details.
+ *
+ * Static information comes from the
+ * Loan document while financial
+ * information is derived from the
+ * Loan Summary.
+ */
+export async function getLoan(loanId: LoanIdInput): Promise<LoanDetails> {
+  const { loan } = await loadLoanDetailPage(loanId, { freshPassbook: true });
+
+  return loan;
 }

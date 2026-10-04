@@ -1,5 +1,7 @@
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
@@ -20,6 +22,8 @@ import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 
 import PaymentsOutlinedIcon from "@mui/icons-material/PaymentsOutlined";
 
+import ListAltOutlinedIcon from "@mui/icons-material/ListAltOutlined";
+
 import { ADMIN_ROLES, FINANCIAL_STEWARD_ROLES, type UserRole } from "@/lib/auth/roles";
 
 import type { NavigationItem } from "./navigation-types";
@@ -36,11 +40,18 @@ export const dashboardNavigation: NavigationItem[] = [
     icon: DashboardOutlinedIcon,
   },
 
-  {
-    title: "Chitty",
-    href: "/chitty",
-    icon: PaymentsOutlinedIcon,
-  },
+  /*  {
+      title: "Chitty",
+      href: "/chitty",
+      icon: PaymentsOutlinedIcon,
+    },
+  
+    {
+      title: "Chitty Schemes",
+      href: "/chitty/schemes",
+      icon: ListAltOutlinedIcon,
+      roles: ADMIN_ROLES,
+    },*/
 
   {
     title: "Meetings",
@@ -100,6 +111,13 @@ export const dashboardNavigation: NavigationItem[] = [
     icon: SettingsOutlinedIcon,
     roles: ADMIN_ROLES,
   },
+
+  /*  {
+      title: "WhatsApp",
+      href: "/settings/whatsapp",
+      icon: WhatsAppIcon,
+      roles: ADMIN_ROLES,
+    },*/
 ];
 
 export function filterNavigationByRole(

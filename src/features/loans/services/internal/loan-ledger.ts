@@ -40,6 +40,10 @@ export type BuildLoanLedgerInput = {
 
   closedDate?: Date | null;
 
+  financialYearId?: {
+    toString(): string;
+  };
+
   financialYearEndDate?: Date;
 };
 
@@ -81,6 +85,7 @@ export async function buildLoanLedger(
     repayments ??
     (await loadLoanRepayments({
       memberId: loan.memberId,
+      financialYearId: loan.financialYearId,
     }));
 
   /**
@@ -126,6 +131,9 @@ export async function buildLoanLedger(
       pendingLoanFine,
     },
   ];
+
+
+
 
   /**
    * Previous repayment date.

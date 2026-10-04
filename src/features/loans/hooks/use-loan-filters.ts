@@ -9,7 +9,10 @@ import type { LoanFilterState, LoanFilters } from "../types/loan-filters";
 /**
  * Loan filtering hook.
  */
-export function useLoanFilters(loans: LoanSummary[]): LoanFilterState & {
+export function useLoanFilters(
+  loans: LoanSummary[],
+  initialFilters: Partial<LoanFilters> = {},
+): LoanFilterState & {
   filteredLoans: LoanSummary[];
 } {
   const [filters, setFilters] = useState<LoanFilters>({
@@ -20,6 +23,8 @@ export function useLoanFilters(loans: LoanSummary[]): LoanFilterState & {
     loanType: "",
 
     status: "",
+
+    ...initialFilters,
   });
 
   const filteredLoans = useMemo(() => {
