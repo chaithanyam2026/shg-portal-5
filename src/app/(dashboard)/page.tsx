@@ -32,6 +32,7 @@ const modules: DashboardModule[] = [
     description: "Track weekly chitty cash, GPay, and missing payments.",
     href: "/chitty",
     icon: PaymentsOutlinedIcon,
+    stewardOnly: true,
   },
   {
     title: "Loans",
