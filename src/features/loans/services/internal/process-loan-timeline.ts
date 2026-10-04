@@ -136,6 +136,7 @@ function evaluateMonthlyFineForMonth(
   const activity = monthlyActivity.get(evaluatedMonthKey) ?? {
     principalPaid: 0,
     finePaid: 0,
+    amountPaid: 0
   };
 
   const fineEvaluation = evaluateMonthlyLoanFineAtMonthEnd({
