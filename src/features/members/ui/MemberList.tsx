@@ -55,13 +55,13 @@ export default function MemberList({ members, canManageMembers = false }: Props)
 
                 <TableCell>Name</TableCell>
 
-                <TableCell>Phone</TableCell>
+                {/* <TableCell>Phone</TableCell>
 
                 <TableCell>Joined</TableCell>
 
                 <TableCell>Deactivated</TableCell>
 
-                <TableCell>Status</TableCell>
+                <TableCell>Status</TableCell> */}
 
                 <TableCell align="center">Action</TableCell>
               </TableRow>
@@ -74,7 +74,7 @@ export default function MemberList({ members, canManageMembers = false }: Props)
 
                   <TableCell>{member.name}</TableCell>
 
-                  <TableCell>{member.phone}</TableCell>
+                  {/* <TableCell>{member.phone}</TableCell>
 
                   <TableCell>{member.joinedDate ? formatDate(member.joinedDate) : "-"}</TableCell>
 
@@ -88,7 +88,7 @@ export default function MemberList({ members, canManageMembers = false }: Props)
                       color={member.status === "ACTIVE" ? "success" : "default"}
                       size="small"
                     />
-                  </TableCell>
+                  </TableCell> */}
 
                   <TableCell align="center">
                     <Button
