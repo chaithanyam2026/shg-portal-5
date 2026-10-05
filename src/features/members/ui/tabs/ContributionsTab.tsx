@@ -120,7 +120,7 @@ export default function ContributionsTab({ contributions }: Props) {
 
               <TableCell>Description</TableCell>
 
-              <TableCell align="right">Expected</TableCell>
+              {/* <TableCell align="right">Expected</TableCell> */}
 
               <TableCell align="right">Paid</TableCell>
 
@@ -145,7 +145,7 @@ export default function ContributionsTab({ contributions }: Props) {
 
                   <TableCell>{entry.description}</TableCell>
 
-                  <TableCell align="right">{formatCurrency(entry.expectedAmount)}</TableCell>
+                  {/* <TableCell align="right">{formatCurrency(entry.expectedAmount)}</TableCell> */}
 
                   <TableCell align="right">{formatCurrency(entry.paidAmount)}</TableCell>
 

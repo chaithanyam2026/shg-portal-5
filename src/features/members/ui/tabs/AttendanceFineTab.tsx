@@ -209,7 +209,7 @@ function AttendanceFineContent({ attendanceFine }: { attendanceFine: AttendanceF
 
               <TableCell>Status</TableCell>
 
-              <TableCell align="center">Consecutive</TableCell>
+              {/* <TableCell align="center">Consecutive</TableCell> */}
 
               <TableCell align="right">Fine</TableCell>
 
@@ -239,9 +239,9 @@ function AttendanceFineContent({ attendanceFine }: { attendanceFine: AttendanceF
                     />
                   </TableCell>
 
-                  <TableCell align="center">
+                  {/* <TableCell align="center">
                     {entry.status === "ABSENT" ? entry.consecutiveAbsence : "-"}
-                  </TableCell>
+                  </TableCell> */}
 
                   <TableCell align="right">{formatCurrency(entry.fineCharged)}</TableCell>
 
