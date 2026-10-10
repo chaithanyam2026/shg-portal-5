@@ -40,10 +40,10 @@ export default function PaymentTable({ records, disabled = false, onChange }: Pr
             <TableCell width={80} align="right">
               Si. No.
             </TableCell>
-            <TableCell>Member</TableCell>
-            <TableCell>Contribution</TableCell>
-            <TableCell>Loan Repayment</TableCell>
-            <TableCell>Absent Fine</TableCell>
+            <TableCell>Member<br />(പേര്) </TableCell>
+            <TableCell>Contribution<br />(സമ്പാദ്യം)</TableCell>
+            <TableCell>Loan Repayment<br />(ലോൺ)</TableCell>
+            <TableCell>Absent Fine<br />(ഫൈൻ)</TableCell>
             {showSpecialLoan && <TableCell>Special Loan</TableCell>}
             <TableCell>Total</TableCell>
             <TableCell>Remarks</TableCell>

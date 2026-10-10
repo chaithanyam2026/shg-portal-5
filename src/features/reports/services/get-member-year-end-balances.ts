@@ -1,11 +1,17 @@
-import connectMongo from "@/lib/db/mongodb";
+import type { Types } from "mongoose";
 
-import { buildMemberPassbook } from "@/features/members/services/internal/member-passbook";
 import { WEEKLY_CONTRIBUTION } from "@/features/meetings/domain/payment";
+import { buildMemberPassbook } from "@/features/members/services/internal/member-passbook";
+import connectMongo from "@/lib/db/mongodb";
+import type { FinancialYearMemberOpening } from "@/models/FinancialYear";
 import FinancialYear from "@/models/FinancialYear";
 import Meeting from "@/models/Meeting";
-import type { FinancialYearMemberOpening } from "@/models/FinancialYear";
-import type { Types } from "mongoose";
+
+import {
+  contributionToBePaid,
+  expectedContributionAmount,
+  standardOpeningContribution,
+} from "../domain/expected-contribution";
 
 import { buildAttendanceFineRegister } from "./build-attendance-fine-register";
 
@@ -46,9 +52,7 @@ export async function getMemberYearEndBalances(
     throw new Error("Financial year not found.");
   }
 
-  const member = financialYear.members.find(
-    (item) => item.memberId._id.toString() === memberId,
-  );
+  const member = financialYear.members.find((item) => item.memberId._id.toString() === memberId);
 
   if (!member) {
     throw new Error("Member not found in the financial year.");
@@ -71,7 +75,10 @@ export async function getMemberYearEndBalances(
     buildAttendanceFineRegister(financialYearId),
   ]);
 
-  const openingContribution = member.opening?.contribution ?? 0;
+  const memberOpeningContribution = member.opening?.contribution ?? 0;
+  const openingContribution = standardOpeningContribution(
+    financialYear.members.map((item) => item.opening?.contribution ?? 0),
+  );
 
   const passbook = buildMemberPassbook({
     memberId,
@@ -80,18 +87,22 @@ export async function getMemberYearEndBalances(
     financialYearId: financialYear._id.toString(),
     financialYearName: financialYear.name,
     startDate: financialYear.startDate,
-    openingContribution,
+    openingContribution: memberOpeningContribution,
     meetings,
   });
 
-  const contributionExpected = openingContribution + meetings.length * WEEKLY_CONTRIBUTION;
+  const contributionExpected = expectedContributionAmount(
+    openingContribution,
+    meetings.length,
+    WEEKLY_CONTRIBUTION,
+  );
 
-  const contributionToBePaid = Math.max(0, contributionExpected - passbook.currentBalance);
+  const pendingContribution = contributionToBePaid(contributionExpected, passbook.currentBalance);
 
   const fineRow = fineRegister.rows.find((row) => row.memberId === memberId);
 
   return {
-    pendingContribution: contributionToBePaid,
+    pendingContribution,
     pendingAbsentFine: fineRow?.pendingFine ?? 0,
   };
 }

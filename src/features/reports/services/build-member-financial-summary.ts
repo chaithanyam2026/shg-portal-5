@@ -6,13 +6,18 @@ import { calculateLoanSummary } from "@/features/loans/domain";
 import { isNormalLoan, isSpecialLoan } from "@/features/loans/domain/loan-type";
 import { buildLoanLedger } from "@/features/loans/services/internal/loan-ledger";
 import { loadRepaymentsForMembers } from "@/features/loans/services/internal/meeting-loader";
-import { buildMemberPassbook } from "@/features/members/services/internal/member-passbook";
 import { WEEKLY_CONTRIBUTION } from "@/features/meetings/domain/payment";
+import { buildMemberPassbook } from "@/features/members/services/internal/member-passbook";
+import type { FinancialYearMemberOpening } from "@/models/FinancialYear";
 import FinancialYear from "@/models/FinancialYear";
 import Loan from "@/models/Loan";
 import Meeting from "@/models/Meeting";
-import type { FinancialYearMemberOpening } from "@/models/FinancialYear";
 
+import {
+  contributionToBePaid,
+  expectedContributionAmount,
+  standardOpeningContribution,
+} from "../domain/expected-contribution";
 import type {
   MemberFinancialSummary,
   MemberFinancialSummaryRow,
@@ -32,6 +37,7 @@ type PopulatedMember = {
 
 function createEmptyTotals(): MemberFinancialSummaryTotals {
   return {
+    contributionExpected: 0,
     contributionPaid: 0,
     contributionToBePaid: 0,
     outstandingLoan: 0,
@@ -49,6 +55,7 @@ function addRowToTotals(
   totals: MemberFinancialSummaryTotals,
   row: MemberFinancialSummaryRow,
 ): void {
+  totals.contributionExpected += row.contributionExpected;
   totals.contributionPaid += row.contributionPaid;
   totals.contributionToBePaid += row.contributionToBePaid;
   totals.outstandingLoan += row.outstandingLoan;
@@ -114,10 +121,16 @@ export async function buildMemberFinancialSummary(
   ]);
 
   const closedMeetingCount = meetings.length;
-
-  const fineByMember = new Map(
-    fineRegister.rows.map((row) => [row.memberId, row]),
+  const openingContribution = standardOpeningContribution(
+    members.map((member) => member.opening?.contribution ?? 0),
   );
+  const expectedContribution = expectedContributionAmount(
+    openingContribution,
+    closedMeetingCount,
+    WEEKLY_CONTRIBUTION,
+  );
+
+  const fineByMember = new Map(fineRegister.rows.map((row) => [row.memberId, row]));
 
   const loansByMember = new Map<string, typeof loans>();
 
@@ -209,7 +222,7 @@ export async function buildMemberFinancialSummary(
 
   const rows: MemberFinancialSummaryRow[] = members.map((member) => {
     const memberId = member.memberId._id.toString();
-    const openingContribution = member.opening?.contribution ?? 0;
+    const memberOpeningContribution = member.opening?.contribution ?? 0;
 
     const passbook = buildMemberPassbook({
       memberId,
@@ -218,16 +231,12 @@ export async function buildMemberFinancialSummary(
       financialYearId: financialYear._id.toString(),
       financialYearName: financialYear.name,
       startDate: financialYear.startDate,
-      openingContribution,
+      openingContribution: memberOpeningContribution,
       meetings,
     });
 
-    const contributionExpected =
-      openingContribution + closedMeetingCount * WEEKLY_CONTRIBUTION;
-
     const contributionPaid = passbook.currentBalance;
-
-    const contributionToBePaid = Math.max(0, contributionExpected - contributionPaid);
+    const memberContributionToBePaid = contributionToBePaid(expectedContribution, contributionPaid);
 
     const loanTotals = loanSummaryByMember.get(memberId) ?? {
       outstandingLoan: 0,
@@ -245,8 +254,9 @@ export async function buildMemberFinancialSummary(
       memberId,
       memberCode: member.memberId.memberCode,
       memberName: member.memberId.name,
+      contributionExpected: expectedContribution,
       contributionPaid,
-      contributionToBePaid,
+      contributionToBePaid: memberContributionToBePaid,
       outstandingLoan: loanTotals.outstandingLoan,
       outstandingSpecialLoan: loanTotals.outstandingSpecialLoan,
       specialLoanExpiry: loanTotals.specialLoanExpiry,
@@ -270,5 +280,9 @@ export async function buildMemberFinancialSummary(
   return {
     rows,
     totals,
+    openingContribution,
+    closedMeetingCount,
+    weeklyContribution: WEEKLY_CONTRIBUTION,
+    expectedContribution,
   };
 }
