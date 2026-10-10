@@ -41,9 +41,9 @@ export default function MemberFinancialSummaryTable({ report }: Props) {
     <TableContainer
       component={Paper}
       variant="outlined"
-      sx={{
-        maxHeight: 640,
-      }}
+    /* sx={{
+    maxHeight: 640,
+  }} */
     >
       <Table stickyHeader size="small">
         <TableHead>
@@ -52,9 +52,9 @@ export default function MemberFinancialSummaryTable({ report }: Props) {
 
             <TableCell>Member</TableCell>
 
-            <TableCell align="right">Contribution Paid</TableCell>
+            <TableCell align="right">Contribution Paid<br />സമ്പാദ്യം അടച്ചത് </TableCell>
 
-            <TableCell align="right">Contribution To Be Paid</TableCell>
+            <TableCell align="right">Contribution To Be Paid<br />സമ്പാദ്യം അടയ്ക്കാനുള്ളത്</TableCell>
 
             <TableCell align="right">Outstanding Loan</TableCell>
 
@@ -79,7 +79,7 @@ export default function MemberFinancialSummaryTable({ report }: Props) {
         <TableBody>
           {report.rows.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={13} align="center">
+              <TableCell colSpan={14} align="center">
                 <Typography color="text.secondary">No members found.</Typography>
               </TableCell>
             </TableRow>
@@ -148,6 +148,12 @@ export default function MemberFinancialSummaryTable({ report }: Props) {
             <TableRow>
               <TableCell colSpan={2}>
                 <Typography sx={{ fontWeight: 700 }}>Totals</Typography>
+              </TableCell>
+
+              <TableCell align="right">
+                <Typography sx={{ fontWeight: 700 }}>
+                  {formatCurrency(report.totals.contributionExpected)}
+                </Typography>
               </TableCell>
 
               <TableCell align="right">

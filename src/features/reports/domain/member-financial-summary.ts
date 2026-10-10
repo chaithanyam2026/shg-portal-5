@@ -5,6 +5,8 @@ export type MemberFinancialSummaryRow = {
 
   memberName: string;
 
+  contributionExpected: number;
+
   contributionPaid: number;
 
   contributionToBePaid: number;
@@ -29,6 +31,8 @@ export type MemberFinancialSummaryRow = {
 };
 
 export type MemberFinancialSummaryTotals = {
+  contributionExpected: number;
+
   contributionPaid: number;
 
   contributionToBePaid: number;
@@ -54,6 +58,14 @@ export type MemberFinancialSummary = {
   rows: MemberFinancialSummaryRow[];
 
   totals: MemberFinancialSummaryTotals;
+
+  openingContribution: number;
+
+  closedMeetingCount: number;
+
+  weeklyContribution: number;
+
+  expectedContribution: number;
 };
 
 export function getFinancialYearLoanInterestIncomeTotal(
