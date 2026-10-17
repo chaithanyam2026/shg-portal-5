@@ -153,11 +153,12 @@ export default function SummaryView({ meetingId, summary, readOnly = false }: Pr
                 <ValidationItem key={index} validation={validation} />
               ))}
 
-              <Chip
-                size="small"
-                color={summary.canClose ? "success" : "error"}
-                label={summary.canClose ? "Ready to Close Meeting" : "Meeting Cannot Be Closed"}
-              />
+              {summary.status === "IN_PROGRESS" ?
+                <Chip
+                  size="small"
+                  color={summary.canClose ? "success" : "error"}
+                  label={summary.canClose ? "Ready to Close Meeting" : "Meeting Cannot Be Closed"}
+                /> : null}
               <MeetingActionButton
                 meetingId={meetingId}
                 action="close"

@@ -12,17 +12,18 @@ import {
 } from "@mui/material";
 
 import type { MemberFinancialSummary } from "../domain/member-financial-summary";
+import { formatCurrency } from "@/lib/utils/currency";
 
 type Props = {
   report: MemberFinancialSummary;
 };
 
-function formatCurrency(value: number) {
+/* function formatCurrency(value: number) {
   return `₹ ${value.toLocaleString("en-IN", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
   })}`;
-}
+} */
 
 function formatDate(value: string | null) {
   if (!value) {
@@ -50,9 +51,12 @@ export default function MemberFinancialSummaryTable({ report }: Props) {
           <TableRow>
             <TableCell>Code</TableCell>
 
-            <TableCell>Member</TableCell>
+            <TableCell >Member</TableCell>
 
-            <TableCell align="right">Contribution Paid<br />സമ്പാദ്യം അടച്ചത് </TableCell>
+            <TableCell align="right" sx={{
+              pl: 0,
+              pr: 0,
+            }}>Contribution Paid<br />സമ്പാദ്യം അടച്ചത് </TableCell>
 
             <TableCell align="right">Contribution To Be Paid<br />സമ്പാദ്യം അടയ്ക്കാനുള്ളത്</TableCell>
 
@@ -88,7 +92,10 @@ export default function MemberFinancialSummaryTable({ report }: Props) {
               <TableRow key={row.memberId} hover>
                 <TableCell>{row.memberCode}</TableCell>
 
-                <TableCell>{row.memberName}</TableCell>
+                <TableCell sx={{
+                  pl: 0,
+                  pr: 0,
+                }}>{row.memberName}</TableCell>
 
                 <TableCell align="right">{formatCurrency(row.contributionPaid)}</TableCell>
 

@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 
 import { formatCurrency } from "@/lib/utils/currency";
+import { formatDate } from "@/lib/utils/date";
 
 import type { MemberTransactionsSummary } from "../types";
 
@@ -36,11 +37,15 @@ export default function MemberTransactionsView({ summary }: Props) {
             sx={{
               justifyContent: "space-between",
               alignItems: "center",
-              gap: 2,
+              gap: 1,
               flexWrap: "wrap",
             }}
           >
-            <Typography variant="h6">Meeting Collection</Typography>
+            <Typography variant="h6">
+              <Typography variant="body2" sx={{ fontWeight: 600 }} align="center">
+                {formatDate(summary.meetingDate)}
+              </Typography>
+              Meeting Collection</Typography>
 
             <Typography sx={{ fontWeight: 700 }}>{formatCurrency(summary.grandTotal)}</Typography>
           </Stack>
@@ -51,12 +56,12 @@ export default function MemberTransactionsView({ summary }: Props) {
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>Member</TableCell>
-              <TableCell align="right">Contribution</TableCell>
-              <TableCell align="right">Loan</TableCell>
-              <TableCell align="right">Absent Fine</TableCell>
-              <TableCell align="right">Special Loan</TableCell>
-              <TableCell align="right">Total</TableCell>
+              <TableCell align="center">Member</TableCell>
+              <TableCell align="center">Contribution (സമ്പാദ്യം)</TableCell>
+              <TableCell align="center">Loan (ലോൺ)</TableCell>
+              <TableCell align="center">Absent Fine</TableCell>
+              <TableCell align="center">Special Loan</TableCell>
+              <TableCell align="center">Total</TableCell>
             </TableRow>
           </TableHead>
 
@@ -72,9 +77,9 @@ export default function MemberTransactionsView({ summary }: Props) {
             {summary.records.map((record) => (
               <TableRow key={record.memberId}>
                 <TableCell sx={{ whiteSpace: "nowrap" }}>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                  {/* <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {record.memberCode}
-                  </Typography>
+                  </Typography> */}
 
                   <Typography variant="body2">{record.memberName}</Typography>
                 </TableCell>
