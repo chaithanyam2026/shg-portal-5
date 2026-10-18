@@ -10,6 +10,7 @@ import {
 import type { MeetingDetails } from "../types";
 
 import { formatDate } from "@/lib/utils/date";
+import { formatDateTime } from "@/lib/utils/format";
 
 import MeetingStatusChip from "./MeetingStatusChip";
 
@@ -17,13 +18,13 @@ type Props = {
   meeting: MeetingDetails;
 };
 
-function formatDateTime(value: string | null) {
+/* function formatDateTime(value: string | null) {
   if (!value) {
     return "-";
   }
 
   return new Date(value).toLocaleString();
-}
+} */
 
 export default function MeetingGeneralPanel({ meeting }: Props) {
   return (
