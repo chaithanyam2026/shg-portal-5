@@ -27,13 +27,13 @@ const modules: DashboardModule[] = [
     href: "/meetings",
     icon: EventOutlinedIcon,
   },
-  {
-    title: "Chitty Dashboard",
-    description: "Track weekly chitty cash, GPay, and missing payments.",
-    href: "/chitty",
-    icon: PaymentsOutlinedIcon,
-    stewardOnly: true,
-  },
+  /*   {
+      title: "Chitty Dashboard",
+      description: "Track weekly chitty cash, GPay, and missing payments.",
+      href: "/chitty",
+      icon: PaymentsOutlinedIcon,
+      stewardOnly: true,
+    }, */
   {
     title: "Loans",
     description: "Manage member loans and repayments.",

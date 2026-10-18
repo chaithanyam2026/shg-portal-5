@@ -21,7 +21,6 @@ export async function loadFinancialYearMembers(financialYearId: string) {
     .populate({
       path: "members.memberId",
       select: "memberCode name",
-      // Go-live WhatsApp: also select "phone" and return it with each member.
     })
     .lean<PopulatedFinancialYear>();
 

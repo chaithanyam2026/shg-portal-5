@@ -1,6 +1,10 @@
 import type { Types } from "mongoose";
 
-import { processAttendance } from "@/features/reports/domain";
+import {
+  expectedContributionAmount,
+  processAttendance,
+  standardOpeningContribution,
+} from "@/features/reports/domain";
 import FinancialYear from "@/models/FinancialYear";
 import Meeting from "@/models/Meeting";
 import type { FinancialYearDocument, FinancialYearMemberOpening } from "@/models/FinancialYear";
@@ -38,6 +42,11 @@ function isPriorToCurrent(meetingDate: Date, meetingId: string, currentDate: Dat
 /**
  * Contribution and absent-fine still owed as of this meeting,
  * excluding amounts entered on this meeting's payment row.
+ *
+ * Expected contribution matches the member summary: the group's standard
+ * opening (highest non-zero opening) plus one weekly amount per meeting
+ * through this one. A member's own opening counts as already paid, so
+ * someone who joined mid-year with a zero opening still owes the standard.
  */
 export async function loadPaymentDues(
   financialYearId: string,
@@ -75,6 +84,14 @@ export async function loadPaymentDues(
   const currentHasAttendance = (currentMeeting?.attendance?.length ?? 0) > 0;
 
   const expectedWeeks = priorClosed.length + 1;
+  const standardOpening = standardOpeningContribution(
+    financialYear.members.map((member) => member.opening?.contribution ?? 0),
+  );
+  const expectedContribution = expectedContributionAmount(
+    standardOpening,
+    expectedWeeks,
+    WEEKLY_CONTRIBUTION,
+  );
 
   for (const member of financialYear.members) {
     const memberId = member.memberId.toString();
@@ -110,8 +127,6 @@ export async function loadPaymentDues(
 
       chargedAbsentFine += result.fineCharged;
     }
-
-    const expectedContribution = openingContribution + expectedWeeks * WEEKLY_CONTRIBUTION;
 
     dues.set(memberId, {
       contributionDue: expectedContribution - paidContribution,

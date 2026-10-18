@@ -1,7 +1,5 @@
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 
-import WhatsAppIcon from "@mui/icons-material/WhatsApp";
-
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
@@ -111,13 +109,6 @@ export const dashboardNavigation: NavigationItem[] = [
     icon: SettingsOutlinedIcon,
     roles: ADMIN_ROLES,
   },
-
-  /*  {
-      title: "WhatsApp",
-      href: "/settings/whatsapp",
-      icon: WhatsAppIcon,
-      roles: ADMIN_ROLES,
-    },*/
 ];
 
 export function filterNavigationByRole(
