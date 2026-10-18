@@ -25,7 +25,10 @@ export async function getLoanCloseBalances(loanId: LoanIdInput): Promise<LoanMem
     throw new AppError("Loan not found.", 404);
   }
 
-  await assertCanViewLoan(loan.memberId.toString());
+  await assertCanViewLoan({
+    memberId: loan.memberId.toString(),
+    financialYearId: loan.financialYearId.toString(),
+  });
 
   return getLoanMemberCloseBalances(loan.memberId.toString(), loan.financialYearId.toString());
 }

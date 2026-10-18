@@ -16,12 +16,11 @@ import { toIsoString } from "@/lib/utils/date";
 
 import { ObjectIdSchema } from "../validation";
 
-import { getCurrentMemberId } from "@/lib/auth/current-member";
 import { CACHE_TAGS, remember } from "@/lib/cache";
 import { buildLoanLedger } from "./internal/loan-ledger";
 import { loadRepaymentsForMembers } from "./internal/meeting-loader";
 
-import { canCurrentUserViewAllLoans } from "./internal/loan-access";
+import { getCurrentLoanViewScope } from "./internal/loan-access";
 
 type ListLoansInput = {
   financialYearId?: string;
@@ -35,16 +34,39 @@ type ListLoansInput = {
   search?: string;
 };
 
-async function queryLoans(filters: ListLoansInput = {}): Promise<LoanSummary[]> {
+type ListLoansQuery = ListLoansInput & {
+  financialYearIds?: string[];
+
+  memberOrFinancialYearIds?: {
+    memberId: string;
+    financialYearIds: string[];
+  };
+};
+
+async function queryLoans(filters: ListLoansQuery = {}): Promise<LoanSummary[]> {
   await connectMongo();
 
   const query: Record<string, unknown> = {};
 
   if (filters.financialYearId) {
     query.financialYearId = ObjectIdSchema.parse(filters.financialYearId);
+  } else if (filters.financialYearIds) {
+    query.financialYearId = {
+      $in: filters.financialYearIds.map((id) => ObjectIdSchema.parse(id)),
+    };
   }
 
-  if (filters.memberId) {
+  if (filters.memberOrFinancialYearIds) {
+    const memberId = ObjectIdSchema.parse(filters.memberOrFinancialYearIds.memberId);
+    const yearIds = filters.memberOrFinancialYearIds.financialYearIds.map((id) =>
+      ObjectIdSchema.parse(id),
+    );
+
+    query.$or = [
+      ...(yearIds.length > 0 ? [{ financialYearId: { $in: yearIds } }] : []),
+      { memberId },
+    ];
+  } else if (filters.memberId) {
     query.memberId = ObjectIdSchema.parse(filters.memberId);
   }
 
@@ -190,18 +212,60 @@ const queryLoansCached = remember(queryLoans, {
 });
 
 export async function listLoans(filters: ListLoansInput = {}): Promise<LoanSummary[]> {
-  if (await canCurrentUserViewAllLoans()) {
-    return queryLoansCached(filters);
+  const scope = await getCurrentLoanViewScope();
+  const publicFilters: ListLoansInput = {
+    financialYearId: filters.financialYearId,
+    memberId: filters.memberId,
+    loanType: filters.loanType,
+    status: filters.status,
+    search: filters.search,
+  };
+
+  if (scope.canViewAllFinancialYears) {
+    return queryLoansCached(publicFilters);
   }
 
-  const memberId = await getCurrentMemberId();
-
-  if (!memberId) {
+  if (!scope.memberId) {
     return [];
   }
 
+  const requestedMemberId = publicFilters.memberId;
+  const isOwnMember = !requestedMemberId || requestedMemberId === scope.memberId;
+
+  if (publicFilters.financialYearId) {
+    const canViewYear = scope.officeBearerFinancialYearIds.includes(publicFilters.financialYearId);
+
+    if (canViewYear) {
+      return queryLoansCached(publicFilters);
+    }
+
+    if (!isOwnMember) {
+      return [];
+    }
+
+    return queryLoansCached({
+      ...publicFilters,
+      memberId: scope.memberId,
+    });
+  }
+
+  if (requestedMemberId && requestedMemberId !== scope.memberId) {
+    if (scope.officeBearerFinancialYearIds.length === 0) {
+      return [];
+    }
+
+    return queryLoansCached({
+      ...publicFilters,
+      financialYearIds: scope.officeBearerFinancialYearIds,
+    });
+  }
+
   return queryLoansCached({
-    ...filters,
-    memberId,
+    ...publicFilters,
+    memberId: undefined,
+    memberOrFinancialYearIds: {
+      memberId: scope.memberId,
+      financialYearIds: scope.officeBearerFinancialYearIds,
+    },
   });
 }

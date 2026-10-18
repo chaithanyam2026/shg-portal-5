@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 
-import { canCurrentUserViewAllLoans } from "@/features/loans/services";
-import { canViewLoanDetails } from "@/features/loans/domain";
+import { getCurrentLoanViewScope } from "@/features/loans/services";
 import { canCurrentUserAccessFinancialStewardArea } from "@/features/financial-year/services";
 import {
   getDefaultMemberFinancialYearId,
@@ -21,11 +20,11 @@ export default async function Page({ params }: Props) {
   const { id } = await params;
 
   try {
-    const [member, financialYearOptions, canViewAllLoans, currentMemberId, canManageMembers] =
+    const [member, financialYearOptions, loanViewScope, currentMemberId, canManageMembers] =
       await Promise.all([
         getMember(id),
         listMemberFinancialYearOptions(id),
-        canCurrentUserViewAllLoans(),
+        getCurrentLoanViewScope(),
         getCurrentMemberId(),
         canCurrentUserAccessFinancialStewardArea(),
       ]);
@@ -37,11 +36,9 @@ export default async function Page({ params }: Props) {
         member={member}
         financialYearOptions={financialYearOptions}
         initialFinancialYearId={initialFinancialYearId}
-        canViewLoanDetails={canViewLoanDetails({
-          loanMemberId: member._id,
-          currentMemberId,
-          canViewAllLoans,
-        })}
+        canViewAllFinancialYears={loanViewScope.canViewAllFinancialYears}
+        officeBearerFinancialYearIds={loanViewScope.officeBearerFinancialYearIds}
+        currentMemberId={currentMemberId}
         canManageMembers={canManageMembers}
       />
     );

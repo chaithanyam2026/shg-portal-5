@@ -4,7 +4,8 @@ export * from "./update";
 export * from "./create";
 export * from "./get";
 export * from "./get-close-balances";
-export { canCurrentUserViewAllLoans } from "./internal/loan-access";
+export { getCurrentLoanViewScope } from "./internal/loan-access";
+export type { LoanViewScope } from "./internal/loan-access";
 export * from "./list";
 export * from "./summary";
 

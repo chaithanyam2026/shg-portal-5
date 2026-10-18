@@ -28,15 +28,34 @@ type Props = {
 
   financialYears: FinancialYearLookup[];
 
-  ownLoansOnly?: boolean;
+  /**
+   * Financial years where this user can see every member's loans.
+   * `null` means every year (admin).
+   */
+  viewAllFinancialYearIds?: readonly string[] | null;
 
   initialFinancialYearId?: string;
 };
 
+function showsOnlyOwnLoans(
+  financialYearId: string,
+  viewAllFinancialYearIds: readonly string[] | null,
+): boolean {
+  if (viewAllFinancialYearIds === null) {
+    return false;
+  }
+
+  if (!financialYearId) {
+    return viewAllFinancialYearIds.length === 0;
+  }
+
+  return !viewAllFinancialYearIds.includes(financialYearId);
+}
+
 export default function LoanList({
   loans: initialLoans,
   financialYears,
-  ownLoansOnly = false,
+  viewAllFinancialYearIds = null,
   initialFinancialYearId = "",
 }: Props) {
   const [loans, setLoans] = useState(initialLoans);
@@ -256,7 +275,7 @@ export default function LoanList({
         ) : filteredLoans.length === 0 ? (
           <Alert severity="info">
             {loans.length === 0
-              ? ownLoansOnly
+              ? showsOnlyOwnLoans(filters.financialYearId, viewAllFinancialYearIds)
                 ? "You do not have any loans."
                 : filters.financialYearId
                   ? "No loans found for this financial year."

@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 
 import { getMeeting } from "@/features/meetings/services/get";
 import MeetingWorkspace from "@/features/meetings/ui/MeetingWorkspace";
-import { canCurrentUserViewAllLoans } from "@/features/loans/services";
+import { canViewAllLoansForFinancialYear } from "@/features/loans/domain";
+import { getCurrentLoanViewScope } from "@/features/loans/services";
 import { getCurrentMemberId } from "@/lib/auth/current-member";
 
 type Props = {
@@ -20,11 +21,16 @@ export default async function MeetingDetailsPage({ params, searchParams }: Props
   const { tab } = await searchParams;
 
   try {
-    const [meeting, canViewAllLoans, currentMemberId] = await Promise.all([
+    const [meeting, loanViewScope, currentMemberId] = await Promise.all([
       getMeeting(id),
-      canCurrentUserViewAllLoans(),
+      getCurrentLoanViewScope(),
       getCurrentMemberId(),
     ]);
+    const canViewAllLoans = canViewAllLoansForFinancialYear({
+      financialYearId: meeting.financialYearId,
+      canViewAllFinancialYears: loanViewScope.canViewAllFinancialYears,
+      officeBearerFinancialYearIds: loanViewScope.officeBearerFinancialYearIds,
+    });
 
     return (
       <MeetingWorkspace

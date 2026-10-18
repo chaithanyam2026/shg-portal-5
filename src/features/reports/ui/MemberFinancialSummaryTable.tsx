@@ -39,195 +39,304 @@ function formatDate(value: string | null) {
 
 export default function MemberFinancialSummaryTable({ report }: Props) {
   return (
-    <TableContainer
-      component={Paper}
-      variant="outlined"
-    /* sx={{
-    maxHeight: 640,
-  }} */
-    >
-      <Table stickyHeader size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell>Code</TableCell>
-
-            <TableCell >Member</TableCell>
-
-            <TableCell align="right" sx={{
-              pl: 0,
-              pr: 0,
-            }}>Contribution Paid<br />സമ്പാദ്യം അടച്ചത് </TableCell>
-
-            <TableCell align="right">Contribution To Be Paid<br />സമ്പാദ്യം അടയ്ക്കാനുള്ളത്</TableCell>
-
-            <TableCell align="right">Outstanding Loan</TableCell>
-
-            <TableCell align="right">Outstanding Special Loan</TableCell>
-
-            <TableCell align="center">Special Loan Expiry</TableCell>
-
-            <TableCell align="right">Loan Interest Paid</TableCell>
-
-            <TableCell align="right">Loan Interest Pending</TableCell>
-
-            <TableCell align="right">Loan Fine Paid</TableCell>
-
-            <TableCell align="right">Loan Fine Pending</TableCell>
-
-            <TableCell align="right">Absent Fine Paid</TableCell>
-
-            <TableCell align="right">Absent Fine Pending</TableCell>
-          </TableRow>
-        </TableHead>
-
-        <TableBody>
-          {report.rows.length === 0 ? (
+    <>
+      <TableContainer
+        component={Paper}
+        variant="outlined"
+      /* sx={{
+      maxHeight: 640,
+    }} */
+      >
+        <Table stickyHeader size="small">
+          <TableHead>
             <TableRow>
-              <TableCell colSpan={14} align="center">
-                <Typography color="text.secondary">No members found.</Typography>
-              </TableCell>
+              <TableCell>Code</TableCell>
+
+              <TableCell >Member</TableCell>
+
+              <TableCell align="right" sx={{
+                pl: 0,
+                pr: 0,
+              }}>Contribution Paid<br />സമ്പാദ്യം അടച്ചത് </TableCell>
+
+              <TableCell align="right">Contribution To Be Paid<br />സമ്പാദ്യം അടയ്ക്കാനുള്ളത്</TableCell>
+
+              <TableCell align="right">Outstanding Loan</TableCell>
+
+              <TableCell align="right">Outstanding Special Loan</TableCell>
+
+              <TableCell align="center">Special Loan Expiry</TableCell>
+
+              <TableCell align="right">Loan Interest Paid</TableCell>
+
+              <TableCell align="right">Loan Interest Pending</TableCell>
+
+              <TableCell align="right">Loan Fine Paid</TableCell>
+
+              <TableCell align="right">Loan Fine Pending</TableCell>
+
+              <TableCell align="right">Absent Fine Paid</TableCell>
+
+              <TableCell align="right">Absent Fine Pending</TableCell>
             </TableRow>
-          ) : (
-            report.rows.map((row) => (
-              <TableRow key={row.memberId} hover>
-                <TableCell>{row.memberCode}</TableCell>
+          </TableHead>
 
-                <TableCell sx={{
-                  pl: 0,
-                  pr: 0,
-                }}>{row.memberName}</TableCell>
-
-                <TableCell align="right">{formatCurrency(row.contributionPaid)}</TableCell>
-
-                <TableCell
-                  align="right"
-                  sx={{
-                    color: row.contributionToBePaid > 0 ? "warning.main" : "text.primary",
-                  }}
-                >
-                  {formatCurrency(row.contributionToBePaid)}
-                </TableCell>
-
-                <TableCell align="right">{formatCurrency(row.outstandingLoan)}</TableCell>
-
-                <TableCell align="right">{formatCurrency(row.outstandingSpecialLoan)}</TableCell>
-
-                <TableCell align="center">{formatDate(row.specialLoanExpiry)}</TableCell>
-
-                <TableCell align="right">{formatCurrency(row.loanInterestPaid)}</TableCell>
-
-                <TableCell
-                  align="right"
-                  sx={{
-                    color: row.loanInterestPending > 0 ? "error.main" : "text.primary",
-                  }}
-                >
-                  {formatCurrency(row.loanInterestPending)}
-                </TableCell>
-
-                <TableCell align="right">{formatCurrency(row.loanFinePaid)}</TableCell>
-
-                <TableCell
-                  align="right"
-                  sx={{
-                    color: row.loanFinePending > 0 ? "error.main" : "text.primary",
-                  }}
-                >
-                  {formatCurrency(row.loanFinePending)}
-                </TableCell>
-
-                <TableCell align="right">{formatCurrency(row.absentFinePaid)}</TableCell>
-
-                <TableCell
-                  align="right"
-                  sx={{
-                    color: row.absentFinePending > 0 ? "error.main" : "text.primary",
-                    fontWeight: row.absentFinePending > 0 ? 600 : 400,
-                  }}
-                >
-                  {formatCurrency(row.absentFinePending)}
+          <TableBody>
+            {report.rows.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={14} align="center">
+                  <Typography color="text.secondary">No members found.</Typography>
                 </TableCell>
               </TableRow>
-            ))
-          )}
+            ) : (
+              report.rows.map((row) => (
+                <TableRow key={row.memberId} hover>
+                  <TableCell>{row.memberCode}</TableCell>
 
-          {report.rows.length > 0 && (
+                  <TableCell sx={{
+                    pl: 0,
+                    pr: 0,
+                  }}>{row.memberName}</TableCell>
+
+                  <TableCell align="right">{formatCurrency(row.contributionPaid)}</TableCell>
+
+                  <TableCell
+                    align="right"
+                    sx={{
+                      color: row.contributionToBePaid > 0 ? "warning.main" : "text.primary",
+                    }}
+                  >
+                    {formatCurrency(row.contributionToBePaid)}
+                  </TableCell>
+
+                  <TableCell align="right">{formatCurrency(row.outstandingLoan)}</TableCell>
+
+                  <TableCell align="right">{formatCurrency(row.outstandingSpecialLoan)}</TableCell>
+
+                  <TableCell align="center">{formatDate(row.specialLoanExpiry)}</TableCell>
+
+                  <TableCell align="right">{formatCurrency(row.loanInterestPaid)}</TableCell>
+
+                  <TableCell
+                    align="right"
+                    sx={{
+                      color: row.loanInterestPending > 0 ? "error.main" : "text.primary",
+                    }}
+                  >
+                    {formatCurrency(row.loanInterestPending)}
+                  </TableCell>
+
+                  <TableCell align="right">{formatCurrency(row.loanFinePaid)}</TableCell>
+
+                  <TableCell
+                    align="right"
+                    sx={{
+                      color: row.loanFinePending > 0 ? "error.main" : "text.primary",
+                    }}
+                  >
+                    {formatCurrency(row.loanFinePending)}
+                  </TableCell>
+
+                  <TableCell align="right">{formatCurrency(row.absentFinePaid)}</TableCell>
+
+                  <TableCell
+                    align="right"
+                    sx={{
+                      color: row.absentFinePending > 0 ? "error.main" : "text.primary",
+                      fontWeight: row.absentFinePending > 0 ? 600 : 400,
+                    }}
+                  >
+                    {formatCurrency(row.absentFinePending)}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+
+            {report.rows.length > 0 && (
+              <TableRow>
+                <TableCell colSpan={2}>
+                  <Typography sx={{ fontWeight: 700 }}>Totals</Typography>
+                </TableCell>
+
+                <TableCell align="right">
+                  <Typography sx={{ fontWeight: 700 }}>
+                    {formatCurrency(report.totals.contributionExpected)}
+                  </Typography>
+                </TableCell>
+
+                <TableCell align="right">
+                  <Typography sx={{ fontWeight: 700 }}>
+                    {formatCurrency(report.totals.contributionPaid)}
+                  </Typography>
+                </TableCell>
+
+                <TableCell align="right">
+                  <Typography sx={{ fontWeight: 700 }}>
+                    {formatCurrency(report.totals.contributionToBePaid)}
+                  </Typography>
+                </TableCell>
+
+                <TableCell align="right">
+                  <Typography sx={{ fontWeight: 700 }}>
+                    {formatCurrency(report.totals.outstandingLoan)}
+                  </Typography>
+                </TableCell>
+
+                <TableCell align="right">
+                  <Typography sx={{ fontWeight: 700 }}>
+                    {formatCurrency(report.totals.outstandingSpecialLoan)}
+                  </Typography>
+                </TableCell>
+
+                <TableCell />
+
+                <TableCell align="right">
+                  <Typography sx={{ fontWeight: 700 }}>
+                    {formatCurrency(report.totals.loanInterestPaid)}
+                  </Typography>
+                </TableCell>
+
+                <TableCell align="right">
+                  <Typography sx={{ fontWeight: 700 }}>
+                    {formatCurrency(report.totals.loanInterestPending)}
+                  </Typography>
+                </TableCell>
+
+                <TableCell align="right">
+                  <Typography sx={{ fontWeight: 700 }}>
+                    {formatCurrency(report.totals.loanFinePaid)}
+                  </Typography>
+                </TableCell>
+
+                <TableCell align="right">
+                  <Typography sx={{ fontWeight: 700 }}>
+                    {formatCurrency(report.totals.loanFinePending)}
+                  </Typography>
+                </TableCell>
+
+                <TableCell align="right">
+                  <Typography sx={{ fontWeight: 700 }}>
+                    {formatCurrency(report.totals.absentFinePaid)}
+                  </Typography>
+                </TableCell>
+
+                <TableCell align="right">
+                  <Typography sx={{ fontWeight: 700 }}>
+                    {formatCurrency(report.totals.absentFinePending)}
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      <br />
+
+      <Typography variant="subtitle1" sx={{ fontWeight: 600 }} align="center">
+        Expected contribution: {formatCurrency(report.expectedContribution)}
+      </Typography>
+      <Typography variant="body2" color="text.secondary" align="center">
+        Opening {formatCurrency(report.openingContribution)} (opening contribution) +{" "}
+        {report.closedMeetingCount} closed meetings × {formatCurrency(report.weeklyContribution)}{" "}
+        weekly.
+      </Typography>
+      <TableContainer
+        component={Paper}
+        variant="outlined"
+      >
+        <Table stickyHeader size="small">
+          <TableHead>
+            {/* First header row */}
             <TableRow>
-              <TableCell colSpan={2}>
-                <Typography sx={{ fontWeight: 700 }}>Totals</Typography>
+              <TableCell rowSpan={2} align="center">
+                പേര്&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               </TableCell>
 
-              <TableCell align="right">
-                <Typography sx={{ fontWeight: 700 }}>
-                  {formatCurrency(report.totals.contributionExpected)}
-                </Typography>
-              </TableCell>
-
-              <TableCell align="right">
-                <Typography sx={{ fontWeight: 700 }}>
-                  {formatCurrency(report.totals.contributionPaid)}
-                </Typography>
-              </TableCell>
-
-              <TableCell align="right">
-                <Typography sx={{ fontWeight: 700 }}>
-                  {formatCurrency(report.totals.contributionToBePaid)}
-                </Typography>
-              </TableCell>
-
-              <TableCell align="right">
-                <Typography sx={{ fontWeight: 700 }}>
-                  {formatCurrency(report.totals.outstandingLoan)}
-                </Typography>
-              </TableCell>
-
-              <TableCell align="right">
-                <Typography sx={{ fontWeight: 700 }}>
-                  {formatCurrency(report.totals.outstandingSpecialLoan)}
-                </Typography>
-              </TableCell>
-
-              <TableCell />
-
-              <TableCell align="right">
-                <Typography sx={{ fontWeight: 700 }}>
-                  {formatCurrency(report.totals.loanInterestPaid)}
-                </Typography>
-              </TableCell>
-
-              <TableCell align="right">
-                <Typography sx={{ fontWeight: 700 }}>
-                  {formatCurrency(report.totals.loanInterestPending)}
-                </Typography>
-              </TableCell>
-
-              <TableCell align="right">
-                <Typography sx={{ fontWeight: 700 }}>
-                  {formatCurrency(report.totals.loanFinePaid)}
-                </Typography>
-              </TableCell>
-
-              <TableCell align="right">
-                <Typography sx={{ fontWeight: 700 }}>
-                  {formatCurrency(report.totals.loanFinePending)}
-                </Typography>
-              </TableCell>
-
-              <TableCell align="right">
-                <Typography sx={{ fontWeight: 700 }}>
-                  {formatCurrency(report.totals.absentFinePaid)}
-                </Typography>
-              </TableCell>
-
-              <TableCell align="right">
-                <Typography sx={{ fontWeight: 700 }}>
-                  {formatCurrency(report.totals.absentFinePending)}
-                </Typography>
+              <TableCell colSpan={3} align="center">
+                അടയ്ക്കാനുള്ളത്
               </TableCell>
             </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </TableContainer>
+
+            {/* Second header row */}
+            <TableRow>
+              <TableCell align="right">
+                Contribution
+                <br />
+                സമ്പാദ്യം
+              </TableCell>
+
+              <TableCell align="right">
+                Fine<br />
+                ഫൈൻ
+              </TableCell>
+
+              <TableCell align="right">
+                Loan <br />
+                ലോൺ
+              </TableCell>
+
+
+            </TableRow>
+          </TableHead>
+          {/*     <TableHead>
+            <TableRow >
+
+              <TableCell rowSpan={2}>Member</TableCell>
+
+              <TableCell align="right">സമ്പാദ്യം അടയ്ക്കാനുള്ളത്</TableCell>
+
+              <TableCell align="right">ലോൺ അടയ്ക്കാനുള്ളത്</TableCell>
+
+              <TableCell align="right">ആബ്സെന്റ ഫൈൻ  അടയ്ക്കാനുള്ളത്</TableCell>
+            </TableRow>
+          </TableHead> */}
+
+          <TableBody>
+            {report.rows.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={14} align="center">
+                  <Typography color="text.secondary">No members found.</Typography>
+                </TableCell>
+              </TableRow>
+            ) : (
+              report.rows.map((row) => (
+                <TableRow key={row.memberId} hover>
+
+
+                  <TableCell sx={{
+                    pl: 0,
+                    pr: 0,
+                  }}>{row.memberName}</TableCell>
+
+                  <TableCell
+                    align="right"
+                    sx={{
+                      color: row.contributionToBePaid > 0 ? "warning.main" : "text.primary",
+                    }}
+                  >
+                    {formatCurrency(row.contributionToBePaid)}
+                  </TableCell>
+                  <TableCell
+                    align="right"
+                    sx={{
+                      color: row.absentFinePending > 0 ? "error.main" : "text.primary",
+                      fontWeight: row.absentFinePending > 0 ? 600 : 400,
+                    }}
+                  >
+                    {formatCurrency(row.absentFinePending)}
+                  </TableCell>
+
+                  <TableCell align="right">{formatCurrency(row.outstandingLoan + row.loanInterestPending + row.loanFinePending)}</TableCell>
+
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <br />
+    </>
+
   );
 }
