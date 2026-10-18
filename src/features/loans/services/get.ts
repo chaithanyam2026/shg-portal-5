@@ -53,7 +53,10 @@ async function loadLoanDetailPage(
     throw new Error("Loan not found.");
   }
 
-  await assertCanViewLoan(loan.memberId.toString());
+  await assertCanViewLoan({
+    memberId: loan.memberId.toString(),
+    financialYearId: loan.financialYearId.toString(),
+  });
 
   const [financialYear, member, passbook] = await Promise.all([
     FinancialYear.findById(loan.financialYearId)

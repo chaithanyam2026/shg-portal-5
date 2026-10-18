@@ -10,6 +10,8 @@ import PageHeader from "@/components/layout/PageHeader";
 import type { FinancialYearOption } from "@/features/financial-year/domain/financial-year-option";
 import FinancialYearSelector from "@/features/financial-year/ui/FinancialYearSelector";
 
+import { canViewAllLoansForFinancialYear, canViewLoanDetails } from "@/features/loans/domain";
+
 import type { MemberDetails } from "../types";
 
 import AttendanceFineTab from "./tabs/AttendanceFineTab";
@@ -25,7 +27,11 @@ type Props = {
 
   member: MemberDetails;
 
-  canViewLoanDetails?: boolean;
+  canViewAllFinancialYears?: boolean;
+
+  officeBearerFinancialYearIds?: readonly string[];
+
+  currentMemberId?: string | null;
 
   canManageMembers?: boolean;
 };
@@ -36,7 +42,9 @@ export default function MemberTabs({
   member,
   financialYearOptions,
   initialFinancialYearId,
-  canViewLoanDetails = false,
+  canViewAllFinancialYears = false,
+  officeBearerFinancialYearIds = [],
+  currentMemberId = null,
   canManageMembers = false,
 }: Props) {
   const [tab, setTab] = useState(0);
@@ -98,7 +106,15 @@ export default function MemberTabs({
             <LoansTab
               member={member}
               financialYearId={financialYearId}
-              canViewLoanDetails={canViewLoanDetails}
+              canViewLoanDetails={canViewLoanDetails({
+                loanMemberId: member._id,
+                currentMemberId,
+                canViewAllLoans: canViewAllLoansForFinancialYear({
+                  financialYearId,
+                  canViewAllFinancialYears,
+                  officeBearerFinancialYearIds,
+                }),
+              })}
             />
           )}
 
