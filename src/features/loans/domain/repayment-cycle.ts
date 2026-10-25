@@ -50,13 +50,14 @@ function isFirstRepayment(input: RepaymentCycleInput): boolean {
  * The first period includes both the start and end dates.
  * Later periods exclude the start date so the previous period's
  * end date is not charged twice.
+ * A period that starts and ends on the same calendar day accrues no days.
  */
 function calculateDays(fromDate: Date, toDate: Date, includeStartDay: boolean): number {
   const elapsed = Math.round(
     (toCalendarDate(toDate).getTime() - toCalendarDate(fromDate).getTime()) / MILLISECONDS_PER_DAY,
   );
 
-  if (elapsed < 0) {
+  if (elapsed <= 0) {
     return 0;
   }
 
