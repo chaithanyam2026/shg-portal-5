@@ -45,38 +45,30 @@ function isFirstRepayment(input: RepaymentCycleInput): boolean {
 }
 
 /**
- * Whole calendar days in an interest period.
- *
- * The first period includes both the start and end dates.
- * Later periods exclude the start date so the previous period's
- * end date is not charged twice.
- * A period that starts and ends on the same calendar day accrues no days.
+ * Whole calendar days from the previous transaction date to this one.
+ * The start date is excluded so it is not charged twice, and a period
+ * that starts and ends on the same calendar day accrues no days.
  */
-function calculateDays(fromDate: Date, toDate: Date, includeStartDay: boolean): number {
+function calculateDays(fromDate: Date, toDate: Date): number {
   const elapsed = Math.round(
     (toCalendarDate(toDate).getTime() - toCalendarDate(fromDate).getTime()) / MILLISECONDS_PER_DAY,
   );
 
-  if (elapsed <= 0) {
-    return 0;
-  }
-
-  return includeStartDay ? elapsed + 1 : elapsed;
+  return Math.max(elapsed, 0);
 }
 
 export function getRepaymentCycle(input: RepaymentCycleInput): RepaymentCycle {
   const fromDate = getPreviousTransactionDate(input);
 
   const toDate = input.repaymentDate;
-  const firstRepayment = isFirstRepayment(input);
 
   return {
-    isFirstRepayment: firstRepayment,
+    isFirstRepayment: isFirstRepayment(input),
 
     fromDate,
 
     toDate,
 
-    interestDays: calculateDays(fromDate, toDate, firstRepayment),
+    interestDays: calculateDays(fromDate, toDate),
   };
 }
