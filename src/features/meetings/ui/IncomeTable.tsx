@@ -55,7 +55,14 @@ export default function IncomeTable({ records, disabled = false, onChange }: Pro
       </Button>
 
       <TableContainer component={Paper}>
-        <Table>
+        <Table sx={{ width: "100%", tableLayout: "fixed" }}>
+          <colgroup>
+            <col style={{ width: 168 }} />
+            <col style={{ width: 188 }} />
+            <col style={{ width: 160 }} />
+            <col />
+            <col style={{ width: 56 }} />
+          </colgroup>
           <TableHead>
             <TableRow>
               <TableCell>Date</TableCell>

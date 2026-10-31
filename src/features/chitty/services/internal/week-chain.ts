@@ -3,12 +3,15 @@ import { Types } from "mongoose";
 import { toDateInputValue } from "@/lib/utils/date";
 import ChittyWeek from "@/models/ChittyWeek";
 
-import { buildWeekBalanceChain, collectedAmount, type ChittyWeekBalance } from "../../domain";
+import {
+  buildWeekBalanceChain,
+  chittyEntryAmount,
+  type ChittyStoredEntryAmounts,
+  type ChittyWeekBalance,
+} from "../../domain";
 
-type StoredEntry = {
+type StoredEntry = ChittyStoredEntryAmounts & {
   chittyUserId: Types.ObjectId;
-  cash: number;
-  gpay: number;
 };
 
 export type StoredChittyWeek = {
@@ -34,15 +37,33 @@ export async function loadStoredWeeks(chittyId: string): Promise<Map<string, Sto
   );
 }
 
+export function priorUserEntries(
+  sundayValues: string[],
+  selectedDate: string,
+  stored: Map<string, StoredChittyWeek>,
+  chittyUserId: string,
+): ChittyStoredEntryAmounts[] {
+  return sundayValues
+    .filter((date) => date < selectedDate)
+    .map((date) => {
+      const entry = stored
+        .get(date)
+        ?.entries.find((item) => item.chittyUserId.toString() === chittyUserId);
+
+      return entry ?? {};
+    });
+}
+
 export function balanceChainForSundays(
   sundayValues: string[],
   stored: Map<string, StoredChittyWeek>,
+  weeklyAmount: number,
 ): ChittyWeekBalance[] {
   return buildWeekBalanceChain(
     sundayValues.map((date) => {
       const week = stored.get(date);
       const collected = (week?.entries ?? []).reduce(
-        (sum, entry) => sum + collectedAmount(entry.cash, entry.gpay),
+        (sum, entry) => sum + chittyEntryAmount(entry, weeklyAmount),
         0,
       );
 

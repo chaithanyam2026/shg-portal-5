@@ -8,6 +8,8 @@ export interface ChittyDocument {
   name: string;
   code: string;
   startDate: Date;
+  weeklyAmount: number;
+  isAuction: boolean;
   status: (typeof CHITTY_STATUS_VALUES)[number];
   createdBy: Types.ObjectId | null;
   createdAt: Date;
@@ -37,6 +39,15 @@ const chittySchema = new Schema<ChittyDocument>(
     startDate: {
       type: Date,
       required: true,
+    },
+    weeklyAmount: {
+      type: Number,
+      min: 0,
+      default: 0,
+    },
+    isAuction: {
+      type: Boolean,
+      default: false,
     },
     status: {
       type: String,

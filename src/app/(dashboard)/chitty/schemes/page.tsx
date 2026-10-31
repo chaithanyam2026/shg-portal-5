@@ -23,7 +23,10 @@ export default async function Page() {
 
   return (
     <>
-      <PageHeader title="Chitty schemes" subtitle="Create a chitty and set it active or closed" />
+      <PageHeader
+        title="Chitty schemes"
+        subtitle="Create a chitty, or edit its name, dates, weekly amount, and auction setting"
+      />
       <ChittySchemesManager initialSchemes={schemes} />
     </>
   );
