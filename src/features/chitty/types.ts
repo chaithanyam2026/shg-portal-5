@@ -7,6 +7,8 @@ export type ChittySchemeOption = {
   code: string;
   status: ChittyStatus;
   startDate: string;
+  weeklyAmount: number;
+  isAuction: boolean;
 };
 
 export type ChittyPaymentRecord = {
@@ -15,15 +17,17 @@ export type ChittyPaymentRecord = {
   phone: string;
   agentMemberId: string;
   agentMemberName: string;
-  cash: number;
-  gpay: number;
+  paid: boolean;
+  previousBalancePayment: number;
+  pendingBalance: number;
+  auctionAmount: number;
 };
 
 export type ChittyAgentSummary = {
   agentMemberId: string;
   agentMemberName: string;
-  cash: number;
-  gpay: number;
+  weeklyPaid: number;
+  previousBalancePaid: number;
   total: number;
 };
 
@@ -51,6 +55,8 @@ export type ChittyPaymentView = {
   canCloseDay: boolean;
   blockReason: string | null;
   currentMemberId: string | null;
+  weeklyAmount: number;
+  isAuction: boolean;
   records: ChittyPaymentRecord[];
   summaries: ChittyAgentSummary[];
   grandTotal: number;

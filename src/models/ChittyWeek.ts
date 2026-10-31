@@ -1,11 +1,16 @@
 import { HydratedDocument, Model, Schema, Types, model, models } from "mongoose";
 
+import { CHITTY_INSTALLMENT_PAYMENT } from "@/features/chitty/domain/payment-amount";
 import { createSchemaOptions } from "@/lib/db/schema-options";
 
 export type ChittyWeekEntryDocument = {
   chittyUserId: Types.ObjectId;
   cash: number;
   gpay: number;
+  paymentMode?: typeof CHITTY_INSTALLMENT_PAYMENT;
+  paid?: boolean;
+  previousBalancePayment?: number;
+  auctionAmount?: number;
 };
 
 export interface ChittyWeekDocument {
@@ -42,6 +47,21 @@ const entrySchema = new Schema<ChittyWeekEntryDocument>(
       required: true,
       min: 0,
       default: 0,
+    },
+    paymentMode: {
+      type: String,
+      enum: [CHITTY_INSTALLMENT_PAYMENT],
+    },
+    paid: {
+      type: Boolean,
+    },
+    previousBalancePayment: {
+      type: Number,
+      min: 0,
+    },
+    auctionAmount: {
+      type: Number,
+      min: 0,
     },
   },
   { _id: false },

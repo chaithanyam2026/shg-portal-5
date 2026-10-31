@@ -9,7 +9,7 @@ import Chitty from "@/models/Chitty";
 
 import { CHITTY_STATUSES } from "../domain";
 import type { ChittySchemeOption } from "../types";
-import { CreateChittySchema, ObjectIdSchema, UpdateChittyStatusSchema } from "../validation";
+import { CreateChittySchema, ObjectIdSchema, UpdateChittySchema } from "../validation";
 
 import { assertCanAccessChitty } from "./assert-can-access";
 import { parseInput } from "./internal/parse";
@@ -21,6 +21,8 @@ function mapScheme(doc: {
   code: string;
   status: ChittySchemeOption["status"];
   startDate: Date;
+  weeklyAmount?: number;
+  isAuction?: boolean;
 }): ChittySchemeOption {
   return {
     id: doc._id.toString(),
@@ -28,6 +30,8 @@ function mapScheme(doc: {
     code: doc.code,
     status: doc.status,
     startDate: toDateInputValue(doc.startDate),
+    weeklyAmount: doc.weeklyAmount ?? 0,
+    isAuction: doc.isAuction ?? false,
   };
 }
 
@@ -55,6 +59,8 @@ export async function createChitty(input: unknown, userId: string): Promise<Chit
     name: data.name,
     code: data.code.trim().toUpperCase(),
     startDate: parseDateInputValue(data.startDate),
+    weeklyAmount: data.weeklyAmount,
+    isAuction: data.isAuction,
     status: data.status ?? CHITTY_STATUSES.ACTIVE,
     createdBy: new Types.ObjectId(userId),
   });
@@ -62,22 +68,61 @@ export async function createChitty(input: unknown, userId: string): Promise<Chit
   return mapScheme(scheme);
 }
 
-export async function updateChittyStatus(
-  chittyId: string,
-  input: unknown,
-): Promise<ChittySchemeOption> {
+export async function updateChitty(chittyId: string, input: unknown): Promise<ChittySchemeOption> {
   await requireRole(ADMIN_ROLES);
   await connectMongo();
 
-  const data = parseInput(UpdateChittyStatusSchema, input);
+  const data = parseInput(UpdateChittySchema, input);
   const id = parseInput(ObjectIdSchema, chittyId);
+  const update: {
+    name?: string;
+    code?: string;
+    startDate?: Date;
+    status?: ChittySchemeOption["status"];
+    weeklyAmount?: number;
+    isAuction?: boolean;
+  } = {};
+
+  if (data.name !== undefined) {
+    update.name = data.name;
+  }
+
+  if (data.code !== undefined) {
+    const code = data.code.trim().toUpperCase();
+    const existing = await Chitty.findOne({ code, _id: { $ne: id } })
+      .select("_id")
+      .lean();
+
+    if (existing) {
+      throw new AppError("A chitty with this code already exists.", 400);
+    }
+
+    update.code = code;
+  }
+
+  if (data.startDate !== undefined) {
+    update.startDate = parseDateInputValue(data.startDate);
+  }
+
+  if (data.status !== undefined) {
+    update.status = data.status;
+  }
+
+  if (data.weeklyAmount !== undefined) {
+    update.weeklyAmount = data.weeklyAmount;
+  }
+
+  if (data.isAuction !== undefined) {
+    update.isAuction = data.isAuction;
+  }
+
   const scheme = await Chitty.findById(id);
 
   if (!scheme) {
     throw new AppError("Chitty not found.", 404);
   }
 
-  scheme.status = data.status;
+  scheme.set(update);
   await scheme.save();
 
   return mapScheme(scheme);

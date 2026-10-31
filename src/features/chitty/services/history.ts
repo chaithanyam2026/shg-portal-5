@@ -15,7 +15,7 @@ export async function getChittyHistory(chittyId: string): Promise<ChittyHistoryR
   await connectMongo();
 
   const id = parseInput(ObjectIdSchema, chittyId);
-  const scheme = await Chitty.findById(id).select("startDate").lean();
+  const scheme = await Chitty.findById(id).select("startDate weeklyAmount").lean();
 
   if (!scheme) {
     throw new AppError("Chitty not found.", 404);
@@ -24,7 +24,7 @@ export async function getChittyHistory(chittyId: string): Promise<ChittyHistoryR
   const dateOptions = toSundayDateValues(scheme.startDate, new Date());
   const stored = await loadStoredWeeks(id);
 
-  return balanceChainForSundays(dateOptions, stored).map((row) => ({
+  return balanceChainForSundays(dateOptions, stored, scheme.weeklyAmount ?? 0).map((row) => ({
     date: row.date,
     collected: row.collected,
     previousPending: row.previousPending,

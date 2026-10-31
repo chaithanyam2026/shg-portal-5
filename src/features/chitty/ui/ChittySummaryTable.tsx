@@ -22,11 +22,11 @@ type Props = {
 export default function ChittySummaryTable({ summaries }: Props) {
   const totals = summaries.reduce(
     (acc, summary) => ({
-      cash: acc.cash + summary.cash,
-      gpay: acc.gpay + summary.gpay,
+      weeklyPaid: acc.weeklyPaid + summary.weeklyPaid,
+      previousBalancePaid: acc.previousBalancePaid + summary.previousBalancePaid,
       total: acc.total + summary.total,
     }),
-    { cash: 0, gpay: 0, total: 0 },
+    { weeklyPaid: 0, previousBalancePaid: 0, total: 0 },
   );
 
   return (
@@ -35,8 +35,8 @@ export default function ChittySummaryTable({ summaries }: Props) {
         <TableHead>
           <TableRow>
             <TableCell>SHG member</TableCell>
-            <TableCell align="right">Total cash collected</TableCell>
-            <TableCell align="right">Total GPay collected</TableCell>
+            <TableCell align="right">Weekly paid</TableCell>
+            <TableCell align="right">Prev balance paid</TableCell>
             <TableCell align="right">Total collection</TableCell>
           </TableRow>
         </TableHead>
@@ -51,8 +51,8 @@ export default function ChittySummaryTable({ summaries }: Props) {
           {summaries.map((summary) => (
             <TableRow key={summary.agentMemberId}>
               <TableCell>{summary.agentMemberName}</TableCell>
-              <TableCell align="right">{formatCurrency(summary.cash)}</TableCell>
-              <TableCell align="right">{formatCurrency(summary.gpay)}</TableCell>
+              <TableCell align="right">{formatCurrency(summary.weeklyPaid)}</TableCell>
+              <TableCell align="right">{formatCurrency(summary.previousBalancePaid)}</TableCell>
               <TableCell align="right">{formatCurrency(summary.total)}</TableCell>
             </TableRow>
           ))}
@@ -61,8 +61,8 @@ export default function ChittySummaryTable({ summaries }: Props) {
           <TableFooter>
             <TableRow>
               <TableCell>All members</TableCell>
-              <TableCell align="right">{formatCurrency(totals.cash)}</TableCell>
-              <TableCell align="right">{formatCurrency(totals.gpay)}</TableCell>
+              <TableCell align="right">{formatCurrency(totals.weeklyPaid)}</TableCell>
+              <TableCell align="right">{formatCurrency(totals.previousBalancePaid)}</TableCell>
               <TableCell align="right">{formatCurrency(totals.total)}</TableCell>
             </TableRow>
           </TableFooter>

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { updateChittyStatus } from "@/features/chitty/services";
+import { updateChitty } from "@/features/chitty/services";
 import { AppError } from "@/lib/errors";
 
 type RouteContext = {
@@ -13,7 +13,7 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
   try {
     const { id } = await params;
     const body = await request.json();
-    const scheme = await updateChittyStatus(id, body);
+    const scheme = await updateChitty(id, body);
     return NextResponse.json(scheme);
   } catch (error) {
     if (error instanceof AppError) {

@@ -31,6 +31,9 @@ import {
   chittyEditBlockReason,
   isAfterChittyPaymentCutoff,
   isCurrentChittySunday,
+  payablePreviousBalance,
+  roundMoney,
+  userPaymentAmount,
 } from "../domain";
 import type {
   ChittyAgentSummary,
@@ -40,6 +43,7 @@ import type {
   ChittyUserHistory,
 } from "../types";
 
+import ChittyAuctionTable from "./ChittyAuctionTable";
 import ChittyHistoryTable from "./ChittyHistoryTable";
 import ChittyPaymentTable from "./ChittyPaymentTable";
 import ChittySummaryTable from "./ChittySummaryTable";
@@ -49,6 +53,17 @@ import NumberField from "./NumberField";
 type Props = {
   initialSheet: ChittyPaymentView;
 };
+
+type DashboardTab = "payments" | "auction" | "history" | "users";
+
+function recordAmount(record: ChittyPaymentRecord, weeklyAmount: number): number {
+  return userPaymentAmount(
+    record.paid,
+    weeklyAmount,
+    record.pendingBalance,
+    record.previousBalancePayment,
+  );
+}
 
 function liveAccess(sheet: ChittyPaymentView) {
   const now = new Date();
@@ -72,21 +87,25 @@ function liveAccess(sheet: ChittyPaymentView) {
   };
 }
 
-function summariesFrom(records: ChittyPaymentRecord[]): ChittyAgentSummary[] {
+function summariesFrom(records: ChittyPaymentRecord[], weeklyAmount: number): ChittyAgentSummary[] {
   const grouped = new Map<string, ChittyAgentSummary>();
 
   for (const record of records) {
     const current = grouped.get(record.agentMemberId) ?? {
       agentMemberId: record.agentMemberId,
       agentMemberName: record.agentMemberName,
-      cash: 0,
-      gpay: 0,
+      weeklyPaid: 0,
+      previousBalancePaid: 0,
       total: 0,
     };
+    const previousBalancePaid = payablePreviousBalance(
+      record.pendingBalance,
+      record.previousBalancePayment,
+    );
 
-    current.cash += record.cash;
-    current.gpay += record.gpay;
-    current.total = current.cash + current.gpay;
+    current.weeklyPaid = roundMoney(current.weeklyPaid + (record.paid ? weeklyAmount : 0));
+    current.previousBalancePaid = roundMoney(current.previousBalancePaid + previousBalancePaid);
+    current.total = roundMoney(current.weeklyPaid + current.previousBalancePaid);
     grouped.set(record.agentMemberId, current);
   }
 
@@ -107,7 +126,7 @@ export default function ChittyDashboard({ initialSheet }: Props) {
     canCloseDay: initialSheet.canCloseDay,
     blockReason: initialSheet.blockReason,
   });
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useState<DashboardTab>("payments");
   const [history, setHistory] = useState<ChittyHistoryRow[]>([]);
   const [userHistory, setUserHistory] = useState<ChittyUserHistory | null>(null);
   const [loading, setLoading] = useState(false);
@@ -131,6 +150,7 @@ export default function ChittyDashboard({ initialSheet }: Props) {
     setRecords(next.records);
     setDisbursedAmount(next.settlement?.disbursedAmount ?? 0);
     setAccess(liveAccess(next));
+    setTab((current) => (current === "auction" && !next.isAuction ? "payments" : current));
   }
 
   async function loadSheet(chittyId: string, date?: string) {
@@ -333,7 +353,11 @@ export default function ChittyDashboard({ initialSheet }: Props) {
     ) ||
       access.canEditDisbursement);
 
-  const collected = records.reduce((sum, record) => sum + record.cash + record.gpay, 0);
+  const activeTab: DashboardTab = tab === "auction" && !sheet.isAuction ? "payments" : tab;
+  const collected = records.reduce(
+    (sum, record) => sum + recordAmount(record, sheet.weeklyAmount),
+    0,
+  );
   const collection = (sheet.settlement?.previousPending ?? 0) + collected;
   const weekBalance =
     collection -
@@ -374,10 +398,10 @@ export default function ChittyDashboard({ initialSheet }: Props) {
                 onChange={(event) => {
                   const chittyId = event.target.value;
                   void loadSheet(chittyId);
-                  if (tab === 1) {
+                  if (activeTab === "history") {
                     void loadHistory(chittyId);
                   }
-                  if (tab === 2) {
+                  if (activeTab === "users") {
                     void loadUserHistory(chittyId);
                   }
                 }}
@@ -390,7 +414,7 @@ export default function ChittyDashboard({ initialSheet }: Props) {
               </Select>
             </FormControl>
 
-            {tab === 0 && (
+            {(activeTab === "payments" || activeTab === "auction") && (
               <FormControl size="small" sx={{ minWidth: 220 }}>
                 <InputLabel>Sunday</InputLabel>
                 <Select
@@ -416,25 +440,26 @@ export default function ChittyDashboard({ initialSheet }: Props) {
           </Stack>
 
           <Tabs
-            value={tab}
-            onChange={(_event, value: number) => {
+            value={activeTab}
+            onChange={(_event, value: DashboardTab) => {
               setTab(value);
-              if (value === 1 && sheet.chittyId) {
+              if (value === "history" && sheet.chittyId) {
                 void loadHistory(sheet.chittyId);
               }
-              if (value === 2 && sheet.chittyId) {
+              if (value === "users" && sheet.chittyId) {
                 void loadUserHistory(sheet.chittyId);
               }
             }}
             variant="scrollable"
             scrollButtons="auto"
           >
-            <Tab label="Payments" />
-            <Tab label="History" />
-            <Tab label="User history" />
+            <Tab value="payments" label="Payments" />
+            {sheet.isAuction && <Tab value="auction" label="Auction" />}
+            <Tab value="history" label="History" />
+            <Tab value="users" label="User history" />
           </Tabs>
 
-          {tab === 0 && (
+          {activeTab === "payments" && (
             <Stack spacing={3}>
               {access.blockReason && <Alert severity="info">{access.blockReason}</Alert>}
 
@@ -442,8 +467,19 @@ export default function ChittyDashboard({ initialSheet }: Props) {
                 <CardContent>
                   <Stack spacing={2}>
                     <Typography variant="h6">{sheet.chittyName}</Typography>
+                    <Typography color="text.secondary">
+                      Weekly amount: {formatCurrency(sheet.weeklyAmount)}. Checking Pay records this
+                      amount for the week.
+                    </Typography>
+                    {sheet.weeklyAmount <= 0 && (
+                      <Alert severity="warning">
+                        Set a weekly amount for this chitty before recording payments.
+                      </Alert>
+                    )}
                     <ChittyPaymentTable
                       records={records}
+                      weeklyAmount={sheet.weeklyAmount}
+                      isAuction={sheet.isAuction}
                       canEditAll={sheet.canEditAll}
                       canEditSheet={access.canEditPayments}
                       currentMemberId={sheet.currentMemberId}
@@ -468,7 +504,7 @@ export default function ChittyDashboard({ initialSheet }: Props) {
                 <CardContent>
                   <Stack spacing={2}>
                     <Typography variant="h6">Week summary</Typography>
-                    <ChittySummaryTable summaries={summariesFrom(records)} />
+                    <ChittySummaryTable summaries={summariesFrom(records, sheet.weeklyAmount)} />
                     {sheet.settlement && (
                       <>
                         <Stack spacing={0.5}>
@@ -506,9 +542,13 @@ export default function ChittyDashboard({ initialSheet }: Props) {
             </Stack>
           )}
 
-          {tab === 1 && <ChittyHistoryTable rows={history} />}
+          {activeTab === "auction" && sheet.isAuction && (
+            <ChittyAuctionTable date={sheet.date} records={records} />
+          )}
 
-          {tab === 2 && userHistory && (
+          {activeTab === "history" && <ChittyHistoryTable rows={history} />}
+
+          {activeTab === "users" && userHistory && (
             <ChittyUserHistoryTable
               history={userHistory}
               disabled={loading}

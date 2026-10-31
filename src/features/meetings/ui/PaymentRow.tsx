@@ -110,6 +110,8 @@ export default function PaymentRow({
       <TableCell sx={{ verticalAlign: "top" }}>
         <TextField
           fullWidth
+          multiline
+          minRows={2}
           size="small"
           disabled={disabled}
           value={record.remarks}

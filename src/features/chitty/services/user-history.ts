@@ -9,7 +9,7 @@ import ChittyUser from "@/models/ChittyUser";
 import {
   canRecordChittyWin,
   canViewAllChittyRows,
-  collectedAmount,
+  chittyEntryAmount,
   resolveChittyEditorRole,
   roundMoney,
   toSundayDateValues,
@@ -27,7 +27,7 @@ export async function getChittyUserHistory(chittyId: string): Promise<ChittyUser
   await connectMongo();
 
   const id = parseInput(ObjectIdSchema, chittyId);
-  const scheme = await Chitty.findById(id).select("startDate status").lean();
+  const scheme = await Chitty.findById(id).select("startDate status weeklyAmount").lean();
 
   if (!scheme) {
     throw new AppError("Chitty not found.", 404);
@@ -44,7 +44,7 @@ export async function getChittyUserHistory(chittyId: string): Promise<ChittyUser
 
   for (const week of stored.values()) {
     for (const entry of week.entries) {
-      const amount = collectedAmount(entry.cash, entry.gpay);
+      const amount = chittyEntryAmount(entry, scheme.weeklyAmount ?? 0);
 
       if (amount <= 0) {
         continue;

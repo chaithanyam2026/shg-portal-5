@@ -9,6 +9,7 @@ import { EXPENSE_CATEGORY_OPTIONS } from "../domain/expense";
 import type { ExpenseRecord } from "../types";
 
 import AmountField from "./AmountField";
+import ShortDateField from "./ShortDateField";
 
 type Props = {
   record: ExpenseRecord;
@@ -20,28 +21,20 @@ type Props = {
 export default function ExpenseRow({ record, disabled = false, onChange, onDelete }: Props) {
   return (
     <TableRow hover>
-      <TableCell width={160}>
-        <TextField
-          fullWidth
-          size="small"
-          type="date"
+      <TableCell sx={{ verticalAlign: "top" }}>
+        <ShortDateField
           disabled={disabled}
-          value={record.transactionDate.slice(0, 10)}
-          onChange={(event) =>
+          value={record.transactionDate}
+          onChange={(transactionDate) =>
             onChange({
               ...record,
-              transactionDate: event.target.value,
+              transactionDate,
             })
           }
-          slotProps={{
-            inputLabel: {
-              shrink: true,
-            },
-          }}
         />
       </TableCell>
 
-      <TableCell width={220}>
+      <TableCell sx={{ verticalAlign: "top" }}>
         <TextField
           select
           fullWidth
@@ -63,7 +56,7 @@ export default function ExpenseRow({ record, disabled = false, onChange, onDelet
         </TextField>
       </TableCell>
 
-      <TableCell width={140}>
+      <TableCell sx={{ verticalAlign: "top" }}>
         <AmountField
           fullWidth
           size="small"
@@ -83,9 +76,11 @@ export default function ExpenseRow({ record, disabled = false, onChange, onDelet
         />
       </TableCell>
 
-      <TableCell>
+      <TableCell sx={{ verticalAlign: "top" }}>
         <TextField
           fullWidth
+          multiline
+          minRows={2}
           size="small"
           disabled={disabled}
           value={record.remarks}
@@ -98,7 +93,7 @@ export default function ExpenseRow({ record, disabled = false, onChange, onDelet
         />
       </TableCell>
 
-      <TableCell width={70}>
+      <TableCell sx={{ verticalAlign: "top" }}>
         <IconButton color="error" disabled={disabled} onClick={onDelete}>
           <DeleteIcon />
         </IconButton>

@@ -50,9 +50,11 @@ export default function AttendanceRow({
         </TextField>
       </TableCell>
 
-      <TableCell>
+      <TableCell sx={{ verticalAlign: "top" }}>
         <TextField
           fullWidth
+          multiline
+          minRows={2}
           size="small"
           disabled={disabled}
           value={record.remarks}
