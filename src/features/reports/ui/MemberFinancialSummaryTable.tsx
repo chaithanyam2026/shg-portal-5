@@ -11,7 +11,6 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import type { SxProps, Theme } from "@mui/material/styles";
 
 import type { MemberFinancialSummary } from "../domain/member-financial-summary";
 import { formatCurrency } from "@/lib/utils/currency";
@@ -27,7 +26,7 @@ type Props = {
   })}`;
 } */
 
-const stripedBodySx: SxProps<Theme> = {
+const stripedBodySx = {
   "& tbody .MuiTableRow-root:nth-of-type(odd)": {
     bgcolor: "grey.100",
   },
@@ -55,7 +54,7 @@ export default function MemberFinancialSummaryTable({ report }: Props) {
       maxHeight: 640,
     }} */
       >
-        <Table stickyHeader size="small">
+        <Table stickyHeader size="small" sx={stripedBodySx}>
           <TableHead>
             <TableRow>
               <TableCell>Code</TableCell>
@@ -241,41 +240,17 @@ export default function MemberFinancialSummaryTable({ report }: Props) {
 
       <br />
 
-      <Stack
-        spacing={0.25}
-        sx={{
-          alignItems: "center",
-          mx: { xs: -1.5, sm: 0 },
-        }}
-      >
-        <Typography
-          variant="subtitle1"
-          align="center"
-          sx={{ fontWeight: 600, fontSize: { xs: "0.95rem", sm: "1rem" }, lineHeight: 1.3 }}
-        >
+      <Stack spacing={0.5} sx={{ alignItems: "center" }}>
+        <Typography variant="subtitle1" sx={{ fontWeight: 600 }} align="center">
           Expected contribution: {formatCurrency(report.expectedContribution)}
         </Typography>
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          align="center"
-          sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" }, lineHeight: 1.3 }}
-        >
+        <Typography variant="body2" color="text.secondary" align="center">
           Last meeting closed:{" "}
-          <Typography
-            component="span"
-            variant="body2"
-            sx={{ fontWeight: 700, color: "text.primary", fontSize: "inherit" }}
-          >
+          <Typography component="span" variant="body2" sx={{ fontWeight: 700, color: "text.primary" }}>
             {report.lastClosedMeetingDate ? formatDate(report.lastClosedMeetingDate) : "—"}
           </Typography>
         </Typography>
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          align="center"
-          sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" }, lineHeight: 1.3 }}
-        >
+        <Typography variant="body2" color="text.secondary" align="center">
           Opening {formatCurrency(report.openingContribution)} (opening contribution) +{" "}
           {report.closedMeetingCount} closed meetings × {formatCurrency(report.weeklyContribution)}{" "}
           weekly.
@@ -284,67 +259,75 @@ export default function MemberFinancialSummaryTable({ report }: Props) {
       <TableContainer
         component={Paper}
         variant="outlined"
-        sx={{
-          mx: { xs: -1.5, sm: 0 },
-          width: { xs: "calc(100% + 24px)", sm: "100%" },
-        }}
       >
-        <Table
-          size="small"
-          sx={{
-            tableLayout: "fixed",
-            width: "100%",
-            ...stripedBodySx,
-            "& .MuiTableCell-root": {
-              px: 0.5,
-              py: 0.5,
-              fontSize: "0.7rem",
-              lineHeight: 1.2,
-            },
-            "& thead .MuiTableCell-root": {
-              fontSize: "0.65rem",
-              fontWeight: 700,
-              lineHeight: 1.15,
-              py: 0.75,
-              whiteSpace: "normal",
-              bgcolor: "grey.50",
-            },
-            "& tbody .MuiTableCell-root": {
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            },
-          }}
-        >
+        <Table stickyHeader size="small" sx={stripedBodySx}>
           <TableHead>
+            {/* First header row */}
             <TableRow>
-              <TableCell sx={{ width: "28%" }}>പേര്</TableCell>
-              <TableCell align="right" sx={{ width: "18%" }}>
-                സമ്പാദ്യം
+              <TableCell rowSpan={2} sx={{ p: 0 }} align="center">
+                പേര്&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               </TableCell>
-              <TableCell align="right" sx={{ width: "15%" }}>
-                ഫൈൻ
-              </TableCell>
-              <TableCell align="right" sx={{ width: "22%" }}>
-                ലോൺ
-              </TableCell>
-              <TableCell align="right" sx={{ width: "17%" }}>
-                ലോൺ ഫൈൻ
+
+              <TableCell sx={{ p: 0 }} colSpan={4} align="center">
+                അടയ്ക്കാനുള്ളത്
               </TableCell>
             </TableRow>
+
+            {/* Second header row */}
+            <TableRow>
+              <TableCell sx={{ p: 0 }} align="center">
+                Contribution
+                <br />
+                സമ്പാദ്യം
+              </TableCell>
+
+              <TableCell sx={{ p: 0 }} align="center">
+                Fine<br />
+                ഫൈൻ
+              </TableCell>
+
+              <TableCell sx={{ p: 0 }} align="center">
+                Loan <br />
+                ലോൺ
+              </TableCell>
+
+              <TableCell sx={{ p: 0 }} align="right">
+                Loan <br />
+                ലോൺ ഫൈൻ
+              </TableCell>
+
+
+            </TableRow>
           </TableHead>
+          {/*     <TableHead>
+            <TableRow >
+
+              <TableCell rowSpan={2}>Member</TableCell>
+
+              <TableCell align="right">സമ്പാദ്യം അടയ്ക്കാനുള്ളത്</TableCell>
+
+              <TableCell align="right">ലോൺ അടയ്ക്കാനുള്ളത്</TableCell>
+
+              <TableCell align="right">ആബ്സെന്റ ഫൈൻ  അടയ്ക്കാനുള്ളത്</TableCell>
+            </TableRow>
+          </TableHead> */}
 
           <TableBody>
             {report.rows.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} align="center">
+                <TableCell colSpan={14} align="center">
                   <Typography color="text.secondary">No members found.</Typography>
                 </TableCell>
               </TableRow>
             ) : (
               report.rows.map((row) => (
                 <TableRow key={row.memberId} hover>
-                  <TableCell>{row.memberName}</TableCell>
+
+
+                  <TableCell sx={{
+                    pl: 0,
+                    pr: 0,
+                  }}>{row.memberName}</TableCell>
 
                   <TableCell
                     align="right"
@@ -364,11 +347,7 @@ export default function MemberFinancialSummaryTable({ report }: Props) {
                     {formatCurrency(row.absentFinePending)}
                   </TableCell>
 
-                  <TableCell align="right">
-                    {formatCurrency(
-                      row.outstandingLoan + row.loanInterestPending + row.loanFinePending,
-                    )}
-                  </TableCell>
+                  <TableCell align="right" sx={{ p: 0 }}>{formatCurrency(row.outstandingLoan + row.loanInterestPending + row.loanFinePending)}</TableCell>
                   <TableCell
                     align="right"
                     sx={{
@@ -377,6 +356,7 @@ export default function MemberFinancialSummaryTable({ report }: Props) {
                   >
                     {formatCurrency(row.loanFinePending)}
                   </TableCell>
+
                 </TableRow>
               ))
             )}
