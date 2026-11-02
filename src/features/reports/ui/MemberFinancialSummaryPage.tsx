@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import { Stack, Typography } from "@mui/material";
 
+import { formatDate } from "@/lib/utils/date";
 import { formatCurrency } from "@/lib/utils/format";
 
 import type { FinancialYearOption } from "@/features/financial-year/domain/financial-year-option";
@@ -51,6 +52,12 @@ export default function MemberFinancialSummaryPage({ financialYearId, options, r
       <Stack spacing={0.5}>
         <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
           Expected contribution: {formatCurrency(report.expectedContribution)}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Last meeting closed:{" "}
+          <Typography component="span" variant="body2" sx={{ fontWeight: 700, color: "text.primary" }}>
+            {report.lastClosedMeetingDate ? formatDate(report.lastClosedMeetingDate) : "—"}
+          </Typography>
         </Typography>
         <Typography variant="body2" color="text.secondary">
           Opening {formatCurrency(report.openingContribution)} (opening contribution) +{" "}

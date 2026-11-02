@@ -121,6 +121,10 @@ export async function buildMemberFinancialSummary(
   ]);
 
   const closedMeetingCount = meetings.length;
+  const lastClosedMeeting = meetings.at(-1);
+  const lastClosedMeetingDate = lastClosedMeeting
+    ? lastClosedMeeting.meetingDate.toISOString()
+    : null;
   const openingContribution = standardOpeningContribution(
     members.map((member) => member.opening?.contribution ?? 0),
   );
@@ -282,6 +286,7 @@ export async function buildMemberFinancialSummary(
     totals,
     openingContribution,
     closedMeetingCount,
+    lastClosedMeetingDate,
     weeklyContribution: WEEKLY_CONTRIBUTION,
     expectedContribution,
   };
