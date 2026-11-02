@@ -292,8 +292,7 @@ export default function MemberFinancialSummaryTable({ report }: Props) {
               </TableCell>
 
               <TableCell sx={{ p: 0 }} align="right">
-                Loan <br />
-                ലോൺ ഫൈൻ
+                ലോൺ<br />ഫൈൻ
               </TableCell>
 
 
