@@ -63,6 +63,8 @@ export type MemberFinancialSummary = {
 
   closedMeetingCount: number;
 
+  lastClosedMeetingDate: string | null;
+
   weeklyContribution: number;
 
   expectedContribution: number;
