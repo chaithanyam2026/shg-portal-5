@@ -32,6 +32,10 @@ export const ROUTE_PERMISSIONS: readonly RoutePermission[] = [
     path: "/reports",
   },
   {
+    path: "/rules",
+    roles: ADMIN_ROLES,
+  },
+  {
     path: "/settings",
     roles: ADMIN_ROLES,
   },

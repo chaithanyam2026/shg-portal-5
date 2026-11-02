@@ -1,0 +1,1 @@
+export { getClubRules } from "./get";

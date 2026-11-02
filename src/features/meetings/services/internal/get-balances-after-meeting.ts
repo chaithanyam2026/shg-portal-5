@@ -64,6 +64,19 @@ export async function getBalancesAfterMeeting(
     isUpToCurrentMeeting(meeting.meetingDate, meeting._id.toString(), meetingDate, meetingId),
   );
 
+  if (!included.some((meeting) => meeting._id.toString() === meetingId)) {
+    const currentMeeting = await Meeting.findOne({
+      _id: new Types.ObjectId(meetingId),
+      financialYearId: new Types.ObjectId(financialYearId),
+    })
+      .lean()
+      .exec();
+
+    if (currentMeeting) {
+      included.push(currentMeeting);
+    }
+  }
+
   const ledgerEntries = [
     ...buildFinancialYearOpeningEntries({
       financialYearId: financialYear._id,

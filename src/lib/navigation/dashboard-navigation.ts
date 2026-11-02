@@ -1,3 +1,5 @@
+import GavelOutlinedIcon from "@mui/icons-material/GavelOutlined";
+
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
@@ -101,6 +103,13 @@ export const dashboardNavigation: NavigationItem[] = [
     title: "Change Password",
     href: "/account/change-password",
     icon: LockOutlinedIcon,
+  },
+
+  {
+    title: "Rules",
+    href: "/rules",
+    icon: GavelOutlinedIcon,
+    roles: ADMIN_ROLES,
   },
 
   {
