@@ -158,11 +158,11 @@ export default function MemberFinancialSummaryTable({ report }: Props) {
                   <Typography sx={{ fontWeight: 700 }}>Totals</Typography>
                 </TableCell>
 
-                <TableCell align="right">
+                {/*   <TableCell align="right">
                   <Typography sx={{ fontWeight: 700 }}>
                     {formatCurrency(report.totals.contributionExpected)}
                   </Typography>
-                </TableCell>
+                </TableCell> */}
 
                 <TableCell align="right">
                   <Typography sx={{ fontWeight: 700 }}>

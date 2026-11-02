@@ -1,0 +1,65 @@
+{
+  "id": "club-rules-2026",
+  "title": "Rules and Regulations",
+  "description": "Rules and regulations to be followed by all members.",
+  "version": 1,
+  "status": "APPROVED",
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "createdBy": "Admin",
+  "approvedAt": "2026-01-05T00:00:00.000Z",
+  "approvedBy": "General Body",
+  "effectiveFrom": "2026-01-10",
+  "effectiveUntil": null,
+  "sections": [
+    {
+      "id": "general-rules",
+      "title": "General Rules",
+      "rules": [
+        {
+          "id": "rule-001",
+          "text": "Every member must attend the regular meetings.",
+          "order": 1
+        },
+        {
+          "id": "rule-002",
+          "text": "Members must maintain discipline and respect other members.",
+          "order": 2
+        },
+        {
+          "id": "rule-003",
+          "text": "All members must follow the decisions approved by the Chaithanyam.",
+          "order": 3
+        }
+      ]
+    },
+    {
+      "id": "financial-rules",
+      "title": "Financial Rules",
+      "rules": [
+        {
+          "id": "rule-004",
+          "text": "Every member must pay the monthly subscription on time.",
+          "order": 1
+        },
+        {
+          "id": "rule-005",
+          "text": "All financial transactions must be properly recorded.",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "id": "meeting-rules",
+      "title": "Meeting Rules",
+      "rules": [
+        {
+          "id": "rule-006",
+          "text": "Members must inform the secretary in advance if they cannot attend a meeting.",
+          "order": 1
+        }
+      ]
+    }
+  ],
+  "updatedAt": "2026-01-05T00:00:00.000Z",
+  "updatedBy": "Admin"
+}

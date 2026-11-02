@@ -8,6 +8,7 @@ import { Types } from "mongoose";
 
 import type { MemberMeetingTransactions, MemberTransactionsSummary } from "../types";
 import { normalizeAttendanceStatus } from "../domain/attendance-status";
+import { getBalancesAfterMeeting } from "./internal/get-balances-after-meeting";
 import { loadFinancialYearMembers } from "./internal/load-financial-year-members";
 
 export async function getMemberTransactions(
@@ -113,6 +114,12 @@ export async function getMemberTransactions(
     };
   });
 
+  const balances = await getBalancesAfterMeeting(
+    meeting.financialYearId.toString(),
+    meetingId,
+    meeting.meetingDate,
+  );
+
   return {
     meetingId,
     meetingDate: meeting.meetingDate.toISOString(),
@@ -123,5 +130,7 @@ export async function getMemberTransactions(
     totalAbsentFine: records.reduce((sum, record) => sum + record.absentFine, 0),
     totalSpecialLoanFine: records.reduce((sum, record) => sum + record.specialLoanFine, 0),
     grandTotal: records.reduce((sum, record) => sum + record.total, 0),
+    bankBalance: balances.bankBalance,
+    cashInHand: balances.cashInHand,
   };
 }

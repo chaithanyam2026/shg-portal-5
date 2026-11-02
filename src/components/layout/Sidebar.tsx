@@ -10,6 +10,7 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
 import EventOutlinedIcon from "@mui/icons-material/EventOutlined";
+import GavelOutlinedIcon from "@mui/icons-material/GavelOutlined";
 import GroupsOutlinedIcon from "@mui/icons-material/GroupsOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import PaymentsOutlinedIcon from "@mui/icons-material/PaymentsOutlined";
@@ -45,6 +46,7 @@ const NAV_ICONS: Record<string, typeof DashboardOutlinedIcon> = {
   "/reports": BarChartOutlinedIcon,
   "/account/profile": PersonOutlinedIcon,
   "/account/change-password": LockOutlinedIcon,
+  "/rules": GavelOutlinedIcon,
   "/settings/users": SettingsOutlinedIcon,
 };
 

@@ -162,6 +162,8 @@ export type MemberTransactionsSummary = {
   totalAbsentFine: number;
   totalSpecialLoanFine: number;
   grandTotal: number;
+  bankBalance: number;
+  cashInHand: number;
 };
 
 export type BankTransactionRecord = {

@@ -27,27 +27,31 @@ function formatAmount(value: number): string {
   return value > 0 ? formatCurrency(value) : "—";
 }
 
+function SummaryLine({ label, value }: { label: string; value: string }) {
+  return (
+    <Stack direction="row" sx={{ justifyContent: "space-between", gap: 1 }}>
+      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+        {label}
+      </Typography>
+      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+        {value}
+      </Typography>
+    </Stack>
+  );
+}
+
 export default function MemberTransactionsView({ summary }: Props) {
   return (
     <Stack spacing={3}>
       <Card variant="outlined">
         <CardContent>
-          <Stack
-            direction="row"
-            sx={{
-              justifyContent: "space-between",
-              alignItems: "center",
-              gap: 1,
-              flexWrap: "wrap",
-            }}
-          >
-            <Typography variant="h6">
-              <Typography variant="body2" sx={{ fontWeight: 600 }} align="center">
-                {formatDate(summary.meetingDate)}
-              </Typography>
-              Meeting Collection</Typography>
-
-            <Typography sx={{ fontWeight: 700 }}>{formatCurrency(summary.grandTotal)}</Typography>
+          <Stack spacing={0.5}>
+            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+              {formatDate(summary.meetingDate)}
+            </Typography>
+            <SummaryLine label="Meeting Collection" value={formatCurrency(summary.grandTotal)} />
+            <SummaryLine label="Bank Balance" value={formatCurrency(summary.bankBalance)} />
+            <SummaryLine label="Cash Balance" value={formatCurrency(summary.cashInHand)} />
           </Stack>
         </CardContent>
       </Card>
