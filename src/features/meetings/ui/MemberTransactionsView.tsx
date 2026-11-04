@@ -60,8 +60,8 @@ export default function MemberTransactionsView({ summary }: Props) {
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell align="center">Member</TableCell>
-              <TableCell align="center">Contribution (സമ്പാദ്യം)</TableCell>
+              <TableCell align="center" sx={{ padding: 0 }}>Member</TableCell>
+              <TableCell align="center" sx={{ padding: 0 }}>Contribution (സമ്പാദ്യം)</TableCell>
               <TableCell align="center">Loan (ലോൺ)</TableCell>
               <TableCell align="center">Absent Fine</TableCell>
               <TableCell align="center">Special Loan</TableCell>
@@ -80,7 +80,7 @@ export default function MemberTransactionsView({ summary }: Props) {
 
             {summary.records.map((record) => (
               <TableRow key={record.memberId}>
-                <TableCell sx={{ whiteSpace: "nowrap" }}>
+                <TableCell sx={{ whiteSpace: "nowrap", padding: 0 }}>
                   {/* <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {record.memberCode}
                   </Typography> */}
@@ -88,19 +88,19 @@ export default function MemberTransactionsView({ summary }: Props) {
                   <Typography variant="body2">{record.memberName}</Typography>
                 </TableCell>
 
-                <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
+                <TableCell align="right" sx={{ whiteSpace: "nowrap", p: 0 }}>
                   {formatAmount(record.contribution)}
                 </TableCell>
 
-                <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
+                <TableCell align="right" sx={{ whiteSpace: "nowrap", pr: 0 }}>
                   {formatAmount(record.loanRepayment)}
                 </TableCell>
 
-                <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
+                <TableCell align="right" sx={{ whiteSpace: "nowrap", pr: 0 }}>
                   {formatAmount(record.absentFine)}
                 </TableCell>
 
-                <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
+                <TableCell align="right" sx={{ whiteSpace: "nowrap", pr: 0 }}>
                   {formatAmount(record.specialLoanFine)}
                 </TableCell>
 
@@ -114,19 +114,19 @@ export default function MemberTransactionsView({ summary }: Props) {
               <TableRow>
                 <TableCell sx={{ fontWeight: 700 }}>Total</TableCell>
 
-                <TableCell align="right" sx={{ fontWeight: 700, whiteSpace: "nowrap" }}>
+                <TableCell align="right" sx={{ fontWeight: 700, whiteSpace: "nowrap", p: 0 }}>
                   {formatCurrency(summary.totalContribution)}
                 </TableCell>
 
-                <TableCell align="right" sx={{ fontWeight: 700, whiteSpace: "nowrap" }}>
+                <TableCell align="right" sx={{ fontWeight: 700, whiteSpace: "nowrap", pr: 0 }}>
                   {formatCurrency(summary.totalLoanRepayment)}
                 </TableCell>
 
-                <TableCell align="right" sx={{ fontWeight: 700, whiteSpace: "nowrap" }}>
+                <TableCell align="right" sx={{ fontWeight: 700, whiteSpace: "nowrap", pr: 0 }}>
                   {formatCurrency(summary.totalAbsentFine)}
                 </TableCell>
 
-                <TableCell align="right" sx={{ fontWeight: 700, whiteSpace: "nowrap" }}>
+                <TableCell align="right" sx={{ fontWeight: 700, whiteSpace: "nowrap", pr: 0 }}>
                   {formatCurrency(summary.totalSpecialLoanFine)}
                 </TableCell>
 
