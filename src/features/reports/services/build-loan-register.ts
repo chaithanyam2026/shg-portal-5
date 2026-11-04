@@ -46,6 +46,14 @@ function addRowToTotals(totals: LoanRegisterTotals, row: LoanRegisterRow): void 
   totals.totalOutstanding += row.totalOutstanding;
 }
 
+function compareLoanRegisterRows(left: LoanRegisterRow, right: LoanRegisterRow): number {
+  return (
+    left.memberCode.localeCompare(right.memberCode) ||
+    left.memberName.localeCompare(right.memberName) ||
+    left.loanNumber.localeCompare(right.loanNumber)
+  );
+}
+
 export async function buildLoanRegister(financialYearId: string): Promise<LoanRegister> {
   await connectMongo();
 
@@ -72,7 +80,6 @@ export async function buildLoanRegister(financialYearId: string): Promise<LoanRe
     })
     .sort({
       loanType: 1,
-      disbursedDate: 1,
       loanNumber: 1,
     })
     .lean();
@@ -131,7 +138,9 @@ export async function buildLoanRegister(financialYearId: string): Promise<LoanRe
   );
 
   const groups: LoanRegisterGroup[] = LOAN_TYPES.map((loanType) => {
-    const groupRows = rows.filter((row) => row.loanType === loanType);
+    const groupRows = rows
+      .filter((row) => row.loanType === loanType)
+      .sort(compareLoanRegisterRows);
     const totals = createEmptyTotals();
 
     for (const row of groupRows) {
