@@ -32,6 +32,18 @@ const stripedBodySx = {
   },
 };
 
+function contributionToBePaidSx(amount: number) {
+  if (amount > 1000) {
+    return { color: "error.main", fontWeight: 700 };
+  }
+
+  if (amount > 0) {
+    return { color: "warning.main" };
+  }
+
+  return { color: "text.primary" };
+}
+
 function formatDate(value: string | null) {
   if (!value) {
     return "-";
@@ -109,9 +121,7 @@ export default function MemberFinancialSummaryTable({ report }: Props) {
 
                   <TableCell
                     align="right"
-                    sx={{
-                      color: row.contributionToBePaid > 0 ? "warning.main" : "text.primary",
-                    }}
+                    sx={contributionToBePaidSx(row.contributionToBePaid)}
                   >
                     {formatCurrency(row.contributionToBePaid)}
                   </TableCell>
@@ -330,9 +340,7 @@ export default function MemberFinancialSummaryTable({ report }: Props) {
 
                   <TableCell
                     align="right"
-                    sx={{
-                      color: row.contributionToBePaid > 0 ? "warning.main" : "text.primary",
-                    }}
+                    sx={contributionToBePaidSx(row.contributionToBePaid)}
                   >
                     {formatCurrency(row.contributionToBePaid)}
                   </TableCell>
@@ -351,6 +359,7 @@ export default function MemberFinancialSummaryTable({ report }: Props) {
                     align="right"
                     sx={{
                       color: row.loanFinePending > 0 ? "error.main" : "text.primary",
+                      fontWeight: row.loanFinePending > 0 ? 600 : 400,
                     }}
                   >
                     {formatCurrency(row.loanFinePending)}
