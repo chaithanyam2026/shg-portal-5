@@ -24,13 +24,13 @@ type Props = {
 };
 
 function formatAmount(value: number): string {
-  return value > 0 ? formatCurrency(value) : "—";
+  return value > 0 ? formatCurrency(value) : "...";
 }
 
 function SummaryLine({ label, value }: { label: string; value: string }) {
   return (
     <Stack direction="row" sx={{ justifyContent: "space-between", gap: 1 }}>
-      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+      <Typography variant="body2" sx={{ fontWeight: 400 }}>
         {label}
       </Typography>
       <Typography variant="body2" sx={{ fontWeight: 600 }}>
@@ -46,9 +46,10 @@ export default function MemberTransactionsView({ summary }: Props) {
       <Card variant="outlined">
         <CardContent>
           <Stack spacing={0.5}>
-            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+            {/* <Typography variant="body2" sx={{ fontWeight: 600 }}>
               {formatDate(summary.meetingDate)}
-            </Typography>
+            </Typography> */}
+            <SummaryLine label="Meeting Date" value={formatDate(summary.meetingDate)} />
             <SummaryLine label="Meeting Collection" value={formatCurrency(summary.grandTotal)} />
             <SummaryLine label="Bank Balance" value={formatCurrency(summary.bankBalance)} />
             <SummaryLine label="Cash Balance" value={formatCurrency(summary.cashInHand)} />
@@ -60,15 +61,15 @@ export default function MemberTransactionsView({ summary }: Props) {
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell align="center" sx={{ padding: 0 }}>Member</TableCell>
-              <TableCell align="center" sx={{ padding: 0 }}>Contribution (സമ്പാദ്യം)</TableCell>
-              <TableCell align="center">Loan (ലോൺ)</TableCell>
-              {summary.totalAbsentFine > 0 && (
-                <TableCell align="center">Absent Fine</TableCell>)}
+              <TableCell align="center" sx={{ padding: 0, fontWeight: 600 }}>Member</TableCell>
+              <TableCell align="center" sx={{ padding: 0, fontWeight: 600 }}>Contribution (സമ്പാദ്യം)</TableCell>
+              <TableCell align="center" sx={{ padding: 0, fontWeight: 600 }}>Loan (ലോൺ)</TableCell>
+
+              <TableCell align="center" sx={{ padding: 0, fontWeight: 600 }}>Absent Fine</TableCell>
               {summary.totalSpecialLoanFine > 0 && (
-                <TableCell align="center">Special Loan</TableCell>
+                <TableCell align="center" sx={{ padding: 0, fontWeight: 600 }}>Special Loan</TableCell>
               )}
-              <TableCell align="center">Total</TableCell>
+              <TableCell align="center" sx={{ padding: 0, fontWeight: 600 }}>Total</TableCell>
             </TableRow>
           </TableHead>
 
@@ -98,10 +99,10 @@ export default function MemberTransactionsView({ summary }: Props) {
                 <TableCell align="right" sx={{ whiteSpace: "nowrap", pr: 0 }}>
                   {formatAmount(record.loanRepayment)}
                 </TableCell>
-                {summary.totalAbsentFine > 0 && (
-                  <TableCell align="right" sx={{ whiteSpace: "nowrap", pr: 0 }}>
-                    {formatAmount(record.absentFine)}
-                  </TableCell>)}
+
+                <TableCell align="right" sx={{ whiteSpace: "nowrap", pr: 0 }}>
+                  {formatAmount(record.absentFine)}
+                </TableCell>
 
                 {summary.totalSpecialLoanFine > 0 && (
                   <TableCell align="right" sx={{ whiteSpace: "nowrap", pr: 0 }}>
@@ -125,10 +126,10 @@ export default function MemberTransactionsView({ summary }: Props) {
                 <TableCell align="right" sx={{ fontWeight: 700, whiteSpace: "nowrap", pr: 0 }}>
                   {formatCurrency(summary.totalLoanRepayment)}
                 </TableCell>
-                {summary.totalAbsentFine > 0 && (
-                  <TableCell align="right" sx={{ fontWeight: 700, whiteSpace: "nowrap", pr: 0 }}>
-                    {formatCurrency(summary.totalAbsentFine)}
-                  </TableCell>)}
+
+                <TableCell align="right" sx={{ fontWeight: 700, whiteSpace: "nowrap", pr: 0 }}>
+                  {formatCurrency(summary.totalAbsentFine)}
+                </TableCell>
 
                 {summary.totalSpecialLoanFine > 0 && (
                   <TableCell align="right" sx={{ fontWeight: 700, whiteSpace: "nowrap", pr: 0 }}>
@@ -143,6 +144,7 @@ export default function MemberTransactionsView({ summary }: Props) {
           </TableBody>
         </Table>
       </TableContainer>
+      <br /><br />
     </Stack>
   );
 }
