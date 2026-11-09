@@ -86,6 +86,14 @@ export const dashboardNavigation: NavigationItem[] = [
   },
 
   {
+    title: "Members Report",
+    href: "/reports/member-summary",
+    icon: GroupsOutlinedIcon,
+    roles: FINANCIAL_STEWARD_ROLES,
+    allowOfficeBearers: true,
+  },
+
+  {
     title: "Reports",
     href: "/reports",
     icon: BarChartOutlinedIcon,
