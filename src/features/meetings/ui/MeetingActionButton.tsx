@@ -10,7 +10,7 @@ import { useMeetingDataRefresh } from "./MeetingDataRefresh";
 
 type Props = {
   meetingId: string;
-  action: "start" | "close" | "delete" | "reopen";
+  action: "start" | "close" | "delete" | "reopen" | "edit";
   label: string;
   color?: ButtonProps["color"];
   variant?: ButtonProps["variant"];
@@ -28,12 +28,22 @@ export default function MeetingActionButton({
   confirm = false,
 }: Props) {
   const router = useRouter();
-  const { refreshMeetingData, unsavedSectionLabels } = useMeetingDataRefresh();
+  const { refreshMeetingData, unsavedSectionLabels, actionPending, beginAction, endAction } =
+    useMeetingDataRefresh();
 
   const [loading, setLoading] = useState(false);
 
   async function handleClick() {
+    if (disabled || actionPending) {
+      return;
+    }
+
+    if (!beginAction()) {
+      return;
+    }
+
     if (action === "close" && unsavedSectionLabels.length > 0) {
+      endAction();
       alert(`Save ${unsavedSectionLabels.join(", ")} before closing the meeting.`);
       return;
     }
@@ -42,13 +52,19 @@ export default function MeetingActionButton({
       const ok = window.confirm(`Are you sure you want to ${label.toLowerCase()}?`);
 
       if (!ok) {
+        endAction();
         return;
       }
     }
 
-    try {
-      setLoading(true);
+    setLoading(true);
 
+    if (action === "edit") {
+      router.push(`/meetings/${meetingId}/edit`);
+      return;
+    }
+
+    try {
       const method = action === "delete" ? "DELETE" : "POST";
 
       const url =
@@ -73,14 +89,19 @@ export default function MeetingActionButton({
         router.refresh();
       }
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Unexpected error.");
-    } finally {
       setLoading(false);
+      endAction();
+      alert(error instanceof Error ? error.message : "Unexpected error.");
     }
   }
 
   return (
-    <Button color={color} variant={variant} disabled={disabled || loading} onClick={handleClick}>
+    <Button
+      color={color}
+      variant={variant}
+      disabled={disabled || loading || actionPending}
+      onClick={handleClick}
+    >
       {loading ? "Please wait..." : label}
     </Button>
   );

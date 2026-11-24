@@ -20,6 +20,8 @@ export function useLoanFilters(
 
     financialYearId: "",
 
+    memberId: "",
+
     loanType: "",
 
     status: "",
@@ -38,11 +40,13 @@ export function useLoanFilters(
       const matchesYear =
         filters.financialYearId === "" || loan.financialYearId === filters.financialYearId;
 
+      const matchesMember = filters.memberId === "" || loan.memberId === filters.memberId;
+
       const matchesLoanType = filters.loanType === "" || loan.loanType === filters.loanType;
 
       const matchesStatus = filters.status === "" || loan.status === filters.status;
 
-      return matchesSearch && matchesYear && matchesLoanType && matchesStatus;
+      return matchesSearch && matchesYear && matchesMember && matchesLoanType && matchesStatus;
     });
   }, [loans, filters]);
 
@@ -62,6 +66,13 @@ export function useLoanFilters(
       setFilters((previous) => ({
         ...previous,
         financialYearId,
+      }));
+    },
+
+    setMember(memberId) {
+      setFilters((previous) => ({
+        ...previous,
+        memberId,
       }));
     },
 

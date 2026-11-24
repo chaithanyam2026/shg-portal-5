@@ -2,9 +2,7 @@
 
 import { type SyntheticEvent, useMemo, useState } from "react";
 
-import Link from "next/link";
-
-import { Box, Button, Stack } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 
 import PageHeader from "@/components/layout/PageHeader";
 import { formatDate } from "@/lib/utils/date";
@@ -96,11 +94,13 @@ function MeetingWorkspaceContent({
         backHref="/meetings"
       >
         <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", gap: 1 }}>
-          <Link href={`/meetings/${meeting.id}/edit`} style={{ textDecoration: "none" }}>
-            <Button variant="outlined" disabled={readOnly}>
-              Edit
-            </Button>
-          </Link>
+          <MeetingActionButton
+            meetingId={meeting.id}
+            action="edit"
+            label="Edit"
+            variant="outlined"
+            disabled={readOnly}
+          />
 
           <MeetingActionButton
             meetingId={meeting.id}

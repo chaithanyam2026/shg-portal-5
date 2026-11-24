@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import Link from "next/link";
 
-import { Box, Button, Stack, Tab, Tabs } from "@mui/material";
+import { Alert, Box, Button, Snackbar, Stack, Tab, Tabs } from "@mui/material";
 
 import PageHeader from "@/components/layout/PageHeader";
 import type { FinancialYearOption } from "@/features/financial-year/domain/financial-year-option";
@@ -19,6 +19,7 @@ import ContributionsTabLoader from "./tabs/ContributionsTabLoader";
 import GeneralTab from "./tabs/GeneralTab";
 import LoansTab from "./tabs/LoansTab";
 import MemberDeactivateButton from "./MemberDeactivateButton";
+import MemberResetPasswordDialog from "./MemberResetPasswordDialog";
 
 type Props = {
   financialYearOptions: FinancialYearOption[];
@@ -34,6 +35,8 @@ type Props = {
   currentMemberId?: string | null;
 
   canManageMembers?: boolean;
+
+  canResetPassword?: boolean;
 };
 
 const FINANCIAL_YEAR_TABS = new Set([1, 2, 3]);
@@ -46,16 +49,25 @@ export default function MemberTabs({
   officeBearerFinancialYearIds = [],
   currentMemberId = null,
   canManageMembers = false,
+  canResetPassword = false,
 }: Props) {
   const [tab, setTab] = useState(0);
 
   const [financialYearId, setFinancialYearId] = useState(initialFinancialYearId);
+  const [resetOpen, setResetOpen] = useState(false);
+  const [resetMessage, setResetMessage] = useState<string | null>(null);
 
   const showFinancialYearSelector = FINANCIAL_YEAR_TABS.has(tab);
 
   return (
     <Stack spacing={3}>
       <PageHeader title={member.name} subtitle={member.memberCode} backHref="/members">
+        {canResetPassword && (
+          <Button variant="outlined" onClick={() => setResetOpen(true)}>
+            Reset Password
+          </Button>
+        )}
+
         {canManageMembers && (
           <>
             <MemberDeactivateButton member={member} />
@@ -127,6 +139,28 @@ export default function MemberTabs({
           )}
         </Box>
       </Box>
+
+      {canResetPassword && (
+        <MemberResetPasswordDialog
+          member={resetOpen ? member : null}
+          onClose={() => setResetOpen(false)}
+          onSuccess={() => {
+            setResetOpen(false);
+            setResetMessage("Password reset.");
+          }}
+        />
+      )}
+
+      <Snackbar
+        open={resetMessage !== null}
+        autoHideDuration={4000}
+        onClose={() => setResetMessage(null)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert severity="success" onClose={() => setResetMessage(null)}>
+          {resetMessage}
+        </Alert>
+      </Snackbar>
     </Stack>
   );
 }
