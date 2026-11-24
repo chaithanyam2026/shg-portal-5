@@ -1,4 +1,5 @@
 export * from "./deactivate";
+export * from "./reset-password";
 export * from "./get-account-profile";
 export * from "./update-account-profile";
 export * from "./create";

@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 
 import {
+  Alert,
   Button,
   Card,
   CardContent,
-  Chip,
+  Snackbar,
   Stack,
   Table,
   TableBody,
@@ -20,14 +22,22 @@ import {
 import type { MemberSummary } from "../types";
 
 import PageHeader from "@/components/layout/PageHeader";
-import { formatDate } from "@/lib/utils/format";
+
+import MemberResetPasswordDialog from "./MemberResetPasswordDialog";
 
 type Props = {
   members: MemberSummary[];
   canManageMembers?: boolean;
+  canResetPassword?: boolean;
 };
 
-export default function MemberList({ members, canManageMembers = false }: Props) {
+export default function MemberList({
+  members,
+  canManageMembers = false,
+  canResetPassword = false,
+}: Props) {
+  const [resetMember, setResetMember] = useState<MemberSummary | null>(null);
+  const [resetMessage, setResetMessage] = useState<string | null>(null);
   return (
     <Stack spacing={3}>
       <PageHeader title="Members" showBack={false}>
@@ -91,14 +101,30 @@ export default function MemberList({ members, canManageMembers = false }: Props)
                   </TableCell> */}
 
                   <TableCell align="center">
-                    <Button
-                      component={Link}
-                      href={`/members/${member._id}`}
-                      size="small"
-                      variant="outlined"
+                    <Stack
+                      direction="row"
+                      spacing={1}
+                      sx={{ justifyContent: "center", flexWrap: "wrap" }}
                     >
-                      View
-                    </Button>
+                      <Button
+                        component={Link}
+                        href={`/members/${member._id}`}
+                        size="small"
+                        variant="outlined"
+                      >
+                        View
+                      </Button>
+
+                      {canResetPassword && (
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          onClick={() => setResetMember(member)}
+                        >
+                          Reset Password
+                        </Button>
+                      )}
+                    </Stack>
                   </TableCell>
                 </TableRow>
               ))}
@@ -106,6 +132,28 @@ export default function MemberList({ members, canManageMembers = false }: Props)
           </Table>
         </TableContainer>
       )}
+
+      {canResetPassword && (
+        <MemberResetPasswordDialog
+          member={resetMember}
+          onClose={() => setResetMember(null)}
+          onSuccess={() => {
+            setResetMember(null);
+            setResetMessage("Password reset.");
+          }}
+        />
+      )}
+
+      <Snackbar
+        open={resetMessage !== null}
+        autoHideDuration={4000}
+        onClose={() => setResetMessage(null)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert severity="success" onClose={() => setResetMessage(null)}>
+          {resetMessage}
+        </Alert>
+      </Snackbar>
     </Stack>
   );
 }
