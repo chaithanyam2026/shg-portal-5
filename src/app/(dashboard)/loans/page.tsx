@@ -1,7 +1,7 @@
 import { Alert, Box } from "@mui/material";
 
 import { FINANCIAL_YEAR_STATUS } from "@/features/financial-year/domain/financial-year-status";
-import { listFinancialYears } from "@/features/financial-year/services";
+import { listFinancialYears, listMembers } from "@/features/financial-year/services";
 
 import { getCurrentLoanViewScope, listLoans } from "@/features/loans/services";
 
@@ -12,8 +12,9 @@ export const dynamic = "force-dynamic";
 
 export default async function Page() {
   try {
-    const [financialYears, loanViewScope] = await Promise.all([
+    const [financialYears, members, loanViewScope] = await Promise.all([
       listFinancialYears(),
+      listMembers(),
       getCurrentLoanViewScope(),
     ]);
 
@@ -34,6 +35,7 @@ export default async function Page() {
           <LoanList
             loans={loans}
             financialYears={financialYears}
+            members={members}
             viewAllFinancialYearIds={
               loanViewScope.canViewAllFinancialYears
                 ? null

@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type PropsWithChildren,
 } from "react";
@@ -25,6 +26,9 @@ type MeetingDataRefreshContextValue = {
   refreshMeetingData: () => void;
   setSectionUnsaved: (section: MeetingUnsavedSection, unsaved: boolean) => void;
   unsavedSectionLabels: string[];
+  actionPending: boolean;
+  beginAction: () => boolean;
+  endAction: () => void;
 };
 
 const MeetingDataRefreshContext = createContext<MeetingDataRefreshContextValue | null>(null);
@@ -32,6 +36,23 @@ const MeetingDataRefreshContext = createContext<MeetingDataRefreshContextValue |
 export function MeetingDataRefreshProvider({ children }: PropsWithChildren) {
   const [refreshKey, setRefreshKey] = useState(0);
   const [unsavedSections, setUnsavedSections] = useState<Set<MeetingUnsavedSection>>(new Set());
+  const [actionPending, setActionPending] = useState(false);
+  const actionPendingRef = useRef(false);
+
+  const beginAction = useCallback(() => {
+    if (actionPendingRef.current) {
+      return false;
+    }
+
+    actionPendingRef.current = true;
+    setActionPending(true);
+    return true;
+  }, []);
+
+  const endAction = useCallback(() => {
+    actionPendingRef.current = false;
+    setActionPending(false);
+  }, []);
 
   const refreshMeetingData = useCallback(() => {
     setRefreshKey((current) => current + 1);
@@ -63,7 +84,15 @@ export function MeetingDataRefreshProvider({ children }: PropsWithChildren) {
 
   return (
     <MeetingDataRefreshContext.Provider
-      value={{ refreshKey, refreshMeetingData, setSectionUnsaved, unsavedSectionLabels }}
+      value={{
+        refreshKey,
+        refreshMeetingData,
+        setSectionUnsaved,
+        unsavedSectionLabels,
+        actionPending,
+        beginAction,
+        endAction,
+      }}
     >
       {children}
     </MeetingDataRefreshContext.Provider>

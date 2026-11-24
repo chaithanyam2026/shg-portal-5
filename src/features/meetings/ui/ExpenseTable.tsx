@@ -57,18 +57,14 @@ export default function ExpenseTable({ records, disabled = false, onChange }: Pr
       <TableContainer component={Paper}>
         <Table sx={{ width: "100%", tableLayout: "fixed" }}>
           <colgroup>
-            <col style={{ width: 168 }} />
-            <col style={{ width: 188 }} />
-            <col style={{ width: 160 }} />
+            <col style={{ width: 148 }} />
             <col />
             <col style={{ width: 56 }} />
           </colgroup>
           <TableHead>
             <TableRow>
-              <TableCell>Date</TableCell>
-              <TableCell>Category</TableCell>
-              <TableCell>Amount</TableCell>
-              <TableCell>Remarks</TableCell>
+              <TableCell sx={{ px: 1 }}>Date</TableCell>
+              <TableCell sx={{ px: 1 }}>Amount</TableCell>
               <TableCell />
             </TableRow>
           </TableHead>
@@ -76,7 +72,7 @@ export default function ExpenseTable({ records, disabled = false, onChange }: Pr
           <TableBody>
             {records.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} align="center">
+                <TableCell colSpan={3} align="center">
                   No expense records.
                 </TableCell>
               </TableRow>

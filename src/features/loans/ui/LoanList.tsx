@@ -23,10 +23,18 @@ type FinancialYearLookup = {
   name: string;
 };
 
+type MemberLookup = {
+  _id: string;
+  memberCode: string;
+  name: string;
+};
+
 type Props = {
   loans: LoanSummary[];
 
   financialYears: FinancialYearLookup[];
+
+  members?: MemberLookup[];
 
   /**
    * Financial years where this user can see every member's loans.
@@ -55,6 +63,7 @@ function showsOnlyOwnLoans(
 export default function LoanList({
   loans: initialLoans,
   financialYears,
+  members = [],
   viewAllFinancialYearIds = null,
   initialFinancialYearId = "",
 }: Props) {
@@ -121,7 +130,7 @@ export default function LoanList({
       loanType,
       status,
     ]); */
-  const { filters, filteredLoans, setSearch, setFinancialYear, setLoanType, setStatus } =
+  const { filters, filteredLoans, setSearch, setFinancialYear, setMember, setLoanType, setStatus } =
     useLoanFilters(loans, { financialYearId: initialFinancialYearId });
 
   useEffect(() => {
@@ -182,6 +191,7 @@ export default function LoanList({
   const hasActiveFilters =
     filters.search !== "" ||
     filters.financialYearId !== "" ||
+    filters.memberId !== "" ||
     filters.loanType !== "" ||
     filters.status !== "";
 
@@ -228,6 +238,24 @@ export default function LoanList({
           </FormControl>
 
           <FormControl fullWidth>
+            <InputLabel>Member</InputLabel>
+
+            <Select
+              label="Member"
+              value={filters.memberId}
+              onChange={(event) => setMember(event.target.value)}
+            >
+              <MenuItem value="">All</MenuItem>
+
+              {members.map((member) => (
+                <MenuItem key={member._id} value={member._id}>
+                  {member.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <FormControl fullWidth>
             <InputLabel>Loan Type</InputLabel>
 
             <Select
@@ -250,11 +278,7 @@ export default function LoanList({
 
             <Select
               label="Status"
-              /* onChange={(event) =>
-  setStatus(
-    event.target.value,
-  ) */
-
+              value={filters.status}
               onChange={(event) => setStatus(event.target.value as typeof filters.status)}
             >
               <MenuItem value="">All</MenuItem>

@@ -8,6 +8,8 @@ export type LoanFilters = {
 
   financialYearId: string;
 
+  memberId: string;
+
   loanType: LoanType | "";
 
   status: LoanStatus | "";
@@ -23,6 +25,8 @@ export type LoanFilterState = {
   setSearch(value: string): void;
 
   setFinancialYear(value: string): void;
+
+  setMember(value: string): void;
 
   setLoanType(value: LoanType | ""): void;
 
